@@ -26,6 +26,8 @@ export default function Index() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [searchProjectType, setSearchProjectType] = useState("");
   const [searchZip, setSearchZip] = useState("");
+  const [contractorTrade, setContractorTrade] = useState("");
+  const [contractorZip, setContractorZip] = useState("");
 
   useScrollTracking();
 
@@ -367,19 +369,16 @@ export default function Index() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const form = e.currentTarget;
-              const trade = (form.elements.namedItem("trade") as HTMLSelectElement)?.value;
-              const zip = (form.elements.namedItem("contractorZip") as HTMLInputElement)?.value;
               const params = new URLSearchParams();
-              if (trade) params.set("trade", trade);
-              if (zip) params.set("zip", zip);
+              if (contractorTrade) params.set("trade", contractorTrade);
+              if (contractorZip) params.set("zip", contractorZip);
               navigate(`/contractors?${params.toString()}`);
             }}
             className="flex flex-col sm:flex-row gap-4 items-end"
           >
             <div className="flex-1 w-full">
               <label className="text-sm font-medium mb-1.5 block">Trade Category</label>
-              <Select>
+              <Select value={contractorTrade} onValueChange={setContractorTrade}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select trade" />
                 </SelectTrigger>
@@ -397,7 +396,12 @@ export default function Index() {
             </div>
             <div className="w-full sm:w-40">
               <label className="text-sm font-medium mb-1.5 block">ZIP Code</label>
-              <Input name="contractorZip" placeholder="07450" maxLength={5} />
+              <Input
+                placeholder="07450"
+                value={contractorZip}
+                onChange={(e) => setContractorZip(e.target.value)}
+                maxLength={5}
+              />
             </div>
             <Button type="submit" size="lg" className="w-full sm:w-auto whitespace-nowrap">
               Search Contractors
