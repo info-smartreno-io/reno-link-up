@@ -74,23 +74,23 @@ export function SiteNavbar() {
     label: string;
     to: string;
   }[] = [{
+    label: "Platform",
+    to: "/#how-it-works"
+  }, {
+    label: "Software",
+    to: "/software"
+  }, {
     label: "Homeowners",
     to: "/homeowners"
   }, {
     label: "Contractors",
     to: "/contractors"
   }, {
-    label: "Architects",
-    to: "/architects"
+    label: "Projects",
+    to: "/projects"
   }, {
-    label: "Designers",
-    to: "/interiordesigners"
-  }, {
-    label: "Vendors",
-    to: "/vendors"
-  }, {
-    label: "Partners",
-    to: "https://town-data-nexus.lovable.app/"
+    label: "Resources",
+    to: "/blog"
   }, ...(isAdmin ? [{
     label: "Admin",
     to: "/admin/dashboard"
