@@ -24,8 +24,6 @@ export default function Index() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [searchProjectType, setSearchProjectType] = useState("");
-  const [searchZip, setSearchZip] = useState("");
   const [contractorTrade, setContractorTrade] = useState("");
   const [contractorZip, setContractorZip] = useState("");
 
@@ -65,13 +63,8 @@ export default function Index() {
     }
   };
 
-  const handleProjectSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchProjectType) params.set("type", searchProjectType);
-    if (searchZip) params.set("zip", searchZip);
-    navigate(`/start-your-renovation?${params.toString()}`);
-  };
+
+
 
   return (
     <main className="min-h-screen bg-background" style={{ scrollBehavior: "smooth" }}>

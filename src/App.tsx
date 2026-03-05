@@ -54,6 +54,9 @@ import ProjectsIndex from "./pages/ProjectsIndex";
 import ProjectTypePage from "./pages/ProjectTypePage";
 import ServicesIndex from "./pages/services/ServicesIndex";
 import ServiceDetailPage from "./pages/services/ServiceDetailPage";
+import Software from "./pages/Software";
+import StartYourRenovation from "./pages/StartYourRenovation";
+import ContractorsJoin from "./pages/ContractorsJoin";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAnalytics from "./pages/AdminAnalytics";
@@ -294,6 +297,7 @@ function AppRoutes() {
             } />
             <Route path="/homeowner-bid-demo" element={<HomeownerBidDemo />} />
             <Route path="/contractors" element={<ContractorDemo />} />
+            <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
             <Route path="/architects" element={<ArchitectLanding />} />
@@ -321,6 +325,8 @@ function AppRoutes() {
             <Route path="/projects/:projectType" element={<ProjectTypePage />} />
             <Route path="/services" element={<ServicesIndex />} />
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
+            <Route path="/software" element={<Software />} />
+            <Route path="/start-your-renovation" element={<StartYourRenovation />} />
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
               <ProtectedRoute requiredRole="admin">
