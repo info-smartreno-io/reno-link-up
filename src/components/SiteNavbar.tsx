@@ -399,19 +399,21 @@ export function SiteNavbar() {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 items-end max-w-3xl mx-auto">
                 <div className="flex-1 w-full">
-                  <label className="text-xs font-medium mb-1 block text-muted-foreground">What are you renovating?</label>
+                  <label className="text-xs font-medium mb-1 block text-muted-foreground">Trade Category</label>
                   <select
                     className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                     defaultValue=""
-                    id="nav-project-type"
+                    id="nav-contractor-trade"
                   >
-                    <option value="" disabled>Select project type</option>
-                    <option value="kitchen">Kitchen</option>
-                    <option value="bathroom">Bathroom</option>
-                    <option value="basement">Basement</option>
-                    <option value="addition">Addition</option>
-                    <option value="exterior">Exterior Renovation</option>
-                    <option value="other">Other</option>
+                    <option value="" disabled>Select trade</option>
+                    <option value="general">General Contractor</option>
+                    <option value="kitchen">Kitchen Specialist</option>
+                    <option value="bathroom">Bathroom Specialist</option>
+                    <option value="basement">Basement Finishing</option>
+                    <option value="addition">Home Additions</option>
+                    <option value="exterior">Exterior / Roofing</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="electrical">Electrical</option>
                   </select>
                 </div>
                 <div className="w-full sm:w-36">
@@ -420,22 +422,22 @@ export function SiteNavbar() {
                     className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                     placeholder="07450"
                     maxLength={5}
-                    id="nav-zip"
+                    id="nav-contractor-zip"
                   />
                 </div>
                 <button
                   type="button"
-                  className="w-full sm:w-auto rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  className="w-full sm:w-auto rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors whitespace-nowrap"
                   onClick={() => {
-                    const type = (document.getElementById('nav-project-type') as HTMLSelectElement)?.value;
-                    const zip = (document.getElementById('nav-zip') as HTMLInputElement)?.value;
+                    const trade = (document.getElementById('nav-contractor-trade') as HTMLSelectElement)?.value;
+                    const zip = (document.getElementById('nav-contractor-zip') as HTMLInputElement)?.value;
                     const params = new URLSearchParams();
-                    if (type) params.set("type", type);
+                    if (trade) params.set("trade", trade);
                     if (zip) params.set("zip", zip);
-                    window.location.href = `/start-your-renovation?${params.toString()}`;
+                    window.location.href = `/contractors?${params.toString()}`;
                   }}
                 >
-                  Start Project
+                  Find Contractors
                 </button>
               </div>
             </div>
