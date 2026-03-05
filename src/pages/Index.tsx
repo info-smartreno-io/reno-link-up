@@ -149,41 +149,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ===== PROJECT SEARCH BAR ===== */}
-      <section className="py-8 bg-muted/30 border-y">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <form onSubmit={handleProjectSearch} className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1 w-full">
-              <label className="text-sm font-medium mb-1.5 block">What are you renovating?</label>
-              <Select value={searchProjectType} onValueChange={setSearchProjectType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select project type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kitchen">Kitchen</SelectItem>
-                  <SelectItem value="bathroom">Bathroom</SelectItem>
-                  <SelectItem value="basement">Basement</SelectItem>
-                  <SelectItem value="addition">Addition</SelectItem>
-                  <SelectItem value="exterior">Exterior Renovation</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-full sm:w-40">
-              <label className="text-sm font-medium mb-1.5 block">ZIP Code</label>
-              <Input
-                placeholder="07450"
-                value={searchZip}
-                onChange={(e) => setSearchZip(e.target.value)}
-                maxLength={5}
-              />
-            </div>
-            <Button type="submit" size="lg" className="w-full sm:w-auto whitespace-nowrap">
-              Start Project
-            </Button>
-          </form>
-        </div>
-      </section>
 
       {/* ===== LAUNCH BANNER ===== */}
       <LaunchBanner />

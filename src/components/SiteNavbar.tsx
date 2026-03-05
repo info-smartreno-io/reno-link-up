@@ -381,20 +381,63 @@ export function SiteNavbar() {
           </nav>
         </div>
 
-        {/* CTA Buttons Bar (only on homepage) */}
+        {/* CTA Buttons Bar + Search (only on homepage) */}
         {isHomePage && (
           <div className="border-b border-border/40 bg-muted/10 py-4">
-            <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/start-your-renovation" className="no-underline w-full sm:w-auto">
-                <button type="button" className="w-full sm:w-auto rounded-xl bg-primary px-10 py-4 text-lg font-bold text-primary-foreground hover:bg-primary/90 transition-colors">
-                  Start Your Project
+            <div className="mx-auto max-w-7xl px-6 space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link to="/start-your-renovation" className="no-underline w-full sm:w-auto">
+                  <button type="button" className="w-full sm:w-auto rounded-xl bg-primary px-10 py-4 text-lg font-bold text-primary-foreground hover:bg-primary/90 transition-colors">
+                    Start Your Project
+                  </button>
+                </Link>
+                <Link to="/contractors/join" className="no-underline w-full sm:w-auto">
+                  <button type="button" className="w-full sm:w-auto rounded-xl border-2 border-primary px-10 py-4 text-lg font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
+                    Join Contractor Network
+                  </button>
+                </Link>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 items-end max-w-3xl mx-auto">
+                <div className="flex-1 w-full">
+                  <label className="text-xs font-medium mb-1 block text-muted-foreground">What are you renovating?</label>
+                  <select
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    defaultValue=""
+                    id="nav-project-type"
+                  >
+                    <option value="" disabled>Select project type</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="bathroom">Bathroom</option>
+                    <option value="basement">Basement</option>
+                    <option value="addition">Addition</option>
+                    <option value="exterior">Exterior Renovation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="w-full sm:w-36">
+                  <label className="text-xs font-medium mb-1 block text-muted-foreground">ZIP Code</label>
+                  <input
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    placeholder="07450"
+                    maxLength={5}
+                    id="nav-zip"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="w-full sm:w-auto rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  onClick={() => {
+                    const type = (document.getElementById('nav-project-type') as HTMLSelectElement)?.value;
+                    const zip = (document.getElementById('nav-zip') as HTMLInputElement)?.value;
+                    const params = new URLSearchParams();
+                    if (type) params.set("type", type);
+                    if (zip) params.set("zip", zip);
+                    window.location.href = `/start-your-renovation?${params.toString()}`;
+                  }}
+                >
+                  Start Project
                 </button>
-              </Link>
-              <Link to="/contractors/join" className="no-underline w-full sm:w-auto">
-                <button type="button" className="w-full sm:w-auto rounded-xl border-2 border-primary px-10 py-4 text-lg font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
-                  Join Contractor Network
-                </button>
-              </Link>
+              </div>
             </div>
           </div>
         )}
