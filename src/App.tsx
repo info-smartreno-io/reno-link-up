@@ -296,7 +296,7 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/homeowner-bid-demo" element={<HomeownerBidDemo />} />
-            <Route path="/contractors" element={<ContractorDemo />} />
+            <Route path="/contractors" element={<ContractorsDirectory />} />
             <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
