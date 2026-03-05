@@ -1,0 +1,326 @@
+{
+  "system": {
+    "name": "SmartReno AI Agent System",
+    "goal": "Use AI agents to assist homeowners, estimators, contractors, subs, PMs, and admins across the existing SmartReno workflows.",
+    "orchestrator": {
+      "name": "Core Agent Orchestrator",
+      "role": "Route requests to the right agent, share context (project, user, messages), and coordinate multi-step flows.",
+      "key_responsibilities": [
+        "Look at incoming request (who, where, why) and choose the right agent.",
+        "Pass in relevant project/user data from Supabase and existing APIs.",
+        "Allow humans to override or approve key steps (estimates, bids, messages).",
+        "Log all AI activity for debugging and audit."
+      ],
+      "integrations_to_use": [
+        "Supabase (existing schema)",
+        "Stripe (existing payment flows)",
+        "Google Calendar integration (existing estimator scheduling)",
+        "Google Maps link creation",
+        "Resend email + Twilio SMS",
+        "n8n automations that already exist"
+      ]
+    }
+  },
+
+  "categories": [
+    {
+      "name": "Homeowner Agents",
+      "description": "Agents that interact with homeowners inside the existing Homeowner Portal.",
+      "agents": [
+        {
+          "name": "Smart Intake Agent",
+          "where_it_runs": [
+            "Homeowner intake flow",
+            "Project creation steps",
+            "Any free-text or photo-based description from homeowner"
+          ],
+          "main_job": "Turn whatever the homeowner gives us (text + photos) into a clean, structured project record that works with the current DB and estimating flows.",
+          "uses_existing_things": [
+            "projects table",
+            "uploads table (photos)",
+            "existing intake form fields"
+          ],
+          "typical_actions": [
+            "Suggest default values for rooms, project type, and square footage based on what homeowner wrote.",
+            "Auto-fill structured fields (rooms, interior/exterior, addition vs alteration).",
+            "Highlight possible mechanical/electrical/plumbing needs for the estimator dashboard.",
+            "Save back into existing project fields instead of creating new tables where possible."
+          ]
+        },
+        {
+          "name": "Smart Estimate Companion Agent",
+          "where_it_runs": [
+            "After intake is done but before estimator is scheduled",
+            "On a 'Cost Preview' or 'What should I expect?' screen"
+          ],
+          "main_job": "Give the homeowner a friendly cost range and explainers based on what we already know about the project.",
+          "uses_existing_things": [
+            "project scope from intake",
+            "location (zip)",
+            "any existing internal pricing logic or estimate templates"
+          ],
+          "typical_actions": [
+            "Output low / medium / high cost ranges (even if rough).",
+            "Explain what drives cost up or down in plain English.",
+            "Recommend add-ons (3D design, architectural plans) using current Stripe products / upsell logic.",
+            "Suggest time windows to pass into the estimator scheduling flow that already exists."
+          ]
+        },
+        {
+          "name": "Smart Homeowner Support Agent",
+          "where_it_runs": [
+            "Homeowner portal chat or help widget",
+            "FAQ / support pages linked to logged-in users"
+          ],
+          "main_job": "Answer status and process questions using existing project, scheduling, and payment data.",
+          "uses_existing_things": [
+            "project workflow_status",
+            "estimator_scheduled_at",
+            "RFP / bid status",
+            "payments table"
+          ],
+          "typical_actions": [
+            "Answer 'Where is my project in the process?' using workflow_status.",
+            "Tell them if an estimator is scheduled and show date/time.",
+            "Summarize bid status in simple language (X bids received, Y shortlisted).",
+            "Escalate to human support when unsure and log conversation for admins."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Estimator Agents",
+      "description": "Agents that support estimators with scheduling, walkthroughs, and estimate creation, using the existing Estimator Portal and DB.",
+      "agents": [
+        {
+          "name": "Smart Scheduling & Routing Agent",
+          "where_it_runs": [
+            "Immediately after Stripe confirms estimate payment",
+            "Inside existing estimator scheduling edge function / n8n flow"
+          ],
+          "main_job": "Pick the best estimator and schedule the visit using current logic (ZIP, availability, travel buffer).",
+          "uses_existing_things": [
+            "estimators table (zip_prefix, availability)",
+            "projects table (address, zip)",
+            "existing Google Calendar integration and event creation code"
+          ],
+          "typical_actions": [
+            "Auto-select estimator instead of manual assignment when possible.",
+            "Compute start/end times using current travel buffer rules.",
+            "Create calendar event with Maps link and push notifications (SMS/email) through existing flows.",
+            "Expose suggestions to admins if auto-assign fails, instead of silently erroring."
+          ]
+        },
+        {
+          "name": "Smart Walkthrough Agent",
+          "where_it_runs": [
+            "Estimator dashboard during a site visit",
+            "Walkthrough / photos / notes tab"
+          ],
+          "main_job": "Turn estimator's photos + notes into a structured scope that drops cleanly into the existing estimate workflow.",
+          "uses_existing_things": [
+            "uploads table for photos",
+            "walkthrough notes fields",
+            "projects / estimates tables"
+          ],
+          "typical_actions": [
+            "Group photos by room and tag them.",
+            "Extract bullets from free-text notes (demo, framing, MEP, finishes).",
+            "Pre-populate scope/line items in whatever format the current estimating UI expects.",
+            "Flag red flags (structural, water damage, etc.) as notes for internal use."
+          ]
+        },
+        {
+          "name": "SmartEstimate Agent",
+          "where_it_runs": [
+            "Estimator creates or edits an estimate",
+            "Admin converts walkthrough into proposal"
+          ],
+          "main_job": "Generate or improve the estimate using the existing pricing model, not replace it.",
+          "uses_existing_things": [
+            "current estimate line-item structure",
+            "any existing templates or libraries for costs",
+            "estimate PDF generation logic"
+          ],
+          "typical_actions": [
+            "Suggest line items and quantities from the structured scope.",
+            "Fill in rough pricing where allowed, using current defaults.",
+            "Insert standard disclaimers already used by the business.",
+            "Produce a homeowner-facing summary and a detailed contractor/RFP version using the existing PDF / document flow."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Contractor Agents",
+      "description": "Agents that live inside the Contractor Portal and help contractors respond to RFPs and manage work.",
+      "agents": [
+        {
+          "name": "Bid Preparation Agent",
+          "where_it_runs": [
+            "When a contractor opens an RFP detail page",
+            "On a 'Generate Draft Bid' button"
+          ],
+          "main_job": "Pre-fill a bid for the contractor based on estimator scope and photos, keeping the current bid structure.",
+          "uses_existing_things": [
+            "rfps table",
+            "bids table",
+            "estimator scope / estimate snapshot"
+          ],
+          "typical_actions": [
+            "Summarize the job in 3–5 bullets for the contractor.",
+            "Pre-fill line items with quantities where possible.",
+            "Offer low / mid / high suggested pricing for internal reference only.",
+            "Remind contractor about common exclusions and terms used today."
+          ]
+        },
+        {
+          "name": "Smart Contractor Workflow Agent",
+          "where_it_runs": [
+            "Contractor dashboard (list of active jobs)",
+            "Notifications panel"
+          ],
+          "main_job": "Keep contractors aware of next steps and upcoming tasks based on current timelines and messages.",
+          "uses_existing_things": [
+            "project_timeline / milestones (whatever structure exists)",
+            "messages / activity log",
+            "workflow_status fields"
+          ],
+          "typical_actions": [
+            "Generate today / this week task lists per project.",
+            "Suggest update messages to homeowners when something changes.",
+            "Highlight stalled jobs (no update in X days)."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Subcontractor Agents",
+      "description": "Agents that help subs price and align their schedule with the GC's plan.",
+      "agents": [
+        {
+          "name": "Sub Bid Agent",
+          "where_it_runs": [
+            "Subcontractor bid invitations sent from Project Manager or Contractor view"
+          ],
+          "main_job": "Break the GC's scope into trade-specific pieces and help the sub price and pick dates.",
+          "uses_existing_things": [
+            "sub_rfp / invites structure (once created)",
+            "project timeline",
+            "subcontractor profile info"
+          ],
+          "typical_actions": [
+            "Show only the relevant sections of scope for that trade.",
+            "Offer date windows that fit the master timeline.",
+            "Prepare a draft bid the sub can edit."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "PM / Coordinator Agents",
+      "description": "Agents that help build timelines and manage communication using the existing Admin / PM tools.",
+      "agents": [
+        {
+          "name": "Smart Timeline Agent",
+          "where_it_runs": [
+            "Admin / PM dashboard once a project is 'approved' or 'contractor selected'"
+          ],
+          "main_job": "Propose a project timeline that uses the existing scheduling and milestone structure.",
+          "uses_existing_things": [
+            "current milestone model or status pipeline",
+            "material lead time fields if present",
+            "contractor and sub availability"
+          ],
+          "typical_actions": [
+            "Generate a first draft Gantt-style plan (phases, dates).",
+            "Mark critical path tasks and suggested buffer days.",
+            "Update existing timeline records instead of creating a new system."
+          ]
+        },
+        {
+          "name": "Smart Communication Agent",
+          "where_it_runs": [
+            "PM / Coordinator messaging areas",
+            "Any place admins send bulk or templated updates"
+          ],
+          "main_job": "Draft clear, friendly updates and requests based on actual project state.",
+          "uses_existing_things": [
+            "message templates currently in use",
+            "project status, timelines, appointments"
+          ],
+          "typical_actions": [
+            "Write delay explanations tied to real causes (permits, materials, weather).",
+            "Draft meeting requests with suggested date/times.",
+            "Create clean, non-technical homeowner updates PMs can approve."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Admin + Compliance Agents",
+      "description": "Agents that help SmartReno staff with QA, permits, and warranty work using existing back-office tools.",
+      "agents": [
+        {
+          "name": "Smart QA Agent",
+          "where_it_runs": [
+            "Admin review screens for estimates, RFPs, and bids"
+          ],
+          "main_job": "Flag issues and missing pieces before anything is sent to homeowners or contractors.",
+          "uses_existing_things": [
+            "estimates and line items",
+            "rfps and bids",
+            "current business rules (labor rates, markup ranges, disclaimers)"
+          ],
+          "typical_actions": [
+            "Flag missing rooms or big mismatches between intake and estimate.",
+            "Warn if labor or margin is outside normal ranges.",
+            "Check that standard disclaimers are present.",
+            "Produce a short 'QA checklist' for the admin to approve."
+          ]
+        },
+        {
+          "name": "Smart Permit Agent",
+          "where_it_runs": [
+            "Admin 'Permit' tab you're building with NJ municipalities and forms"
+          ],
+          "main_job": "Help the team understand what forms and contacts are needed for a given job and town.",
+          "uses_existing_things": [
+            "permit reference tables (per county/town)",
+            "links to building department websites",
+            "stored PDF templates or online forms"
+          ],
+          "typical_actions": [
+            "List which forms are required based on project type.",
+            "Surface contact info and links for that municipality.",
+            "Draft email templates to send to building departments.",
+            "Eventually suggest how to fill-in forms based on existing project data."
+          ]
+        },
+        {
+          "name": "Smart Warranty Agent",
+          "where_it_runs": [
+            "Warranty claim portal / admin dashboard"
+          ],
+          "main_job": "Sort, triage, and route warranty claims to the right contractor or team.",
+          "uses_existing_things": [
+            "warranty claim records",
+            "original project scope and contractors",
+            "claim photos"
+          ],
+          "typical_actions": [
+            "Classify claim type (leak, finish issue, mechanical, etc.).",
+            "Check if the issue appears covered by current warranty rules.",
+            "Suggest the responsible party and next steps.",
+            "Generate a short internal summary plus a homeowner-facing acknowledgement message."
+          ]
+        }
+      ]
+    }
+  ]
+}
