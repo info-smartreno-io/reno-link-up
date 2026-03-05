@@ -387,12 +387,12 @@ export function SiteNavbar() {
             <div className="mx-auto max-w-7xl px-6 space-y-4">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/start-your-renovation" className="no-underline w-full sm:w-auto">
-                  <button type="button" className="w-full sm:w-auto rounded-xl bg-primary px-10 py-4 text-lg font-bold text-primary-foreground hover:bg-primary/90 transition-colors">
+                  <button type="button" className="w-full sm:w-auto rounded-xl bg-accent px-10 py-4 text-lg font-bold text-accent-foreground hover:bg-accent/90 transition-colors shadow-md">
                     Start Your Project
                   </button>
                 </Link>
                 <Link to="/contractors/join" className="no-underline w-full sm:w-auto">
-                  <button type="button" className="w-full sm:w-auto rounded-xl border-2 border-primary px-10 py-4 text-lg font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
+                  <button type="button" className="w-full sm:w-auto rounded-xl bg-accent px-10 py-4 text-lg font-bold text-accent-foreground hover:bg-accent/90 transition-colors shadow-md">
                     Join Contractor Network
                   </button>
                 </Link>
@@ -427,7 +427,7 @@ export function SiteNavbar() {
                 </div>
                 <button
                   type="button"
-                  className="w-full sm:w-auto rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors whitespace-nowrap"
+                  className="w-full sm:w-auto rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors whitespace-nowrap shadow-md"
                   onClick={() => {
                     const trade = (document.getElementById('nav-contractor-trade') as HTMLSelectElement)?.value;
                     const zip = (document.getElementById('nav-contractor-zip') as HTMLInputElement)?.value;
