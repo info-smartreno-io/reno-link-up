@@ -25,7 +25,6 @@ export default function Index() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [contractorTrade, setContractorTrade] = useState("");
-  const [contractorTrade, setContractorTrade] = useState("");
   const [contractorZip, setContractorZip] = useState("");
 
   useScrollTracking();
