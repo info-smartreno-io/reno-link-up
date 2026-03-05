@@ -57,6 +57,7 @@ import ServiceDetailPage from "./pages/services/ServiceDetailPage";
 import Software from "./pages/Software";
 import StartYourRenovation from "./pages/StartYourRenovation";
 import ContractorsJoin from "./pages/ContractorsJoin";
+import ContractorsDirectory from "./pages/ContractorsDirectory";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAnalytics from "./pages/AdminAnalytics";
