@@ -381,58 +381,20 @@ export function SiteNavbar() {
           </nav>
         </div>
 
-        {/* Sub Navigation Bar (only on homepage) */}
+        {/* CTA Buttons Bar (only on homepage) */}
         {isHomePage && (
-          <div className="border-b border-border/40 bg-muted/30">
-            <div className="mx-auto max-w-7xl px-6">
-              <nav className="flex items-center justify-center gap-6 py-3 overflow-x-auto" aria-label="Secondary Navigation">
-                {SUB_NAV_LINKS.map((link) => {
-                  if (link.dropdown) {
-                    return (
-                      <DropdownMenu key={link.label}>
-                        <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap">
-                          {link.label}
-                          <ChevronDown className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
-                          {link.dropdown.map((section) => (
-                            <DropdownMenuGroup key={section.label}>
-                              <DropdownMenuLabel>{section.label}</DropdownMenuLabel>
-                              {section.items.map((item) => (
-                                <DropdownMenuItem key={item.label} asChild>
-                                  <Link to={item.to} className="cursor-pointer">
-                                    {item.label}
-                                  </Link>
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuGroup>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    );
-                  }
-                  return (
-                    <a
-                      key={link.label}
-                      href={link.to || "#"}
-                      className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap"
-                    >
-                      {link.label}
-                    </a>
-                  );
-                })}
-              </nav>
-            </div>
-          </div>
-        )}
-
-        {/* Live Banner (only on homepage) */}
-        {isHomePage && (
-          <div className="relative overflow-hidden bg-primary py-2.5">
-            <div className="animate-scroll-left whitespace-nowrap">
-              <span className="inline-block text-sm font-bold tracking-wide text-primary-foreground">
-                🎉 1 Call, 3 Quotes, Renovations done right! Schedule your free estimate today!          🎉 1 Call, 3 Quotes, Renovations done right! Schedule your free estimate today!          🎉 1 Call, 3 Quotes, Renovations done right! Schedule your free estimate today!          🎉 1 Call, 3 Quotes, Renovations done right! Schedule your free estimate today!
-              </span>
+          <div className="border-b border-border/40 bg-muted/10 py-4">
+            <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/start-your-renovation" className="no-underline w-full sm:w-auto">
+                <button type="button" className="w-full sm:w-auto rounded-xl bg-primary px-10 py-4 text-lg font-bold text-primary-foreground hover:bg-primary/90 transition-colors">
+                  Start Your Project
+                </button>
+              </Link>
+              <Link to="/contractors/join" className="no-underline w-full sm:w-auto">
+                <button type="button" className="w-full sm:w-auto rounded-xl border-2 border-primary px-10 py-4 text-lg font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
+                  Join Contractor Network
+                </button>
+              </Link>
             </div>
           </div>
         )}
