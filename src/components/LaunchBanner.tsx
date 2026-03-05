@@ -15,15 +15,14 @@ export function LaunchBanner() {
           <Button
             asChild
             size="lg"
-            className="h-14 px-8 text-lg font-semibold rounded-xl bg-background text-foreground hover:bg-background/90 transition-colors"
+            className="h-14 px-8 text-lg font-semibold rounded-xl bg-white text-primary hover:bg-white/90 transition-colors"
           >
             <Link to="/start-your-renovation">Start Your Project</Link>
           </Button>
           <Button
             asChild
             size="lg"
-            variant="outline"
-            className="h-14 px-8 text-lg font-semibold rounded-xl border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
+            className="h-14 px-8 text-lg font-semibold rounded-xl bg-transparent border-2 border-white text-white hover:bg-white/10 transition-colors"
           >
             <Link to="/contractors/join">Join Contractor Network</Link>
           </Button>

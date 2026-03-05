@@ -360,10 +360,56 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ===== CONTRACTOR SEARCH BAR ===== */}
+      <section className="py-10 bg-muted/30 border-y">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-center mb-6">Find a Contractor</h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const trade = (form.elements.namedItem("trade") as HTMLSelectElement)?.value;
+              const zip = (form.elements.namedItem("contractorZip") as HTMLInputElement)?.value;
+              const params = new URLSearchParams();
+              if (trade) params.set("trade", trade);
+              if (zip) params.set("zip", zip);
+              navigate(`/contractors?${params.toString()}`);
+            }}
+            className="flex flex-col sm:flex-row gap-4 items-end"
+          >
+            <div className="flex-1 w-full">
+              <label className="text-sm font-medium mb-1.5 block">Trade Category</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select trade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General Contractor</SelectItem>
+                  <SelectItem value="kitchen">Kitchen Specialist</SelectItem>
+                  <SelectItem value="bathroom">Bathroom Specialist</SelectItem>
+                  <SelectItem value="basement">Basement Finishing</SelectItem>
+                  <SelectItem value="addition">Home Additions</SelectItem>
+                  <SelectItem value="exterior">Exterior / Roofing</SelectItem>
+                  <SelectItem value="plumbing">Plumbing</SelectItem>
+                  <SelectItem value="electrical">Electrical</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full sm:w-40">
+              <label className="text-sm font-medium mb-1.5 block">ZIP Code</label>
+              <Input name="contractorZip" placeholder="07450" maxLength={5} />
+            </div>
+            <Button type="submit" size="lg" className="w-full sm:w-auto whitespace-nowrap">
+              Search Contractors
+            </Button>
+          </form>
+        </div>
+      </section>
+
       {/* ===== FOOTER ===== */}
       <footer className="py-10 pt-20 border-t">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-4 text-sm mb-12">
+          <div className="grid gap-8 md:grid-cols-5 text-sm mb-12">
             <div>
               <div className="font-semibold">SmartReno</div>
               <p className="mt-2 text-muted-foreground mb-3">The first step before you renovate.</p>
@@ -385,10 +431,18 @@ export default function Index() {
               </ul>
             </div>
             <div>
+              <div className="font-semibold">Resources</div>
+              <ul className="mt-2 space-y-2 text-muted-foreground">
+                <li><a className="hover:underline" href="https://jersey-digs-data.lovable.app/pro-calculator">SmartReno Calculator</a></li>
+                <li><a className="hover:underline" href="https://jersey-digs-data.lovable.app/financing">Financing</a></li>
+                <li><Link to="/blog" className="hover:underline">Blog</Link></li>
+                <li><Link to="/locations" className="hover:underline">Service Locations</Link></li>
+              </ul>
+            </div>
+            <div>
               <div className="font-semibold">Company</div>
               <ul className="mt-2 space-y-2 text-muted-foreground">
                 <li><Link to="/about" className="hover:underline">About</Link></li>
-                <li><Link to="/blog" className="hover:underline">Blog</Link></li>
                 <li><Link to="/projects" className="hover:underline">Projects</Link></li>
               </ul>
             </div>
