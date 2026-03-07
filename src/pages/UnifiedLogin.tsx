@@ -80,19 +80,12 @@ export default function UnifiedLogin() {
         });
         window.open('/admin/dashboard', "_blank", "noopener,noreferrer");
         navigate('/');
-      } else if (userRole === 'architect') {
+      } else if (userRole === 'architect' || userRole === 'interior_designer' || userRole === 'design_professional') {
         toast({
           title: "Welcome!",
-          description: "Opening your architect portal in a new tab.",
+          description: "Opening your design professional portal in a new tab.",
         });
-        window.open('/architect/dashboard', "_blank", "noopener,noreferrer");
-        navigate('/');
-      } else if (userRole === 'interior_designer') {
-        toast({
-          title: "Welcome!",
-          description: "Opening your interior designer portal in a new tab.",
-        });
-        window.open('/interiordesigner/dashboard', "_blank", "noopener,noreferrer");
+        window.open('/design-professional/dashboard', "_blank", "noopener,noreferrer");
         navigate('/');
       } else {
         toast({
@@ -376,8 +369,7 @@ export default function UnifiedLogin() {
                   <SelectContent>
                     <SelectItem value="homeowner">Homeowner</SelectItem>
                     <SelectItem value="contractor">Contractor</SelectItem>
-                    <SelectItem value="architect">Architect</SelectItem>
-                    <SelectItem value="interior_designer">Interior Designer</SelectItem>
+                    <SelectItem value="design_professional">Design Professional</SelectItem>
                     <SelectItem value="vendor">Vendor</SelectItem>
                   </SelectContent>
                 </Select>
