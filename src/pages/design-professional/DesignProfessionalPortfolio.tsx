@@ -60,9 +60,22 @@ export default function DesignProfessionalPortfolio() {
           .eq("id", item.id);
         if (error) throw error;
       } else {
+        const insertData = {
+          title: item.title || "Untitled",
+          user_id: user.id,
+          sort_order: (items?.length || 0) + 1,
+          location: item.location || null,
+          project_type: item.project_type || null,
+          description: item.description || null,
+          scope_of_work: item.scope_of_work || null,
+          budget_range: item.budget_range || null,
+          style_tags: item.style_tags || [],
+          cover_image_url: item.cover_image_url || null,
+          featured: item.featured || false,
+        };
         const { error } = await supabase
           .from("design_professional_portfolio_items")
-          .insert({ ...item, user_id: user.id, sort_order: (items?.length || 0) + 1 });
+          .insert(insertData);
         if (error) throw error;
       }
     },
