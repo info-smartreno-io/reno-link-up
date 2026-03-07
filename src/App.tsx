@@ -32,6 +32,14 @@ import ProfileSetup from "./pages/ProfileSetup";
 import Homeowners from "./pages/Homeowners";
 import HomeownerTimeline from "./pages/HomeownerTimeline";
 import HomeownerPortal from "./pages/HomeownerPortal";
+import HomeownerDashboardNew from "./pages/homeowner/HomeownerDashboard";
+import HomeownerProjectsNew from "./pages/homeowner/HomeownerProjects";
+import HomeownerProjectDetailNew from "./pages/homeowner/HomeownerProjectDetail";
+import HomeownerProjectOverview from "./pages/homeowner/HomeownerProjectOverview";
+import HomeownerProposals from "./pages/homeowner/HomeownerProposals";
+import HomeownerProjectTimeline from "./pages/homeowner/HomeownerProjectTimeline";
+import HomeownerProjectMessages from "./pages/homeowner/HomeownerProjectMessages";
+import { HomeownerLayout } from "./components/homeowner/HomeownerLayout";
 import HomeownerBidDemo from "./pages/HomeownerBidDemo";
 import HomeownerWarrantyClaim from "./pages/HomeownerWarrantyClaim";
 import HomeownerAppointments from "./pages/HomeownerAppointments";
@@ -319,6 +327,44 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/homeowner-bid-demo" element={<HomeownerBidDemo />} />
+            
+            {/* New Homeowner Portal Routes */}
+            <Route path="/homeowner/dashboard" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerDashboardNew /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/projects" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectsNew /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/projects/:projectId" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectDetailNew /></HomeownerLayout>
+              </ProtectedRoute>
+            }>
+              <Route path="overview" element={<HomeownerProjectOverview />} />
+              <Route path="proposals" element={<HomeownerProposals />} />
+              <Route path="timeline" element={<HomeownerProjectTimeline />} />
+              <Route path="messages" element={<HomeownerProjectMessages />} />
+              <Route index element={<HomeownerProjectOverview />} />
+            </Route>
+            <Route path="/homeowner/messages" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectMessages /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/notifications" element={
+              <ProtectedRoute>
+                <HomeownerLayout><div className="p-4 text-muted-foreground">Notifications coming soon.</div></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/profile" element={
+              <ProtectedRoute>
+                <HomeownerLayout><AccountSettings /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
             <Route path="/contractors" element={<ContractorsDirectory />} />
             <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
