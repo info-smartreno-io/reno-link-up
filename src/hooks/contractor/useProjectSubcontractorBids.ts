@@ -27,17 +27,34 @@ export function useProjectSubcontractorBids(projectId: string | undefined) {
         .from("subcontractor_bids" as any)
         .insert({ ...bid, project_id: projectId! }) as any);
       if (error) throw error;
+
+      // Log activity
+      await supabase.from("project_activity_log").insert({
+        project_id: projectId!,
+        activity_type: "subcontractor_invited",
+        description: `${bid.company_name} invited for ${bid.trade}`,
+        performed_by: (await supabase.auth.getUser()).data.user?.id,
+        role: "contractor",
+      } as any);
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Subcontractor bid added"); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast.success("Subcontractor bid added");
+    },
     onError: () => toast.error("Failed to add bid"),
   });
 
   const updateBid = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; status?: string; bid_amount?: number; notes?: string }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; status?: string; bid_amount?: number; notes?: string; meeting_date?: string; start_date?: string; duration?: string }) => {
       const { error } = await (supabase.from("subcontractor_bids" as any).update(updates).eq("id", id) as any);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Bid updated"); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unread-notification-count"] });
+      toast.success("Bid updated");
+    },
     onError: () => toast.error("Failed to update bid"),
   });
 

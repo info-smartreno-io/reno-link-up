@@ -244,20 +244,20 @@ export default function ContractorDashboard() {
   // Unified stats for display
   const unifiedStats = [
     {
-      label: "Active Leads",
-      value: recentLeads.length || demoStats?.pendingBids || 0,
-      subtext: "In pipeline",
-      icon: Users,
-      color: "text-info",
-      bgColor: "bg-info/10",
-    },
-    {
       label: "Active Projects",
-      value: projects.filter(p => p.status === 'in_progress').length || demoStats?.activeProjects || 0,
-      subtext: `${projects.filter(p => p.status === 'planning').length} planning`,
+      value: stats?.activeProjects || projects.filter(p => p.status === 'in_progress').length || demoStats?.activeProjects || 0,
+      subtext: `${stats?.newProjects || 0} new`,
       icon: FolderKanban,
       color: "text-primary",
       bgColor: "bg-primary/10",
+    },
+    {
+      label: "Pending Bids",
+      value: stats?.pendingBids || demoStats?.pendingBids || 0,
+      subtext: `${stats?.successfulBids || 0} won`,
+      icon: FileText,
+      color: "text-info",
+      bgColor: "bg-info/10",
     },
     {
       label: "Revenue",
@@ -268,10 +268,10 @@ export default function ContractorDashboard() {
       bgColor: "bg-success/10",
     },
     {
-      label: "Opportunities",
-      value: stats?.requestsForProposals || 0,
-      subtext: `${stats?.successfulBids || 0} won`,
-      icon: TrendingUp,
+      label: "Notifications",
+      value: (stats?.unreadNotifications || 0) + (stats?.unreadMessages || 0),
+      subtext: `${stats?.unreadMessages || 0} messages`,
+      icon: Bell,
       color: "text-warning",
       bgColor: "bg-warning/10",
     },
