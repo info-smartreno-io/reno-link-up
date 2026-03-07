@@ -1710,17 +1710,27 @@ export type Database = {
       bid_packets: {
         Row: {
           allowances: Json | null
+          assumptions: string | null
           bid_due_date: string | null
           bid_instructions: string | null
           created_at: string
+          design_package_id: string | null
+          design_selections_notes: string | null
           estimated_budget_max: number | null
           estimated_budget_min: number | null
           exclusions: string | null
+          generated_at: string | null
+          generated_by: string | null
+          generated_from_design_package: boolean
           id: string
           inclusions: string | null
           lead_id: string
+          permit_technical_notes: string | null
+          project_id: string | null
+          project_overview: string | null
           published_at: string | null
           scope_summary: string | null
+          site_logistics: string | null
           status: string
           title: string
           updated_at: string
@@ -1728,17 +1738,27 @@ export type Database = {
         }
         Insert: {
           allowances?: Json | null
+          assumptions?: string | null
           bid_due_date?: string | null
           bid_instructions?: string | null
           created_at?: string
+          design_package_id?: string | null
+          design_selections_notes?: string | null
           estimated_budget_max?: number | null
           estimated_budget_min?: number | null
           exclusions?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          generated_from_design_package?: boolean
           id?: string
           inclusions?: string | null
           lead_id: string
+          permit_technical_notes?: string | null
+          project_id?: string | null
+          project_overview?: string | null
           published_at?: string | null
           scope_summary?: string | null
+          site_logistics?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1746,17 +1766,27 @@ export type Database = {
         }
         Update: {
           allowances?: Json | null
+          assumptions?: string | null
           bid_due_date?: string | null
           bid_instructions?: string | null
           created_at?: string
+          design_package_id?: string | null
+          design_selections_notes?: string | null
           estimated_budget_max?: number | null
           estimated_budget_min?: number | null
           exclusions?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          generated_from_design_package?: boolean
           id?: string
           inclusions?: string | null
           lead_id?: string
+          permit_technical_notes?: string | null
+          project_id?: string | null
+          project_overview?: string | null
           published_at?: string | null
           scope_summary?: string | null
+          site_logistics?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1764,10 +1794,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "bid_packets_design_package_id_fkey"
+            columns: ["design_package_id"]
+            isOneToOne: false
+            referencedRelation: "design_packages"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bid_packets_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_packets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -4254,29 +4298,38 @@ export type Database = {
       }
       design_package_files: {
         Row: {
+          contractor_visible: boolean
           created_at: string | null
           design_package_id: string
           file_category: string | null
           file_url: string
+          homeowner_visible: boolean
           id: string
+          internal_only: boolean
           section_key: string | null
           visible_to_roles: string[] | null
         }
         Insert: {
+          contractor_visible?: boolean
           created_at?: string | null
           design_package_id: string
           file_category?: string | null
           file_url: string
+          homeowner_visible?: boolean
           id?: string
+          internal_only?: boolean
           section_key?: string | null
           visible_to_roles?: string[] | null
         }
         Update: {
+          contractor_visible?: boolean
           created_at?: string | null
           design_package_id?: string
           file_category?: string | null
           file_url?: string
+          homeowner_visible?: boolean
           id?: string
+          internal_only?: boolean
           section_key?: string | null
           visible_to_roles?: string[] | null
         }
@@ -4293,8 +4346,11 @@ export type Database = {
       design_package_sections: {
         Row: {
           completion_percent: number | null
+          contractor_visible: boolean
           design_package_id: string
+          homeowner_visible: boolean
           id: string
+          internal_only: boolean
           is_complete: boolean | null
           last_edited_by: string | null
           section_data: Json | null
@@ -4303,8 +4359,11 @@ export type Database = {
         }
         Insert: {
           completion_percent?: number | null
+          contractor_visible?: boolean
           design_package_id: string
+          homeowner_visible?: boolean
           id?: string
+          internal_only?: boolean
           is_complete?: boolean | null
           last_edited_by?: string | null
           section_data?: Json | null
@@ -4313,8 +4372,11 @@ export type Database = {
         }
         Update: {
           completion_percent?: number | null
+          contractor_visible?: boolean
           design_package_id?: string
+          homeowner_visible?: boolean
           id?: string
+          internal_only?: boolean
           is_complete?: boolean | null
           last_edited_by?: string | null
           section_data?: Json | null
