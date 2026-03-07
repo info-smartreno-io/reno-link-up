@@ -23,6 +23,7 @@ import {
   SERVICE_MODE_OPTIONS,
   SERVICE_AREA_TYPE_OPTIONS,
   ENGINEERING_SERVICES_OPTIONS,
+  ENGINEERING_SPECIALIZATION_OPTIONS,
   STAGING_SERVICES_OPTIONS,
   getCredentialFieldsForSpecialties,
 } from "@/config/designProfessionalOptions";
