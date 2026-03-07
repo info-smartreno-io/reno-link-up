@@ -345,7 +345,32 @@ function AppRoutes() {
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
+                <AdminDashboardHome />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/intake" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminIntakeReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contractors" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminContractorManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/rfps" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminRFPManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bids" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/live-projects" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLiveProjects />
               </ProtectedRoute>
             } />
             <Route path="/admin/calendars" element={
