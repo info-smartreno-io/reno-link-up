@@ -102,13 +102,14 @@ export default function AdminEstimatingHub() {
                       <TableHead>Stage</TableHead>
                       <TableHead>Budget</TableHead>
                       <TableHead>Updated</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
                     ) : filtered?.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No estimates found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No estimates found</TableCell></TableRow>
                     ) : (
                       filtered?.map((lead) => (
                         <TableRow key={lead.id}>
@@ -120,6 +121,20 @@ export default function AdminEstimatingHub() {
                           </TableCell>
                           <TableCell>{lead.estimated_budget ? `$${Number(lead.estimated_budget).toLocaleString()}` : "—"}</TableCell>
                           <TableCell>{lead.updated_at ? format(new Date(lead.updated_at), "MMM d") : "—"}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Link to={`/admin/estimating/${lead.id}/field-mode`}>
+                                <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                                  <Eye className="h-3.5 w-3.5" /> Field Mode
+                                </Button>
+                              </Link>
+                              <Link to={`/admin/estimating/${lead.id}/bid-packet`}>
+                                <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                                  <FileText className="h-3.5 w-3.5" /> Bid Packet
+                                </Button>
+                              </Link>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
