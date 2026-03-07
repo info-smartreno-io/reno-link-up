@@ -77,11 +77,12 @@ export function useHomeownerProjectDetail(projectId: string | undefined) {
         }
       }
 
-      // Get recent daily logs
+      // Get recent daily logs (use project_daily_logs for client-visible entries)
       const { data: logs } = await supabase
-        .from("daily_logs")
-        .select("id, log_date, work_performed, trade, photo_urls, created_at")
+        .from("project_daily_logs")
+        .select("id, log_date, work_completed, crew_summary, weather, next_steps, created_at")
         .eq("project_id", projectId!)
+        .eq("is_client_visible", true)
         .order("log_date", { ascending: false })
         .limit(5);
 

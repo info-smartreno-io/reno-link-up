@@ -153,9 +153,9 @@ export default function HomeownerProjectOverview() {
                     {new Date(log.log_date).toLocaleDateString()}
                   </div>
                   <div>
-                    <p className="text-foreground">{log.work_performed}</p>
-                    {log.trade && (
-                      <p className="text-xs text-muted-foreground mt-0.5">{log.trade}</p>
+                    <p className="text-foreground">{log.work_completed}</p>
+                    {log.crew_summary && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{log.crew_summary}</p>
                     )}
                   </div>
                 </div>
