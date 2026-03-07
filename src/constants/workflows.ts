@@ -22,10 +22,20 @@ export const WORKFLOW_STATUS = {
   WALKTHROUGH_COMPLETED: "completed",
   WALKTHROUGH_CANCELLED: "cancelled",
   
-  // Project statuses  
+  // Project statuses (full lifecycle)
   INTAKE: "intake",
+  INTAKE_SUBMITTED: "intake_submitted",
   PAYMENT_CONFIRMED: "payment_confirmed",
+  ESTIMATOR_SCHEDULED: "estimator_scheduled",
+  SITE_VISIT_COMPLETE: "site_visit_complete",
+  DESIGN_PACKAGE_IN_PROGRESS: "design_package_in_progress",
+  DESIGN_PACKAGE_REVIEW: "design_package_review",
+  DESIGN_PACKAGE_APPROVED: "design_package_approved",
+  BID_PACKET_GENERATED: "bid_packet_generated",
+  RFP_READY: "rfp_ready",
   RFP_OUT: "rfp_out",
+  BIDDING_CLOSED: "bidding_closed",
+  CONTRACTOR_SELECTED: "contractor_selected",
   WALKTHROUGH_SCHEDULED_PHASE: "walkthrough_scheduled",
   WALKTHROUGH_COMPLETE: "walkthrough_complete",
   ESTIMATING: "estimating",
@@ -62,8 +72,26 @@ export const WALKTHROUGH_STATUS = {
   CANCELLED: "cancelled",
 } as const;
 
+export const BID_PACKET_STATUS = {
+  DRAFT: "draft",
+  READY: "ready",
+  RFP_OUT: "rfp_out",
+  BIDDING_CLOSED: "bidding_closed",
+  AWARDED: "awarded",
+  ARCHIVED: "archived",
+} as const;
+
+export const BID_INVITE_STATUS = {
+  INVITED: "invited",
+  VIEWED: "viewed",
+  SUBMITTED: "submitted",
+  DECLINED: "declined",
+} as const;
+
 // Type exports
 export type WorkflowStatus = typeof WORKFLOW_STATUS[keyof typeof WORKFLOW_STATUS];
 export type LeadStatus = typeof LEAD_STATUS[keyof typeof LEAD_STATUS];
 export type EstimateStatus = typeof ESTIMATE_STATUS[keyof typeof ESTIMATE_STATUS];
 export type WalkthroughStatus = typeof WALKTHROUGH_STATUS[keyof typeof WALKTHROUGH_STATUS];
+export type BidPacketStatus = typeof BID_PACKET_STATUS[keyof typeof BID_PACKET_STATUS];
+export type BidInviteStatus = typeof BID_INVITE_STATUS[keyof typeof BID_INVITE_STATUS];
