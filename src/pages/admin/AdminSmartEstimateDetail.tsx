@@ -157,6 +157,11 @@ export default function AdminSmartEstimateDetail() {
                 </Button>
               </>
             )}
+            {estimate.status === "approved" && (
+              <Button onClick={() => setShowDownstreamDialog(true)}>
+                <ArrowRight className="h-4 w-4 mr-2" /> Next: Design / Bid Packet
+              </Button>
+            )}
           </div>
         </div>
 
