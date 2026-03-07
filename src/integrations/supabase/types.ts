@@ -8037,9 +8037,13 @@ export type Database = {
           created_at: string
           email: string | null
           full_name: string | null
+          has_renovated_before: boolean | null
+          homeowner_status: string | null
           id: string
           phone: string | null
+          preferred_communication: string | null
           profile_completed: boolean
+          project_timeline: string | null
           updated_at: string
         }
         Insert: {
@@ -8048,9 +8052,13 @@ export type Database = {
           created_at?: string
           email?: string | null
           full_name?: string | null
+          has_renovated_before?: boolean | null
+          homeowner_status?: string | null
           id: string
           phone?: string | null
+          preferred_communication?: string | null
           profile_completed?: boolean
+          project_timeline?: string | null
           updated_at?: string
         }
         Update: {
@@ -8059,9 +8067,13 @@ export type Database = {
           created_at?: string
           email?: string | null
           full_name?: string | null
+          has_renovated_before?: boolean | null
+          homeowner_status?: string | null
           id?: string
           phone?: string | null
+          preferred_communication?: string | null
           profile_completed?: boolean
+          project_timeline?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -9021,15 +9033,19 @@ export type Database = {
       }
       projects: {
         Row: {
+          address: string | null
           budget_finalized_at: string | null
+          budget_range: string | null
           build_ready_at: string | null
           change_order_count: number | null
+          city: string | null
           contract_signed_at: string | null
           coordinator_id: string | null
           coordinator_status: string | null
           created_at: string
           deposit_received_at: string | null
           description: string | null
+          design_needed: string | null
           estimated_budget: number | null
           final_invoice_sent: boolean | null
           final_invoice_sent_at: string | null
@@ -9038,11 +9054,14 @@ export type Database = {
           final_plans_complete_at: string | null
           final_scope_approved_at: string | null
           finance_readonly: boolean | null
+          financing_needed: string | null
+          homeowner_id: string | null
           id: string
           inspection_status: string | null
           last_pm_activity_at: string | null
           last_update_at: string | null
           lead_id: string | null
+          material_help: string | null
           materials_ordered_at: string | null
           materials_status: string | null
           name: string
@@ -9050,12 +9069,16 @@ export type Database = {
           pc_assigned_at: string | null
           pc_readonly: boolean | null
           percent_complete: number | null
+          permit_expectation: string | null
           permit_prepared_at: string | null
           permit_status: string | null
+          photos: Json | null
           pm_approved_start_at: string | null
           pm_status: string | null
           project_manager_id: string | null
+          project_size: string | null
           project_type: string
+          property_data: Json | null
           risk_level: string | null
           square_footage: number | null
           start_date: string | null
@@ -9069,18 +9092,23 @@ export type Database = {
           user_id: string
           warranty_issued: boolean | null
           warranty_issued_at: string | null
+          zip_code: string | null
           zoning_prepared_at: string | null
         }
         Insert: {
+          address?: string | null
           budget_finalized_at?: string | null
+          budget_range?: string | null
           build_ready_at?: string | null
           change_order_count?: number | null
+          city?: string | null
           contract_signed_at?: string | null
           coordinator_id?: string | null
           coordinator_status?: string | null
           created_at?: string
           deposit_received_at?: string | null
           description?: string | null
+          design_needed?: string | null
           estimated_budget?: number | null
           final_invoice_sent?: boolean | null
           final_invoice_sent_at?: string | null
@@ -9089,11 +9117,14 @@ export type Database = {
           final_plans_complete_at?: string | null
           final_scope_approved_at?: string | null
           finance_readonly?: boolean | null
+          financing_needed?: string | null
+          homeowner_id?: string | null
           id?: string
           inspection_status?: string | null
           last_pm_activity_at?: string | null
           last_update_at?: string | null
           lead_id?: string | null
+          material_help?: string | null
           materials_ordered_at?: string | null
           materials_status?: string | null
           name: string
@@ -9101,12 +9132,16 @@ export type Database = {
           pc_assigned_at?: string | null
           pc_readonly?: boolean | null
           percent_complete?: number | null
+          permit_expectation?: string | null
           permit_prepared_at?: string | null
           permit_status?: string | null
+          photos?: Json | null
           pm_approved_start_at?: string | null
           pm_status?: string | null
           project_manager_id?: string | null
+          project_size?: string | null
           project_type: string
+          property_data?: Json | null
           risk_level?: string | null
           square_footage?: number | null
           start_date?: string | null
@@ -9120,18 +9155,23 @@ export type Database = {
           user_id: string
           warranty_issued?: boolean | null
           warranty_issued_at?: string | null
+          zip_code?: string | null
           zoning_prepared_at?: string | null
         }
         Update: {
+          address?: string | null
           budget_finalized_at?: string | null
+          budget_range?: string | null
           build_ready_at?: string | null
           change_order_count?: number | null
+          city?: string | null
           contract_signed_at?: string | null
           coordinator_id?: string | null
           coordinator_status?: string | null
           created_at?: string
           deposit_received_at?: string | null
           description?: string | null
+          design_needed?: string | null
           estimated_budget?: number | null
           final_invoice_sent?: boolean | null
           final_invoice_sent_at?: string | null
@@ -9140,11 +9180,14 @@ export type Database = {
           final_plans_complete_at?: string | null
           final_scope_approved_at?: string | null
           finance_readonly?: boolean | null
+          financing_needed?: string | null
+          homeowner_id?: string | null
           id?: string
           inspection_status?: string | null
           last_pm_activity_at?: string | null
           last_update_at?: string | null
           lead_id?: string | null
+          material_help?: string | null
           materials_ordered_at?: string | null
           materials_status?: string | null
           name?: string
@@ -9152,12 +9195,16 @@ export type Database = {
           pc_assigned_at?: string | null
           pc_readonly?: boolean | null
           percent_complete?: number | null
+          permit_expectation?: string | null
           permit_prepared_at?: string | null
           permit_status?: string | null
+          photos?: Json | null
           pm_approved_start_at?: string | null
           pm_status?: string | null
           project_manager_id?: string | null
+          project_size?: string | null
           project_type?: string
+          property_data?: Json | null
           risk_level?: string | null
           square_footage?: number | null
           start_date?: string | null
@@ -9171,6 +9218,7 @@ export type Database = {
           user_id?: string
           warranty_issued?: boolean | null
           warranty_issued_at?: string | null
+          zip_code?: string | null
           zoning_prepared_at?: string | null
         }
         Relationships: [
@@ -10466,6 +10514,50 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: []
+      }
+      site_visit_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          created_at: string
+          homeowner_id: string
+          id: string
+          notes: string | null
+          project_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          created_at?: string
+          homeowner_id: string
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string
+          homeowner_id?: string
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_visit_appointments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       smartplan_items: {
         Row: {
