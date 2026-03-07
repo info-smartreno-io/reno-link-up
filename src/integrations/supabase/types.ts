@@ -8041,6 +8041,7 @@ export type Database = {
           homeowner_status: string | null
           id: string
           phone: string | null
+          pinterest_board_url: string | null
           preferred_communication: string | null
           profile_completed: boolean
           project_timeline: string | null
@@ -8056,6 +8057,7 @@ export type Database = {
           homeowner_status?: string | null
           id: string
           phone?: string | null
+          pinterest_board_url?: string | null
           preferred_communication?: string | null
           profile_completed?: boolean
           project_timeline?: string | null
@@ -8071,6 +8073,7 @@ export type Database = {
           homeowner_status?: string | null
           id?: string
           phone?: string | null
+          pinterest_board_url?: string | null
           preferred_communication?: string | null
           profile_completed?: boolean
           project_timeline?: string | null
