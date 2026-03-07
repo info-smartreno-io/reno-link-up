@@ -1,7 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { SiteNavbar } from "@/components/SiteNavbar";
-import { FooterAdminLogin } from "@/components/FooterAdminLogin";
 import { ProjectIntakeWizard } from "@/components/intake/ProjectIntakeWizard";
 
 export default function StartYourRenovation() {
@@ -28,7 +27,7 @@ export default function StartYourRenovation() {
 
       <ProjectIntakeWizard />
 
-      <FooterAdminLogin />
+      {/* Footer removed */}
     </main>
   );
 }

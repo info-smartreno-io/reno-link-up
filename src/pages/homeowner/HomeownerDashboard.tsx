@@ -42,10 +42,15 @@ const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
 };
 
 const TIME_SLOT_LABELS: Record<string, string> = {
-  "9-11": "9:00 AM – 11:00 AM",
-  "11-1": "11:00 AM – 1:00 PM",
-  "2-4": "2:00 PM – 4:00 PM",
-  "4-6": "4:00 PM – 6:00 PM",
+  "10-11": "10:00 AM – 11:00 AM",
+  "11-12": "11:00 AM – 12:00 PM",
+  "12-1": "12:00 PM – 1:00 PM",
+  "1-2": "1:00 PM – 2:00 PM",
+  "2-3": "2:00 PM – 3:00 PM",
+  "3-4": "3:00 PM – 4:00 PM",
+  "4-5": "4:00 PM – 5:00 PM",
+  "6-7": "6:00 PM – 7:00 PM",
+  "7-8": "7:00 PM – 8:00 PM",
 };
 
 function useSiteVisitAppointments() {

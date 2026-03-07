@@ -17,14 +17,27 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
-const TIME_SLOTS = [
-  { value: "9-11", label: "9:00 AM – 11:00 AM" },
-  { value: "11-1", label: "11:00 AM – 1:00 PM" },
-  { value: "2-4", label: "2:00 PM – 4:00 PM" },
-  { value: "4-6", label: "4:00 PM – 6:00 PM" },
+// Tue/Wed/Thu: 10am-2pm & 6pm-8pm (1hr), Saturday: 10am-5pm (1hr)
+const WEEKDAY_SLOTS = [
+  { value: "10-11", label: "10:00 AM – 11:00 AM" },
+  { value: "11-12", label: "11:00 AM – 12:00 PM" },
+  { value: "12-1", label: "12:00 PM – 1:00 PM" },
+  { value: "1-2", label: "1:00 PM – 2:00 PM" },
+  { value: "6-7", label: "6:00 PM – 7:00 PM" },
+  { value: "7-8", label: "7:00 PM – 8:00 PM" },
 ];
 
-const AVAILABLE_DAYS = [1, 3, 5]; // Mon, Wed, Fri
+const SATURDAY_SLOTS = [
+  { value: "10-11", label: "10:00 AM – 11:00 AM" },
+  { value: "11-12", label: "11:00 AM – 12:00 PM" },
+  { value: "12-1", label: "12:00 PM – 1:00 PM" },
+  { value: "1-2", label: "1:00 PM – 2:00 PM" },
+  { value: "2-3", label: "2:00 PM – 3:00 PM" },
+  { value: "3-4", label: "3:00 PM – 4:00 PM" },
+  { value: "4-5", label: "4:00 PM – 5:00 PM" },
+];
+
+const AVAILABLE_DAYS = [2, 3, 4, 6]; // Tue, Wed, Thu, Sat
 
 export default function IntakeConfirmation() {
   const location = useLocation();
@@ -320,31 +333,34 @@ export default function IntakeConfirmation() {
                         className={cn("p-3 pointer-events-auto rounded-lg border")}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground text-center">Available Monday, Wednesday, Friday</p>
+                    <p className="text-xs text-muted-foreground text-center">Available Tuesday, Wednesday, Thursday & Saturday</p>
                   </div>
 
-                  {selectedDate && (
-                    <div className="space-y-2">
-                      <Label>Select a time slot</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {TIME_SLOTS.map((slot) => (
-                          <button
-                            key={slot.value}
-                            onClick={() => setSelectedTime(slot.value)}
-                            className={cn(
-                              "flex items-center gap-2 border rounded-lg p-3 text-sm transition-colors text-left",
-                              selectedTime === slot.value
-                                ? "border-primary bg-primary/5 text-foreground"
-                                : "border-border hover:border-muted-foreground/30 text-foreground"
-                            )}
-                          >
-                            <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                            {slot.label}
-                          </button>
-                        ))}
+                  {selectedDate && (() => {
+                    const slots = selectedDate.getDay() === 6 ? SATURDAY_SLOTS : WEEKDAY_SLOTS;
+                    return (
+                      <div className="space-y-2">
+                        <Label>Select a time slot</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {slots.map((slot) => (
+                            <button
+                              key={slot.value}
+                              onClick={() => setSelectedTime(slot.value)}
+                              className={cn(
+                                "flex items-center gap-2 border rounded-lg p-3 text-sm transition-colors text-left",
+                                selectedTime === slot.value
+                                  ? "border-primary bg-primary/5 text-foreground"
+                                  : "border-border hover:border-muted-foreground/30 text-foreground"
+                              )}
+                            >
+                              <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                              {slot.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -384,7 +400,7 @@ export default function IntakeConfirmation() {
                 </span>
                 {" "}at{" "}
                 <span className="font-medium text-foreground">
-                  {TIME_SLOTS.find(s => s.value === selectedTime)?.label}
+                {[...WEEKDAY_SLOTS, ...SATURDAY_SLOTS].find(s => s.value === selectedTime)?.label}
                 </span>
               </p>
               <Button size="lg" onClick={() => navigate("/homeowner/dashboard")}>
@@ -394,7 +410,7 @@ export default function IntakeConfirmation() {
           )}
         </div>
       </section>
-      <FooterAdminLogin />
+      {/* Footer removed - no admin login popup */}
     </main>
   );
 }
