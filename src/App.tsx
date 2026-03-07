@@ -377,6 +377,26 @@ function AppRoutes() {
                 <AdminLiveProjects />
               </ProtectedRoute>
             } />
+            <Route path="/admin/estimating" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminEstimatingHub />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/designers" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesigners />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/vendor-monitoring" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminVendorMonitoring />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/file-storage" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminFileStorage />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/calendars" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminCalendars />
