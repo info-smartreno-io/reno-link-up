@@ -4214,6 +4214,290 @@ export type Database = {
           },
         ]
       }
+      design_professional_matches: {
+        Row: {
+          created_at: string | null
+          design_professional_user_id: string
+          id: string
+          match_reason: Json | null
+          match_score: number | null
+          project_id: string | null
+          responded_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          design_professional_user_id: string
+          id?: string
+          match_reason?: Json | null
+          match_score?: number | null
+          project_id?: string | null
+          responded_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          design_professional_user_id?: string
+          id?: string
+          match_reason?: Json | null
+          match_score?: number | null
+          project_id?: string | null
+          responded_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      design_professional_portfolio_items: {
+        Row: {
+          budget_range: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          location: string | null
+          project_type: string | null
+          scope_of_work: string | null
+          sort_order: number | null
+          style_tags: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          budget_range?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          project_type?: string | null
+          scope_of_work?: string | null
+          sort_order?: number | null
+          style_tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          budget_range?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          project_type?: string | null
+          scope_of_work?: string | null
+          sort_order?: number | null
+          style_tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      design_professional_portfolio_media: {
+        Row: {
+          created_at: string | null
+          file_name: string | null
+          file_url: string
+          id: string
+          media_type: string | null
+          mime_type: string | null
+          portfolio_item_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_name?: string | null
+          file_url: string
+          id?: string
+          media_type?: string | null
+          mime_type?: string | null
+          portfolio_item_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string | null
+          file_url?: string
+          id?: string
+          media_type?: string | null
+          mime_type?: string | null
+          portfolio_item_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_professional_portfolio_media_portfolio_item_id_fkey"
+            columns: ["portfolio_item_id"]
+            isOneToOne: false
+            referencedRelation: "design_professional_portfolio_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_professional_profiles: {
+        Row: {
+          accepting_new_projects: boolean | null
+          aia_member: boolean | null
+          application_status: string | null
+          approved_at: string | null
+          approved_by: string | null
+          architect_license_number: string | null
+          budget_ranges: string[] | null
+          business_address: string | null
+          business_registered: boolean | null
+          certification_notes: string | null
+          company_logo_url: string | null
+          company_name: string | null
+          consultation_availability: string | null
+          counties_served: string[] | null
+          created_at: string | null
+          credentials: Json | null
+          design_philosophy: string | null
+          featured: boolean | null
+          full_bio: string | null
+          headline: string | null
+          id: string
+          ideal_client_type: string | null
+          instagram_or_portfolio_link: string | null
+          insurance_status: string | null
+          leed_accredited: boolean | null
+          licensed_states: string[] | null
+          minimum_project_size: number | null
+          ncarb: boolean | null
+          nkba_member: boolean | null
+          preferred_communication: string[] | null
+          preferred_lead_types: string[] | null
+          pricing_model: string[] | null
+          pricing_notes: string | null
+          primary_service_area: string | null
+          profile_completion_percent: number | null
+          profile_photo_url: string | null
+          project_types: string[] | null
+          service_mode: string | null
+          services_offered: string[] | null
+          specialties: string[] | null
+          starting_consultation_fee: number | null
+          team_size: number | null
+          travel_radius_miles: number | null
+          updated_at: string | null
+          user_id: string
+          website: string | null
+          willing_to_travel_for_premium_projects: boolean | null
+          years_in_business: number | null
+          zip_codes_served: string[] | null
+        }
+        Insert: {
+          accepting_new_projects?: boolean | null
+          aia_member?: boolean | null
+          application_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          architect_license_number?: string | null
+          budget_ranges?: string[] | null
+          business_address?: string | null
+          business_registered?: boolean | null
+          certification_notes?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          consultation_availability?: string | null
+          counties_served?: string[] | null
+          created_at?: string | null
+          credentials?: Json | null
+          design_philosophy?: string | null
+          featured?: boolean | null
+          full_bio?: string | null
+          headline?: string | null
+          id?: string
+          ideal_client_type?: string | null
+          instagram_or_portfolio_link?: string | null
+          insurance_status?: string | null
+          leed_accredited?: boolean | null
+          licensed_states?: string[] | null
+          minimum_project_size?: number | null
+          ncarb?: boolean | null
+          nkba_member?: boolean | null
+          preferred_communication?: string[] | null
+          preferred_lead_types?: string[] | null
+          pricing_model?: string[] | null
+          pricing_notes?: string | null
+          primary_service_area?: string | null
+          profile_completion_percent?: number | null
+          profile_photo_url?: string | null
+          project_types?: string[] | null
+          service_mode?: string | null
+          services_offered?: string[] | null
+          specialties?: string[] | null
+          starting_consultation_fee?: number | null
+          team_size?: number | null
+          travel_radius_miles?: number | null
+          updated_at?: string | null
+          user_id: string
+          website?: string | null
+          willing_to_travel_for_premium_projects?: boolean | null
+          years_in_business?: number | null
+          zip_codes_served?: string[] | null
+        }
+        Update: {
+          accepting_new_projects?: boolean | null
+          aia_member?: boolean | null
+          application_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          architect_license_number?: string | null
+          budget_ranges?: string[] | null
+          business_address?: string | null
+          business_registered?: boolean | null
+          certification_notes?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          consultation_availability?: string | null
+          counties_served?: string[] | null
+          created_at?: string | null
+          credentials?: Json | null
+          design_philosophy?: string | null
+          featured?: boolean | null
+          full_bio?: string | null
+          headline?: string | null
+          id?: string
+          ideal_client_type?: string | null
+          instagram_or_portfolio_link?: string | null
+          insurance_status?: string | null
+          leed_accredited?: boolean | null
+          licensed_states?: string[] | null
+          minimum_project_size?: number | null
+          ncarb?: boolean | null
+          nkba_member?: boolean | null
+          preferred_communication?: string[] | null
+          preferred_lead_types?: string[] | null
+          pricing_model?: string[] | null
+          pricing_notes?: string | null
+          primary_service_area?: string | null
+          profile_completion_percent?: number | null
+          profile_photo_url?: string | null
+          project_types?: string[] | null
+          service_mode?: string | null
+          services_offered?: string[] | null
+          specialties?: string[] | null
+          starting_consultation_fee?: number | null
+          team_size?: number | null
+          travel_radius_miles?: number | null
+          updated_at?: string | null
+          user_id?: string
+          website?: string | null
+          willing_to_travel_for_premium_projects?: boolean | null
+          years_in_business?: number | null
+          zip_codes_served?: string[] | null
+        }
+        Relationships: []
+      }
       embedding_jobs: {
         Row: {
           chunks_created: number | null
@@ -12798,6 +13082,7 @@ export type Database = {
         | "estimator_team"
         | "office_admin"
         | "finance"
+        | "design_professional"
       notification_status: "pending" | "sent" | "acknowledged" | "dismissed"
       notification_type:
         | "task_starting"
@@ -12967,6 +13252,7 @@ export const Constants = {
         "estimator_team",
         "office_admin",
         "finance",
+        "design_professional",
       ],
       notification_status: ["pending", "sent", "acknowledged", "dismissed"],
       notification_type: [
