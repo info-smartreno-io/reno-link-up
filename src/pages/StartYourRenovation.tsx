@@ -1,15 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams } from "react-router-dom";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { FooterAdminLogin } from "@/components/FooterAdminLogin";
-import { IntakeSection } from "@/components/homepage/IntakeSection";
+import { ProjectIntakeWizard } from "@/components/intake/ProjectIntakeWizard";
 
 export default function StartYourRenovation() {
-  const [searchParams] = useSearchParams();
-  const projectType = searchParams.get("type") || "";
-  const zip = searchParams.get("zip") || "";
-
   return (
     <main className="min-h-screen bg-background">
       <Helmet>
@@ -26,12 +21,12 @@ export default function StartYourRenovation() {
             Start Your Renovation Project
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Fill out the form below and we'll match you with up to three vetted contractors in your area.
+            Answer a few questions and we'll match you with vetted contractors and clear pricing options.
           </p>
         </div>
       </section>
 
-      <IntakeSection />
+      <ProjectIntakeWizard />
 
       <FooterAdminLogin />
     </main>
