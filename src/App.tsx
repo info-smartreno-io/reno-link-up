@@ -39,6 +39,10 @@ import HomeownerProjectOverview from "./pages/homeowner/HomeownerProjectOverview
 import HomeownerProposals from "./pages/homeowner/HomeownerProposals";
 import HomeownerProjectTimeline from "./pages/homeowner/HomeownerProjectTimeline";
 import HomeownerProjectMessages from "./pages/homeowner/HomeownerProjectMessages";
+import HomeownerDailyLogs from "./pages/homeowner/HomeownerDailyLogs";
+import HomeownerProjectFiles from "./pages/homeowner/HomeownerProjectFiles";
+import HomeownerNotifications from "./pages/homeowner/HomeownerNotifications";
+import HomeownerProfile from "./pages/homeowner/HomeownerProfile";
 import { HomeownerLayout } from "./components/homeowner/HomeownerLayout";
 import HomeownerBidDemo from "./pages/HomeownerBidDemo";
 import HomeownerWarrantyClaim from "./pages/HomeownerWarrantyClaim";
@@ -348,6 +352,8 @@ function AppRoutes() {
               <Route path="proposals" element={<HomeownerProposals />} />
               <Route path="timeline" element={<HomeownerProjectTimeline />} />
               <Route path="messages" element={<HomeownerProjectMessages />} />
+              <Route path="files" element={<HomeownerProjectFiles />} />
+              <Route path="daily-logs" element={<HomeownerDailyLogs />} />
               <Route index element={<HomeownerProjectOverview />} />
             </Route>
             <Route path="/homeowner/messages" element={
@@ -357,12 +363,12 @@ function AppRoutes() {
             } />
             <Route path="/homeowner/notifications" element={
               <ProtectedRoute>
-                <HomeownerLayout><div className="p-4 text-muted-foreground">Notifications coming soon.</div></HomeownerLayout>
+                <HomeownerLayout><HomeownerNotifications /></HomeownerLayout>
               </ProtectedRoute>
             } />
             <Route path="/homeowner/profile" element={
               <ProtectedRoute>
-                <HomeownerLayout><AccountSettings /></HomeownerLayout>
+                <HomeownerLayout><HomeownerProfile /></HomeownerLayout>
               </ProtectedRoute>
             } />
             <Route path="/contractors" element={<ContractorsDirectory />} />
