@@ -71,6 +71,10 @@ import AdminEstimatingHub from "./pages/admin/AdminEstimatingHub";
 import AdminDesigners from "./pages/admin/AdminDesigners";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
+import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
+import AdminDailyLogsOversight from "./pages/admin/AdminDailyLogsOversight";
+import AdminTimelineOversight from "./pages/admin/AdminTimelineOversight";
+import AdminNotificationsCenter from "./pages/admin/AdminNotificationsCenter";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminWorkflow from "./pages/AdminWorkflow";
 import AdminApplications from "./pages/AdminApplications";
@@ -395,6 +399,26 @@ function AppRoutes() {
             <Route path="/admin/file-storage" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminFileStorage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/messages" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminMessagesOversight />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/logs" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDailyLogsOversight />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/timeline" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminTimelineOversight />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/notifications" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminNotificationsCenter />
               </ProtectedRoute>
             } />
             <Route path="/admin/calendars" element={
