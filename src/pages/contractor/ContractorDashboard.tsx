@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { useSmartMatchScores, useCalculateSmartMatch, getMatchLabel } from "@/hooks/contractor/useSmartMatch";
+import { useOpportunities } from "@/hooks/contractor/useOpportunities";
 import { useDemoMode } from "@/context/DemoModeContext";
 import { ContractorLayout } from "@/components/contractor/ContractorLayout";
 import { ContractorDashboardToolbar } from "@/components/contractor/ContractorDashboardToolbar";
