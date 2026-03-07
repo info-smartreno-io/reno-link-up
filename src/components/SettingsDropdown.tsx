@@ -56,14 +56,19 @@ export const SettingsDropdown = ({ userRole }: SettingsDropdownProps) => {
         { icon: DollarSign, label: "Estimates", onClick: () => navigate("/contractor/estimates") },
       ],
       architect: [
-        { icon: Home, label: "Dashboard", onClick: () => navigate("/architect/dashboard") },
-        { icon: FileText, label: "Projects", onClick: () => navigate("/architect/projects") },
-        { icon: MessageSquare, label: "Messages", onClick: () => navigate("/architect/messages") },
+        { icon: Home, label: "Dashboard", onClick: () => navigate("/design-professional/dashboard") },
+        { icon: FileText, label: "Portfolio", onClick: () => navigate("/design-professional/portfolio") },
+        { icon: MessageSquare, label: "Messages", onClick: () => navigate("/design-professional/messages") },
       ],
       interiordesigner: [
-        { icon: Home, label: "Dashboard", onClick: () => navigate("/interiordesigner/dashboard") },
-        { icon: FileText, label: "Bid Room", onClick: () => navigate("/interiordesigner/bid-room") },
-        { icon: MessageSquare, label: "My Bids", onClick: () => navigate("/interiordesigner/bids") },
+        { icon: Home, label: "Dashboard", onClick: () => navigate("/design-professional/dashboard") },
+        { icon: FileText, label: "Portfolio", onClick: () => navigate("/design-professional/portfolio") },
+        { icon: MessageSquare, label: "Opportunities", onClick: () => navigate("/design-professional/opportunities") },
+      ],
+      design_professional: [
+        { icon: Home, label: "Dashboard", onClick: () => navigate("/design-professional/dashboard") },
+        { icon: FileText, label: "Portfolio", onClick: () => navigate("/design-professional/portfolio") },
+        { icon: MessageSquare, label: "Opportunities", onClick: () => navigate("/design-professional/opportunities") },
       ],
       admin: [
         { icon: Home, label: "Admin Dashboard", onClick: () => navigate("/admin/dashboard") },
