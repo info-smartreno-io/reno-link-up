@@ -1022,6 +1022,16 @@ function AppRoutes() {
                 <ContractorMyBids />
               </ProtectedRoute>
             } />
+            <Route path="/contractor/bid-packets" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBidPackets />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/bid-packets/:packetId" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBidPacketView />
+              </ProtectedRoute>
+            } />
             <Route path="/contractor/estimates" element={
               <ProtectedRoute requiredRole="contractor">
                 <ContractorEstimates />
