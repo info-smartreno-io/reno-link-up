@@ -303,16 +303,8 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/project/:projectId/timeline" element={<HomeownerTimeline />} />
-            <Route path="/homeowner-portal" element={
-              <ProtectedRoute>
-                <HomeownerPortal />
-              </ProtectedRoute>
-            } />
-            <Route path="/homeowner/portal" element={
-              <ProtectedRoute>
-                <HomeownerPortal />
-              </ProtectedRoute>
-            } />
+            <Route path="/homeowner-portal" element={<Navigate to="/homeowner/dashboard" replace />} />
+            <Route path="/homeowner/portal" element={<Navigate to="/homeowner/dashboard" replace />} />
             <Route path="/homeowner/account-settings" element={
               <ProtectedRoute>
                 <AccountSettings />

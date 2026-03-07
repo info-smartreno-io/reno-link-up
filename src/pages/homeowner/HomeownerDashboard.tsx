@@ -246,11 +246,18 @@ export default function HomeownerDashboard() {
           )}
         </>
       ) : (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">No active projects yet.</p>
-            <Button className="mt-4" onClick={() => navigate("/start-your-renovation")}>
+        <Card className="border-dashed border-2 border-primary/20">
+          <CardContent className="p-8 md:p-12 text-center space-y-4">
+            <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <ClipboardList className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">Start Your First Project</h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Tell us about your renovation and we'll connect you with vetted contractors, help with design, and guide you through every step.
+            </p>
+            <Button size="lg" className="mt-2 gap-2" onClick={() => navigate("/start-your-renovation")}>
               Start Your Renovation
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </CardContent>
         </Card>

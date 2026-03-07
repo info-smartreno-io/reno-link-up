@@ -61,7 +61,7 @@ export default function UnifiedLogin() {
         window.open('/contractor/portal', "_blank", "noopener,noreferrer");
         navigate('/');
       } else if (userRole === 'homeowner') {
-        navigate('/homeowner-portal');
+        navigate('/homeowner/dashboard');
         toast({
           title: "Welcome!",
           description: "You're now logged in to your homeowner portal.",
