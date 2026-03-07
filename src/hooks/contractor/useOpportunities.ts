@@ -25,17 +25,17 @@ export function useOpportunities() {
       if (!user) throw new Error("Not authenticated");
 
       // Check contractor approval status
-      const { data: contractor } = await supabase
-        .from("contractors")
-        .select("id, is_active, trades, service_areas")
+      const { data: contractor } = await (supabase
+        .from("contractors" as any)
+        .select("id, is_active, trade_focus, service_areas")
         .eq("user_id", user.id)
-        .maybeSingle();
+        .maybeSingle() as any);
 
       // Only approved contractors see opportunities
-      if (!contractor?.is_active) return [] as Opportunity[];
+      if (contractor && !contractor.is_active) return [] as Opportunity[];
 
       // Fetch open opportunities for contractors
-      let query = supabase
+      const { data, error } = await supabase
         .from("bid_opportunities")
         .select("*")
         .eq("status", "open")
@@ -43,7 +43,6 @@ export function useOpportunities() {
         .gte("bid_deadline", new Date().toISOString())
         .order("created_at", { ascending: false });
 
-      const { data, error } = await query;
       if (error) throw error;
 
       // Filter out opportunities the contractor already bid on
@@ -55,19 +54,7 @@ export function useOpportunities() {
 
       const biddedIds = new Set(existingBids?.map(b => b.bid_opportunity_id) || []);
 
-      let filtered = (data || []).filter(opp => !biddedIds.has(opp.id));
-
-      // Filter by trade match if contractor has trades specified
-      if (contractor.trades && Array.isArray(contractor.trades) && contractor.trades.length > 0) {
-        const contractorTrades = contractor.trades.map((t: string) => t.toLowerCase());
-        filtered = filtered.filter(opp => {
-          const oppType = opp.project_type?.toLowerCase() || "";
-          return contractorTrades.some((t: string) => oppType.includes(t) || t.includes(oppType)) || true;
-          // Fallback: show all if no exact match (trade matching is advisory)
-        });
-      }
-
-      return filtered as Opportunity[];
+      return ((data || []) as Opportunity[]).filter(opp => !biddedIds.has(opp.id));
     },
   });
 }
