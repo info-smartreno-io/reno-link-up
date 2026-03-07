@@ -21,8 +21,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, Brain, CheckCircle2, AlertTriangle, Plus, Trash2,
-  Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock,
+  Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock, ArrowRight,
 } from "lucide-react";
+import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -63,6 +64,7 @@ export default function AdminSmartEstimateDetail() {
   const [newTradeItem, setNewTradeItem] = useState({ trade_category: "", line_item_name: "", scope_description: "", quantity: 1, unit: "EA" });
   const [revisionNotes, setRevisionNotes] = useState("");
   const [showRevisionDialog, setShowRevisionDialog] = useState(false);
+  const [showDownstreamDialog, setShowDownstreamDialog] = useState(false);
   const [aiGenerating, setAiGenerating] = useState<string | null>(null);
 
   // Recalculate completion/confidence when sections change
@@ -154,6 +156,11 @@ export default function AdminSmartEstimateDetail() {
                   <ThumbsUp className="h-4 w-4 mr-2" /> Approve
                 </Button>
               </>
+            )}
+            {estimate.status === "approved" && (
+              <Button onClick={() => setShowDownstreamDialog(true)}>
+                <ArrowRight className="h-4 w-4 mr-2" /> Next: Design / Bid Packet
+              </Button>
             )}
           </div>
         </div>
@@ -406,6 +413,15 @@ export default function AdminSmartEstimateDetail() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Downstream Workflow Dialog */}
+      <SmartEstimateDownstreamDialog
+        open={showDownstreamDialog}
+        onOpenChange={setShowDownstreamDialog}
+        estimate={estimate}
+        sections={sections}
+        rooms={rooms}
+        tradeItems={tradeItems}
+      />
     </AdminLayout>
   );
 }
