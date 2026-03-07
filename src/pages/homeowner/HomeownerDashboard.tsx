@@ -31,6 +31,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { formatDistanceToNow, format, parseISO } from "date-fns";
+import { DashboardInspirationSection } from "@/components/homeowner/DashboardInspirationSection";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -267,6 +268,9 @@ export default function HomeownerDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Inspiration & Materials Section - always visible */}
+      <DashboardInspirationSection />
     </div>
   );
 }
