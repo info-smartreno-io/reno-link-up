@@ -177,7 +177,7 @@ export function GenerateBidPacketDialog({ open, onOpenChange, packageId, package
       if (packageData.project_id) {
         await supabase
           .from("projects")
-          .update({ status: "rfp_out" })
+          .update({ status: "rfp_ready" })
           .eq("id", packageData.project_id);
       }
 
