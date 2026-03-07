@@ -13,28 +13,38 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useContractorOnboarding, useContractorId } from "@/hooks/contractor/useContractorOnboarding";
 import { useContractorProfile } from "@/hooks/contractor/useContractorProfile";
+import { ContractorTermsOfService } from "@/components/contractor/ContractorTermsOfService";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import {
   Building2, Wrench, Upload, FileSpreadsheet, Image, Send,
-  CheckCircle, ChevronRight, ChevronLeft, Loader2, Users, Briefcase, MapPin, Globe
+  CheckCircle, ChevronRight, ChevronLeft, Loader2, Users, Briefcase, MapPin, Globe,
+  FileText, ShieldCheck, Clock
 } from "lucide-react";
 
 const STEPS = [
   { label: "Company Info", icon: Building2 },
-  { label: "Business Details", icon: Briefcase },
-  { label: "Trades & Experience", icon: Wrench },
+  { label: "Operations", icon: Clock },
+  { label: "Trades", icon: Wrench },
   { label: "Service Area", icon: MapPin },
-  { label: "Uploads", icon: Upload },
+  { label: "Licensing", icon: ShieldCheck },
+  { label: "Documents", icon: FileText },
   { label: "Cost Codes", icon: FileSpreadsheet },
   { label: "Portfolio", icon: Image },
+  { label: "Terms", icon: ShieldCheck },
   { label: "Submit", icon: Send },
 ];
 
 const TRADES = [
-  "General Contractor", "Kitchen", "Bathroom", "Basement", "Additions",
-  "Roofing", "Electrical", "Plumbing", "HVAC", "Flooring", "Painting", "Landscaping",
+  "General Contracting", "Interior Remodeling", "Exterior Remodeling", "Additions",
+  "Kitchen Remodeling", "Bathroom Remodeling", "Basement Finishing",
+  "Framing", "Drywall", "Painting", "Flooring", "Tile",
+  "Electrical", "Plumbing", "HVAC",
+  "Roofing", "Siding", "Windows",
+  "Masonry", "Hardscape", "Concrete",
+  "Decks", "Outdoor Living", "Landscaping",
+  "Commercial Renovation",
 ];
 
 const PROJECT_TYPES = [
@@ -62,20 +72,23 @@ export default function ContractorOnboardingWizard() {
   const [businessPhone, setBusinessPhone] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
   const [website, setWebsite] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [contactRole, setContactRole] = useState("owner");
 
-  // Social & Online
+  // Social
   const [googleBusinessUrl, setGoogleBusinessUrl] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
   const [facebookUrl, setFacebookUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [houzzUrl, setHouzzUrl] = useState("");
 
-  // Business Details
+  // Operations
   const [businessType, setBusinessType] = useState("general_contractor");
   const [hasOffice, setHasOffice] = useState(false);
   const [officeAddress, setOfficeAddress] = useState("");
   const [officeStaffCount, setOfficeStaffCount] = useState("");
   const [pmCount, setPmCount] = useState("");
+  const [estimatorCount, setEstimatorCount] = useState("");
   const [hasDesigner, setHasDesigner] = useState(false);
   const [designerCount, setDesignerCount] = useState("");
   const [hasEstimator, setHasEstimator] = useState(false);
@@ -84,6 +97,11 @@ export default function ContractorOnboardingWizard() {
   const [usesSubs, setUsesSubs] = useState(false);
   const [subTrades, setSubTrades] = useState<string[]>([]);
   const [isBonded, setIsBonded] = useState(false);
+  const [operatingDays, setOperatingDays] = useState("mon_fri");
+  const [operatingStart, setOperatingStart] = useState("08:00");
+  const [operatingEnd, setOperatingEnd] = useState("17:00");
+  const [bidTurnaround, setBidTurnaround] = useState("");
+  const [concurrentProjects, setConcurrentProjects] = useState("");
 
   // Trades & Experience
   const [selectedTrades, setSelectedTrades] = useState<string[]>([]);
@@ -91,11 +109,18 @@ export default function ContractorOnboardingWizard() {
   const [typicalBudget, setTypicalBudget] = useState("");
   const [avgProjectsPerYear, setAvgProjectsPerYear] = useState("");
   const [typicalDuration, setTypicalDuration] = useState("");
+  const [largestProjectValue, setLargestProjectValue] = useState("");
+  const [largestProjectDuration, setLargestProjectDuration] = useState("");
 
   // Service Area
   const [serviceZips, setServiceZips] = useState("");
   const [serviceCounties, setServiceCounties] = useState("");
   const [serviceCities, setServiceCities] = useState("");
+
+  // Licensing
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [licenseExpiration, setLicenseExpiration] = useState("");
+  const [workersComp, setWorkersComp] = useState(false);
 
   // Uploads
   const [uploading, setUploading] = useState(false);
@@ -124,6 +149,8 @@ export default function ContractorOnboardingWizard() {
       setBusinessPhone(profile.business_phone || profile.phone || "");
       setBusinessEmail(profile.business_email || profile.email || "");
       setWebsite(profile.website || "");
+      setContactName((profile as any).contact_name || "");
+      setContactRole((profile as any).contact_role || "owner");
       setGoogleBusinessUrl(profile.google_business_url || "");
       setInstagramUrl(profile.instagram_url || "");
       setFacebookUrl(profile.facebook_url || "");
@@ -134,6 +161,7 @@ export default function ContractorOnboardingWizard() {
       setOfficeAddress(profile.office_address || "");
       setOfficeStaffCount(profile.office_staff_count?.toString() || "");
       setPmCount(profile.project_manager_count?.toString() || "");
+      setEstimatorCount((profile as any).estimator_count?.toString() || "");
       setHasDesigner(profile.has_in_house_designer || false);
       setDesignerCount(profile.designer_count?.toString() || "");
       setHasEstimator(profile.has_dedicated_estimator || false);
@@ -142,13 +170,24 @@ export default function ContractorOnboardingWizard() {
       setUsesSubs(profile.uses_subcontractors || false);
       setSubTrades(profile.subcontracted_trades || []);
       setIsBonded(profile.is_bonded || false);
+      setOperatingDays((profile as any).operating_days || "mon_fri");
+      setOperatingStart((profile as any).operating_hours_start || "08:00");
+      setOperatingEnd((profile as any).operating_hours_end || "17:00");
+      setBidTurnaround((profile as any).bid_turnaround || "");
+      setConcurrentProjects((profile as any).concurrent_projects?.toString() || "");
       setProjectTypes(profile.project_types || []);
       setTypicalBudget(profile.typical_budget_range || "");
       setAvgProjectsPerYear(profile.avg_projects_per_year?.toString() || "");
       setTypicalDuration(profile.typical_project_duration || "");
+      setLargestProjectValue((profile as any).largest_project_value?.toString() || "");
+      setLargestProjectDuration((profile as any).largest_project_duration || "");
       setServiceZips((profile.service_zip_codes || []).join(", "));
       setServiceCounties((profile.service_counties || []).join(", "));
       setServiceCities((profile.service_areas || []).join(", "));
+      setLicenseNumber(profile.license_number || "");
+      setLicenseExpiration((profile as any).license_expiration || "");
+      setWorkersComp(profile.workers_comp_verified || false);
+      setCrewSize(profile.crew_size?.toString() || "");
     }
   }, [profile]);
 
@@ -173,22 +212,26 @@ export default function ContractorOnboardingWizard() {
       business_phone: businessPhone,
       business_email: businessEmail,
       website,
+      contact_name: contactName,
+      contact_role: contactRole,
       google_business_url: googleBusinessUrl,
       instagram_url: instagramUrl,
       facebook_url: facebookUrl,
       linkedin_url: linkedinUrl,
       houzz_url: houzzUrl,
+      crew_size: parseInt(crewSize) || null,
     } as any);
     setStep(1);
   };
 
-  const saveBusinessDetails = async () => {
+  const saveOperations = async () => {
     await updateProfile.mutateAsync({
       business_type: businessType,
       has_office: hasOffice,
       office_address: hasOffice ? officeAddress : null,
       office_staff_count: parseInt(officeStaffCount) || 0,
       project_manager_count: parseInt(pmCount) || 0,
+      estimator_count: parseInt(estimatorCount) || 0,
       has_in_house_designer: hasDesigner,
       designer_count: hasDesigner ? parseInt(designerCount) || 0 : 0,
       has_dedicated_estimator: hasEstimator,
@@ -197,7 +240,11 @@ export default function ContractorOnboardingWizard() {
       uses_subcontractors: usesSubs,
       subcontracted_trades: usesSubs ? subTrades : [],
       is_bonded: isBonded,
-      crew_size: parseInt(crewSize) || null,
+      operating_days: operatingDays,
+      operating_hours_start: operatingStart,
+      operating_hours_end: operatingEnd,
+      bid_turnaround: bidTurnaround,
+      concurrent_projects: parseInt(concurrentProjects) || null,
     } as any);
     setStep(2);
   };
@@ -209,6 +256,8 @@ export default function ContractorOnboardingWizard() {
       typical_budget_range: typicalBudget,
       avg_projects_per_year: parseInt(avgProjectsPerYear) || null,
       typical_project_duration: typicalDuration,
+      largest_project_value: parseFloat(largestProjectValue) || null,
+      largest_project_duration: largestProjectDuration || null,
     } as any);
     setStep(3);
   };
@@ -225,18 +274,33 @@ export default function ContractorOnboardingWizard() {
     setStep(4);
   };
 
-  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, docType: "license" | "insurance" | "w9") => {
+  const saveLicensing = async () => {
+    await updateProfile.mutateAsync({
+      license_number: licenseNumber,
+      license_expiration: licenseExpiration,
+      workers_comp_verified: workersComp,
+    } as any);
+    setStep(5);
+  };
+
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, docType: "license" | "insurance" | "w9" | "contract_sample" | "estimate_sample") => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     try {
       const url = await handleFileUpload(file, docType);
-      const updates: any = {};
-      if (docType === "license") { updates.license_document_url = url; updates.license_verified = true; }
-      else if (docType === "insurance") { updates.insurance_document_url = url; updates.insurance_verified = true; }
-      else { updates.w9_url = url; }
-      await updateOnboarding.mutateAsync(updates);
-      toast({ title: "Uploaded", description: `${docType} uploaded successfully.` });
+      if (docType === "contract_sample" || docType === "estimate_sample") {
+        await updateProfile.mutateAsync({
+          [docType === "contract_sample" ? "contract_sample_url" : "estimate_sample_url"]: url,
+        } as any);
+      } else {
+        const updates: any = {};
+        if (docType === "license") { updates.license_document_url = url; updates.license_verified = true; }
+        else if (docType === "insurance") { updates.insurance_document_url = url; updates.insurance_verified = true; }
+        else { updates.w9_url = url; }
+        await updateOnboarding.mutateAsync(updates);
+      }
+      toast({ title: "Uploaded", description: `${docType.replace("_", " ")} uploaded successfully.` });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
     } finally {
@@ -285,7 +349,7 @@ export default function ContractorOnboardingWizard() {
     onSuccess: () => {
       toast({ title: "Saved", description: "Cost codes imported." });
       queryClient.invalidateQueries({ queryKey: ["cost-codes"] });
-      setStep(6);
+      setStep(7);
     },
     onError: (err: any) => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -306,7 +370,7 @@ export default function ContractorOnboardingWizard() {
       }
       await updateOnboarding.mutateAsync({ portfolio_uploaded: true } as any);
       toast({ title: "Uploaded", description: `${portfolioFiles.length} images added.` });
-      setStep(7);
+      setStep(8);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -314,7 +378,12 @@ export default function ContractorOnboardingWizard() {
     }
   };
 
-  const submitForReview = async () => {
+  const acceptTosAndSubmit = async () => {
+    await updateProfile.mutateAsync({
+      tos_accepted_at: new Date().toISOString(),
+      tos_version: "1.0",
+      approval_status: "pending",
+    } as any);
     await updateOnboarding.mutateAsync({ onboarding_status: "pending_review" } as any);
     toast({ title: "Submitted!", description: "Your profile is under review." });
   };
@@ -338,7 +407,7 @@ export default function ContractorOnboardingWizard() {
         <div className="max-w-2xl mx-auto py-16 text-center space-y-4">
           <CheckCircle className="h-16 w-16 text-accent mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">Application Under Review</h1>
-          <p className="text-muted-foreground">Your profile has been submitted for review.</p>
+          <p className="text-muted-foreground">Your profile has been submitted for review. We'll notify you once approved.</p>
         </div>
       </ContractorLayout>
     );
@@ -385,6 +454,24 @@ export default function ContractorOnboardingWizard() {
               <CardDescription>Contact details and online presence.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Main Point of Contact</Label>
+                  <Input value={contactName} onChange={e => setContactName(e.target.value)} placeholder="John Smith" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact Role</Label>
+                  <Select value={contactRole} onValueChange={setContactRole}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="owner">Owner</SelectItem>
+                      <SelectItem value="office_manager">Office Manager</SelectItem>
+                      <SelectItem value="project_manager">Project Manager</SelectItem>
+                      <SelectItem value="estimator">Estimator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label>Company Address</Label>
                 <Input value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} placeholder="123 Main St, City, NJ" />
@@ -450,12 +537,12 @@ export default function ContractorOnboardingWizard() {
           </Card>
         )}
 
-        {/* Step 1: Business Details */}
+        {/* Step 1: Operations */}
         {step === 1 && (
           <Card>
             <CardHeader>
-              <CardTitle>Business Details</CardTitle>
-              <CardDescription>Team structure and workforce info.</CardDescription>
+              <CardTitle>Business Operations</CardTitle>
+              <CardDescription>Team structure, workforce, and operating details.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -482,14 +569,18 @@ export default function ContractorOnboardingWizard() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Office Staff Count</Label>
+                  <Label>Office Staff</Label>
                   <Input type="number" value={officeStaffCount} onChange={e => setOfficeStaffCount(e.target.value)} placeholder="0" />
                 </div>
                 <div className="space-y-2">
                   <Label>Project Managers</Label>
                   <Input type="number" value={pmCount} onChange={e => setPmCount(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Estimators</Label>
+                  <Input type="number" value={estimatorCount} onChange={e => setEstimatorCount(e.target.value)} placeholder="0" />
                 </div>
               </div>
 
@@ -505,13 +596,13 @@ export default function ContractorOnboardingWizard() {
               )}
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <Label className="text-sm">Dedicated Estimator?</Label>
-                  <Switch checked={hasEstimator} onCheckedChange={setHasEstimator} />
-                </div>
                 <div className="space-y-2">
                   <Label>Lead Foreman Count</Label>
                   <Input type="number" value={leadForemanCount} onChange={e => setLeadForemanCount(e.target.value)} placeholder="0" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Concurrent Projects</Label>
+                  <Input type="number" value={concurrentProjects} onChange={e => setConcurrentProjects(e.target.value)} placeholder="3" />
                 </div>
               </div>
 
@@ -553,9 +644,47 @@ export default function ContractorOnboardingWizard() {
                 <Switch checked={isBonded} onCheckedChange={setIsBonded} />
               </div>
 
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm font-medium text-foreground mb-3 flex items-center gap-2"><Clock className="h-4 w-4" /> Operating Hours & Responsiveness</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Days of Operation</Label>
+                    <Select value={operatingDays} onValueChange={setOperatingDays}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mon_fri">Mon–Fri</SelectItem>
+                        <SelectItem value="mon_sat">Mon–Sat</SelectItem>
+                        <SelectItem value="7_days">7 Days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Start Time</Label>
+                    <Input type="time" value={operatingStart} onChange={e => setOperatingStart(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>End Time</Label>
+                    <Input type="time" value={operatingEnd} onChange={e => setOperatingEnd(e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-2 mt-4">
+                  <Label>Average Bid Turnaround</Label>
+                  <Select value={bidTurnaround} onValueChange={setBidTurnaround}>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="24-48 hours">24–48 hours</SelectItem>
+                      <SelectItem value="3-5 days">3–5 days</SelectItem>
+                      <SelectItem value="5-7 days">5–7 days</SelectItem>
+                      <SelectItem value="7-10 days">7–10 days</SelectItem>
+                      <SelectItem value="10+ days">10+ days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setStep(0)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
-                <Button onClick={saveBusinessDetails} disabled={updateProfile.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={saveOperations} disabled={updateProfile.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90">
                   {updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Next <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
@@ -604,15 +733,15 @@ export default function ContractorOnboardingWizard() {
               </div>
 
               <div className="space-y-2">
-                <Label>Typical Project Budget</Label>
+                <Label>Average Project Size</Label>
                 <Select value={typicalBudget} onValueChange={setTypicalBudget}>
                   <SelectTrigger><SelectValue placeholder="Select range" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="$5k – $25k">$5k – $25k</SelectItem>
-                    <SelectItem value="$25k – $75k">$25k – $75k</SelectItem>
-                    <SelectItem value="$75k – $150k">$75k – $150k</SelectItem>
-                    <SelectItem value="$150k – $300k">$150k – $300k</SelectItem>
-                    <SelectItem value="$300k+">$300k+</SelectItem>
+                    <SelectItem value="$10k – $50k">$10k – $50k</SelectItem>
+                    <SelectItem value="$50k – $100k">$50k – $100k</SelectItem>
+                    <SelectItem value="$100k – $250k">$100k – $250k</SelectItem>
+                    <SelectItem value="$250k – $500k">$250k – $500k</SelectItem>
+                    <SelectItem value="$500k+">$500k+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -634,6 +763,28 @@ export default function ContractorOnboardingWizard() {
                       <SelectItem value="6+ months">6+ months</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <p className="text-sm font-medium text-foreground mb-3">Largest Project Completed</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Project Value ($)</Label>
+                    <Input type="number" value={largestProjectValue} onChange={e => setLargestProjectValue(e.target.value)} placeholder="500000" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Duration</Label>
+                    <Select value={largestProjectDuration} onValueChange={setLargestProjectDuration}>
+                      <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1-3 months">1–3 months</SelectItem>
+                        <SelectItem value="3-6 months">3–6 months</SelectItem>
+                        <SelectItem value="6-12 months">6–12 months</SelectItem>
+                        <SelectItem value="12+ months">12+ months</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
@@ -677,17 +828,33 @@ export default function ContractorOnboardingWizard() {
           </Card>
         )}
 
-        {/* Step 4: Uploads */}
+        {/* Step 4: Licensing & Insurance */}
         {step === 4 && (
           <Card>
             <CardHeader>
-              <CardTitle>Upload Documents</CardTitle>
-              <CardDescription>License, Insurance, and W9 are required.</CardDescription>
+              <CardTitle>Licensing & Insurance</CardTitle>
+              <CardDescription>License details and document uploads.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>License Number</Label>
+                  <Input value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)} placeholder="13VH12345678" />
+                </div>
+                <div className="space-y-2">
+                  <Label>License Expiration</Label>
+                  <Input type="date" value={licenseExpiration} onChange={e => setLicenseExpiration(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <Label>Workers Compensation Coverage?</Label>
+                <Switch checked={workersComp} onCheckedChange={setWorkersComp} />
+              </div>
+
               {[
                 { label: "Contractor License", type: "license" as const, done: onboarding?.license_verified },
-                { label: "Insurance Certificate", type: "insurance" as const, done: onboarding?.insurance_verified },
+                { label: "General Liability Insurance", type: "insurance" as const, done: onboarding?.insurance_verified },
                 { label: "W9 Form", type: "w9" as const, done: !!onboarding?.w9_url },
               ].map(doc => (
                 <div key={doc.type} className="flex items-center justify-between p-4 border rounded-lg">
@@ -701,26 +868,83 @@ export default function ContractorOnboardingWizard() {
                   <Input type="file" accept=".pdf,.jpg,.png" className="w-48" onChange={e => handleDocUpload(e, doc.type)} disabled={uploading} />
                 </div>
               ))}
+
+              {workersComp && (
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Upload className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium text-foreground">Workers Comp Certificate</p>
+                      <p className="text-sm text-muted-foreground">Upload if applicable</p>
+                    </div>
+                  </div>
+                  <Input type="file" accept=".pdf,.jpg,.png" className="w-48" onChange={e => handleDocUpload(e, "insurance")} disabled={uploading} />
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>License Expiry</Label>
-                  <Input type="date" onChange={e => updateOnboarding.mutate({ license_expiry: e.target.value } as any)} />
+                  <Input type="date" onChange={e => updateOnboarding.mutate({ license_expiry: e.target.value } as any)} defaultValue={onboarding?.license_expiry || ""} />
                 </div>
                 <div className="space-y-2">
                   <Label>Insurance Expiry</Label>
-                  <Input type="date" onChange={e => updateOnboarding.mutate({ insurance_expiry: e.target.value } as any)} />
+                  <Input type="date" onChange={e => updateOnboarding.mutate({ insurance_expiry: e.target.value } as any)} defaultValue={onboarding?.insurance_expiry || ""} />
                 </div>
               </div>
+
               <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setStep(3)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
-                <Button onClick={() => setStep(5)} className="bg-accent text-accent-foreground hover:bg-accent/90">Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
+                <Button onClick={saveLicensing} disabled={updateProfile.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  Next <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Step 5: Cost Codes */}
+        {/* Step 5: Documents & Samples */}
         {step === 5 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents & Samples</CardTitle>
+              <CardDescription>Upload your contract and estimate samples for review.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  {(profile as any)?.contract_sample_url ? <CheckCircle className="h-5 w-5 text-accent" /> : <FileText className="h-5 w-5 text-muted-foreground" />}
+                  <div>
+                    <p className="font-medium text-foreground">Home Improvement Contract Sample</p>
+                    <p className="text-sm text-muted-foreground">Upload a sample of the contract you use with homeowners</p>
+                  </div>
+                </div>
+                <Input type="file" accept=".pdf,.doc,.docx" className="w-48" onChange={e => handleDocUpload(e, "contract_sample")} disabled={uploading} />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  {(profile as any)?.estimate_sample_url ? <CheckCircle className="h-5 w-5 text-accent" /> : <FileText className="h-5 w-5 text-muted-foreground" />}
+                  <div>
+                    <p className="font-medium text-foreground">Previous Estimate Sample</p>
+                    <p className="text-sm text-muted-foreground">Upload a sample estimate to show your estimating style</p>
+                  </div>
+                </div>
+                <Input type="file" accept=".pdf,.doc,.docx,.xlsx" className="w-48" onChange={e => handleDocUpload(e, "estimate_sample")} disabled={uploading} />
+              </div>
+
+              <div className="flex justify-between">
+                <Button variant="outline" onClick={() => setStep(4)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
+                <Button onClick={() => setStep(6)} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  Next <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 6: Cost Codes */}
+        {step === 6 && (
           <Card>
             <CardHeader>
               <CardTitle>Import Cost Codes</CardTitle>
@@ -761,9 +985,9 @@ export default function ContractorOnboardingWizard() {
                 </div>
               )}
               <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setStep(4)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
+                <Button variant="outline" onClick={() => setStep(5)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
                 <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => setStep(6)}>Skip</Button>
+                  <Button variant="ghost" onClick={() => setStep(7)}>Skip</Button>
                   <Button onClick={() => saveCostCodes.mutate()} disabled={parsedCodes.length === 0 || saveCostCodes.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {saveCostCodes.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Import & Continue
                   </Button>
@@ -773,8 +997,8 @@ export default function ContractorOnboardingWizard() {
           </Card>
         )}
 
-        {/* Step 6: Portfolio */}
-        {step === 6 && (
+        {/* Step 7: Portfolio */}
+        {step === 7 && (
           <Card>
             <CardHeader>
               <CardTitle>Portfolio Images</CardTitle>
@@ -787,9 +1011,9 @@ export default function ContractorOnboardingWizard() {
                 <p className="text-xs text-muted-foreground mt-2">{portfolioFiles.length} files selected</p>
               </div>
               <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setStep(5)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
+                <Button variant="outline" onClick={() => setStep(6)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
                 <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => setStep(7)}>Skip</Button>
+                  <Button variant="ghost" onClick={() => setStep(8)}>Skip</Button>
                   <Button onClick={uploadPortfolio} disabled={portfolioFiles.length === 0 || uploadingPortfolio} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {uploadingPortfolio ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Upload & Continue
                   </Button>
@@ -799,24 +1023,34 @@ export default function ContractorOnboardingWizard() {
           </Card>
         )}
 
-        {/* Step 7: Submit */}
-        {step === 7 && (
+        {/* Step 8: Terms of Service */}
+        {step === 8 && (
+          <ContractorTermsOfService
+            onAccept={acceptTosAndSubmit}
+            onBack={() => setStep(7)}
+            isPending={updateOnboarding.isPending || updateProfile.isPending}
+          />
+        )}
+
+        {/* Step 9: Submit / Review Checklist */}
+        {step === 9 && (
           <Card>
             <CardHeader>
-              <CardTitle>Submit for Review</CardTitle>
-              <CardDescription>Review your information and submit.</CardDescription>
+              <CardTitle>Review & Submit</CardTitle>
+              <CardDescription>Review your information before submitting.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 {[
-                  { label: "Company Info", done: !!onboarding?.company_address },
-                  { label: "Business Details", done: !!profile?.business_type },
+                  { label: "Company Info", done: !!companyAddress || !!businessPhone },
+                  { label: "Operations", done: !!businessType },
                   { label: "Trades Selected", done: (onboarding?.trades?.length || 0) > 0 },
                   { label: "Service Area", done: (profile?.service_areas?.length || 0) > 0 || (profile?.service_zip_codes?.length || 0) > 0 },
-                  { label: "License Uploaded", done: onboarding?.license_verified },
-                  { label: "Insurance Uploaded", done: onboarding?.insurance_verified },
+                  { label: "License & Insurance", done: onboarding?.license_verified && onboarding?.insurance_verified },
+                  { label: "Documents", done: !!(profile as any)?.contract_sample_url },
                   { label: "Cost Codes", done: onboarding?.pricing_template_created },
                   { label: "Portfolio", done: onboarding?.portfolio_uploaded },
+                  { label: "Terms Accepted", done: !!(profile as any)?.tos_accepted_at },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                     {item.done ? <CheckCircle className="h-5 w-5 text-accent" /> : <div className="h-5 w-5 rounded-full border-2 border-muted-foreground" />}
@@ -825,8 +1059,8 @@ export default function ContractorOnboardingWizard() {
                 ))}
               </div>
               <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setStep(6)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
-                <Button onClick={submitForReview} disabled={updateOnboarding.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
+                <Button variant="outline" onClick={() => setStep(8)}><ChevronLeft className="h-4 w-4 mr-1" /> Back</Button>
+                <Button onClick={acceptTosAndSubmit} disabled={updateOnboarding.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90" size="lg">
                   {updateOnboarding.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                   Submit for Review
                 </Button>

@@ -3580,13 +3580,25 @@ export type Database = {
       }
       contractors: {
         Row: {
+          approval_notes: string | null
+          approval_status: string | null
+          approved_at: string | null
+          approved_by: string | null
           avg_projects_per_year: number | null
+          bid_turnaround: string | null
           business_email: string | null
           business_phone: string | null
           business_type: string | null
+          concurrent_projects: number | null
+          contact_name: string | null
+          contact_role: string | null
+          contract_sample_url: string | null
           created_at: string
+          crew_size: number | null
           designer_count: number | null
           email: string | null
+          estimate_sample_url: string | null
+          estimator_count: number | null
           facebook_url: string | null
           google_business_url: string | null
           google_rating: number | null
@@ -3599,14 +3611,20 @@ export type Database = {
           instagram_url: string | null
           is_active: boolean | null
           is_bonded: boolean | null
+          largest_project_duration: string | null
+          largest_project_value: number | null
           lead_foreman_count: number | null
           legal_name: string | null
+          license_expiration: string | null
           license_number: string | null
           linkedin_url: string | null
           logo_url: string | null
           name: string
           office_address: string | null
           office_staff_count: number | null
+          operating_days: string | null
+          operating_hours_end: string | null
+          operating_hours_start: string | null
           owner_name: string | null
           phone: string | null
           profile_completion_pct: number | null
@@ -3616,6 +3634,8 @@ export type Database = {
           service_counties: string[] | null
           service_zip_codes: string[] | null
           subcontracted_trades: string[] | null
+          tos_accepted_at: string | null
+          tos_version: string | null
           trade_focus: string | null
           typical_budget_range: string | null
           typical_project_duration: string | null
@@ -3627,13 +3647,25 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          approval_notes?: string | null
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           avg_projects_per_year?: number | null
+          bid_turnaround?: string | null
           business_email?: string | null
           business_phone?: string | null
           business_type?: string | null
+          concurrent_projects?: number | null
+          contact_name?: string | null
+          contact_role?: string | null
+          contract_sample_url?: string | null
           created_at?: string
+          crew_size?: number | null
           designer_count?: number | null
           email?: string | null
+          estimate_sample_url?: string | null
+          estimator_count?: number | null
           facebook_url?: string | null
           google_business_url?: string | null
           google_rating?: number | null
@@ -3646,14 +3678,20 @@ export type Database = {
           instagram_url?: string | null
           is_active?: boolean | null
           is_bonded?: boolean | null
+          largest_project_duration?: string | null
+          largest_project_value?: number | null
           lead_foreman_count?: number | null
           legal_name?: string | null
+          license_expiration?: string | null
           license_number?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name: string
           office_address?: string | null
           office_staff_count?: number | null
+          operating_days?: string | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
           owner_name?: string | null
           phone?: string | null
           profile_completion_pct?: number | null
@@ -3663,6 +3701,8 @@ export type Database = {
           service_counties?: string[] | null
           service_zip_codes?: string[] | null
           subcontracted_trades?: string[] | null
+          tos_accepted_at?: string | null
+          tos_version?: string | null
           trade_focus?: string | null
           typical_budget_range?: string | null
           typical_project_duration?: string | null
@@ -3674,13 +3714,25 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          approval_notes?: string | null
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           avg_projects_per_year?: number | null
+          bid_turnaround?: string | null
           business_email?: string | null
           business_phone?: string | null
           business_type?: string | null
+          concurrent_projects?: number | null
+          contact_name?: string | null
+          contact_role?: string | null
+          contract_sample_url?: string | null
           created_at?: string
+          crew_size?: number | null
           designer_count?: number | null
           email?: string | null
+          estimate_sample_url?: string | null
+          estimator_count?: number | null
           facebook_url?: string | null
           google_business_url?: string | null
           google_rating?: number | null
@@ -3693,14 +3745,20 @@ export type Database = {
           instagram_url?: string | null
           is_active?: boolean | null
           is_bonded?: boolean | null
+          largest_project_duration?: string | null
+          largest_project_value?: number | null
           lead_foreman_count?: number | null
           legal_name?: string | null
+          license_expiration?: string | null
           license_number?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name?: string
           office_address?: string | null
           office_staff_count?: number | null
+          operating_days?: string | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
           owner_name?: string | null
           phone?: string | null
           profile_completion_pct?: number | null
@@ -3710,6 +3768,8 @@ export type Database = {
           service_counties?: string[] | null
           service_zip_codes?: string[] | null
           subcontracted_trades?: string[] | null
+          tos_accepted_at?: string | null
+          tos_version?: string | null
           trade_focus?: string | null
           typical_budget_range?: string | null
           typical_project_duration?: string | null
