@@ -4529,10 +4529,12 @@ export type Database = {
           business_registered: boolean | null
           business_registration_document: string | null
           can_coordinate_engineering: boolean | null
+          can_stamp_plans: boolean | null
           certification_notes: string | null
           company_logo_url: string | null
           company_name: string | null
           consultation_availability: string | null
+          contract_template_url: string | null
           counties_served: string[] | null
           created_at: string | null
           credentials: Json | null
@@ -4540,14 +4542,19 @@ export type Database = {
           do_you_source_materials: boolean | null
           engineering_services_supported: string[] | null
           featured: boolean | null
+          firm_insurance_type: string | null
+          firm_liability_coverage: string | null
           full_bio: string | null
+          has_showroom: boolean | null
           headline: string | null
           id: string
           ideal_client_type: string | null
+          initial_consultation_fee_note: string | null
           instagram_or_portfolio_link: string | null
           insurance_certificate_upload: string | null
           insurance_status: string | null
           inventory_available: boolean | null
+          is_licensed_architecture_firm: boolean | null
           leed_accredited: boolean | null
           licensed_states: string[] | null
           material_sourcing_notes: string | null
@@ -4566,11 +4573,14 @@ export type Database = {
           profile_completion_percent: number | null
           profile_photo_url: string | null
           project_types: string[] | null
+          recent_estimate_url: string | null
           region_notes: string | null
           service_area_type: string | null
           service_mode: string | null
           service_radius_miles: number | null
           services_offered: string[] | null
+          showroom_address: string | null
+          showroom_description: string | null
           specialties: string[] | null
           staging_services_offered: string[] | null
           staging_turnaround_time_days: number | null
@@ -4605,10 +4615,12 @@ export type Database = {
           business_registered?: boolean | null
           business_registration_document?: string | null
           can_coordinate_engineering?: boolean | null
+          can_stamp_plans?: boolean | null
           certification_notes?: string | null
           company_logo_url?: string | null
           company_name?: string | null
           consultation_availability?: string | null
+          contract_template_url?: string | null
           counties_served?: string[] | null
           created_at?: string | null
           credentials?: Json | null
@@ -4616,14 +4628,19 @@ export type Database = {
           do_you_source_materials?: boolean | null
           engineering_services_supported?: string[] | null
           featured?: boolean | null
+          firm_insurance_type?: string | null
+          firm_liability_coverage?: string | null
           full_bio?: string | null
+          has_showroom?: boolean | null
           headline?: string | null
           id?: string
           ideal_client_type?: string | null
+          initial_consultation_fee_note?: string | null
           instagram_or_portfolio_link?: string | null
           insurance_certificate_upload?: string | null
           insurance_status?: string | null
           inventory_available?: boolean | null
+          is_licensed_architecture_firm?: boolean | null
           leed_accredited?: boolean | null
           licensed_states?: string[] | null
           material_sourcing_notes?: string | null
@@ -4642,11 +4659,14 @@ export type Database = {
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
           project_types?: string[] | null
+          recent_estimate_url?: string | null
           region_notes?: string | null
           service_area_type?: string | null
           service_mode?: string | null
           service_radius_miles?: number | null
           services_offered?: string[] | null
+          showroom_address?: string | null
+          showroom_description?: string | null
           specialties?: string[] | null
           staging_services_offered?: string[] | null
           staging_turnaround_time_days?: number | null
@@ -4681,10 +4701,12 @@ export type Database = {
           business_registered?: boolean | null
           business_registration_document?: string | null
           can_coordinate_engineering?: boolean | null
+          can_stamp_plans?: boolean | null
           certification_notes?: string | null
           company_logo_url?: string | null
           company_name?: string | null
           consultation_availability?: string | null
+          contract_template_url?: string | null
           counties_served?: string[] | null
           created_at?: string | null
           credentials?: Json | null
@@ -4692,14 +4714,19 @@ export type Database = {
           do_you_source_materials?: boolean | null
           engineering_services_supported?: string[] | null
           featured?: boolean | null
+          firm_insurance_type?: string | null
+          firm_liability_coverage?: string | null
           full_bio?: string | null
+          has_showroom?: boolean | null
           headline?: string | null
           id?: string
           ideal_client_type?: string | null
+          initial_consultation_fee_note?: string | null
           instagram_or_portfolio_link?: string | null
           insurance_certificate_upload?: string | null
           insurance_status?: string | null
           inventory_available?: boolean | null
+          is_licensed_architecture_firm?: boolean | null
           leed_accredited?: boolean | null
           licensed_states?: string[] | null
           material_sourcing_notes?: string | null
@@ -4718,11 +4745,14 @@ export type Database = {
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
           project_types?: string[] | null
+          recent_estimate_url?: string | null
           region_notes?: string | null
           service_area_type?: string | null
           service_mode?: string | null
           service_radius_miles?: number | null
           services_offered?: string[] | null
+          showroom_address?: string | null
+          showroom_description?: string | null
           specialties?: string[] | null
           staging_services_offered?: string[] | null
           staging_turnaround_time_days?: number | null
