@@ -25,7 +25,7 @@ export function useProjectSubcontractorBids(projectId: string | undefined) {
     mutationFn: async (bid: { trade: string; company_name: string; contact_name: string; phone?: string; email?: string; bid_amount?: number; duration?: string; notes?: string }) => {
       const { error } = await (supabase
         .from("subcontractor_bids" as any)
-        .insert({ ...bid, project_id: projectId! }) as any);
+        .insert({ ...bid, bid_amount: bid.bid_amount ?? 0, project_id: projectId!, status: "pending" }) as any);
       if (error) throw error;
 
       // Log activity
