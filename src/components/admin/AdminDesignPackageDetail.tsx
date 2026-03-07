@@ -304,6 +304,9 @@ export function AdminDesignPackageDetail({ packageId, onClose }: Props) {
             <Button variant="outline" onClick={handleMarkRFPReady} disabled={updatePackage.isPending}>
               <Send className="mr-2 h-4 w-4" /> Mark Ready for RFP
             </Button>
+            <Button variant="default" onClick={() => setBidPacketDialogOpen(true)} disabled={updatePackage.isPending}>
+              <Package className="mr-2 h-4 w-4" /> Generate Bid Packet
+            </Button>
           </div>
 
           {/* Revision Request */}
