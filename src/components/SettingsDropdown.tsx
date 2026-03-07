@@ -32,7 +32,7 @@ export const SettingsDropdown = ({ userRole }: SettingsDropdownProps) => {
     ];
 
     // Add QuickBooks and Invoicing for professional roles
-    const isProfessional = ['estimator', 'contractor', 'architect', 'interiordesigner'].includes(userRole || '');
+    const isProfessional = ['estimator', 'contractor', 'architect', 'interiordesigner', 'design_professional'].includes(userRole || '');
     if (isProfessional) {
       commonItems.push({ icon: Wallet, label: "QuickBooks", onClick: () => navigate("/quickbooks") });
       commonItems.push({ icon: Receipt, label: "Invoicing", onClick: () => navigate("/invoicing") });
