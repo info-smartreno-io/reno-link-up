@@ -528,11 +528,7 @@ function AppRoutes() {
                 <AdminVendors />
               </ProtectedRoute>
             } />
-            <Route path="/admin/contractors" element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminContractorNetwork />
-              </ProtectedRoute>
-            } />
+            {/* Contractor management moved to /admin/contractors above */}
             <Route path="/admin/revenue-optimization" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminRevenueOptimization />
