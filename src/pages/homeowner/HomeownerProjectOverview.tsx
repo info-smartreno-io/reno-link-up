@@ -16,8 +16,20 @@ import {
   Mail,
   CalendarDays,
   Wrench,
+  ArrowRight,
+  Users,
   FileText,
+  MessageSquare,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
+const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
+  status_change: ArrowRight,
+  daily_log: Wrench,
+  contractor_selected: Users,
+  file_upload: FileText,
+  message: MessageSquare,
+};
 
 export default function HomeownerProjectOverview() {
   const { projectId } = useParams();
@@ -32,7 +44,7 @@ export default function HomeownerProjectOverview() {
     );
   }
 
-  const { project, contractor, recentLogs, timelineTasks } = data!;
+  const { project, contractor, recentLogs, timelineTasks, recentActivity } = data!;
   const status = getHomeownerStatus(project.status || "intake");
   const nextStep = getNextStep(project.status || "intake");
   const progressPercent = Math.round((status.step / (HOMEOWNER_MILESTONES.length - 1)) * 100);
@@ -138,13 +150,43 @@ export default function HomeownerProjectOverview() {
         </Card>
       </div>
 
-      {/* Recent Updates */}
+      {/* Recent Activity from activity log */}
+      {recentActivity && recentActivity.length > 0 && (
+        <Card>
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+              <Wrench className="h-4 w-4 text-muted-foreground" />
+              Recent Activity
+            </h3>
+            <div className="space-y-3">
+              {recentActivity.map((activity: any) => {
+                const Icon = ACTIVITY_ICONS[activity.activity_type] || ArrowRight;
+                return (
+                  <div key={activity.id} className="flex items-start gap-3 text-sm">
+                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Icon className="h-3 w-3 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-foreground">{activity.description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Daily Logs */}
       {recentLogs.length > 0 && (
         <Card>
           <CardContent className="p-5 space-y-3">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
               <Wrench className="h-4 w-4 text-muted-foreground" />
-              Recent Updates
+              Recent Progress Updates
             </h3>
             <div className="space-y-3">
               {recentLogs.map((log: any) => (

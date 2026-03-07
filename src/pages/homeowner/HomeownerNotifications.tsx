@@ -1,9 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useNotifications,
+  useMarkNotificationRead,
+  useMarkAllNotificationsRead,
+} from "@/hooks/useNotifications";
 import {
   Bell,
   MessageSquare,
@@ -27,52 +29,9 @@ const NOTIFICATION_ICONS: Record<string, typeof Bell> = {
 
 export default function HomeownerNotifications() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const { data: notifications, isLoading } = useQuery({
-    queryKey: ["homeowner-notifications"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      // Use subcontractor_notifications as a general notification store
-      // In production, a dedicated homeowner_notifications table would be better
-      const { data, error } = await supabase
-        .from("subcontractor_notifications")
-        .select("*")
-        .eq("subcontractor_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  const markReadMutation = useMutation({
-    mutationFn: async (notifId: string) => {
-      const { error } = await supabase
-        .from("subcontractor_notifications")
-        .update({ is_read: true })
-        .eq("id", notifId);
-      if (error) throw error;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["homeowner-notifications"] }),
-  });
-
-  const markAllReadMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { error } = await supabase
-        .from("subcontractor_notifications")
-        .update({ is_read: true })
-        .eq("subcontractor_id", user.id)
-        .eq("is_read", false);
-      if (error) throw error;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["homeowner-notifications"] }),
-  });
+  const { data: notifications, isLoading } = useNotifications();
+  const markReadMutation = useMarkNotificationRead();
+  const markAllReadMutation = useMarkAllNotificationsRead();
 
   if (isLoading) {
     return (
@@ -84,7 +43,7 @@ export default function HomeownerNotifications() {
     );
   }
 
-  const unreadCount = notifications?.filter((n: any) => !n.is_read).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.read).length || 0;
 
   return (
     <div className="space-y-6">
@@ -110,23 +69,23 @@ export default function HomeownerNotifications() {
 
       {notifications?.length ? (
         <div className="space-y-2">
-          {notifications.map((notif: any) => {
+          {notifications.map((notif) => {
             const Icon = NOTIFICATION_ICONS[notif.type] || Bell;
             return (
               <Card
                 key={notif.id}
-                className={`cursor-pointer hover:shadow-sm transition-shadow ${!notif.is_read ? "border-primary/30 bg-primary/[0.02]" : ""}`}
+                className={`cursor-pointer hover:shadow-sm transition-shadow ${!notif.read ? "border-primary/30 bg-primary/[0.02]" : ""}`}
                 onClick={() => {
-                  if (!notif.is_read) markReadMutation.mutate(notif.id);
+                  if (!notif.read) markReadMutation.mutate(notif.id);
                   if (notif.link) navigate(notif.link);
                 }}
               >
                 <CardContent className="p-4 flex items-start gap-3">
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${!notif.is_read ? "bg-primary/10" : "bg-muted"}`}>
-                    <Icon className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${!notif.read ? "bg-primary/10" : "bg-muted"}`}>
+                    <Icon className={`h-4 w-4 ${!notif.read ? "text-primary" : "text-muted-foreground"}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${!notif.is_read ? "font-medium text-foreground" : "text-muted-foreground"}`}>
+                    <p className={`text-sm ${!notif.read ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                       {notif.title}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{notif.message}</p>
@@ -139,7 +98,7 @@ export default function HomeownerNotifications() {
                       })}
                     </p>
                   </div>
-                  {!notif.is_read && (
+                  {!notif.read && (
                     <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-2" />
                   )}
                 </CardContent>
