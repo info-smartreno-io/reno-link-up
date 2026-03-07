@@ -446,7 +446,12 @@ function AppRoutes() {
             } />
             <Route path="/admin/designers" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDesigners />
+                <AdminDesignProfessionals />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/design-professionals" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesignProfessionals />
               </ProtectedRoute>
             } />
             <Route path="/admin/vendor-monitoring" element={
