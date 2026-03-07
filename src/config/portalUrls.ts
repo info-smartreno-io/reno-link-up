@@ -1,12 +1,11 @@
-export type PortalKey = "homeowner" | "contractor" | "estimator" | "admin" | "architect" | "interiordesigner" | "vendor";
+export type PortalKey = "homeowner" | "contractor" | "estimator" | "admin" | "design_professional" | "vendor";
 
 export const PORTAL_URLS: Record<PortalKey, string> = {
   homeowner: "/homeowner/dashboard",
   contractor: "/contractor/dashboard",
   estimator: "/estimator/dashboard",
   admin: "/admin/dashboard",
-  architect: "/architect/dashboard",
-  interiordesigner: "/interiordesigner/dashboard",
+  design_professional: "/design-professional/dashboard",
   vendor: "/vendor/dashboard",
 };
 
@@ -15,7 +14,6 @@ export const PORTAL_LABELS: Record<PortalKey, string> = {
   contractor: "Contractor Portal",
   estimator: "Estimator Portal",
   admin: "Admin Portal",
-  architect: "Architect Portal",
-  interiordesigner: "Interior Designer Portal",
+  design_professional: "Design Professional Portal",
   vendor: "Vendor Portal",
 };
