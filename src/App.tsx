@@ -255,16 +255,16 @@ import ContractorLeads from "./pages/contractor/ContractorLeads";
 import ContractorLeadDetail from "./pages/contractor/ContractorLeadDetail";
 import MarketingDashboard from "./pages/contractor/MarketingDashboard";
 
-import ArchitectAuth from "./pages/architect/ArchitectAuth";
-import ArchitectDashboard from "./pages/architect/ArchitectDashboard";
-import ArchitectProjects from "./pages/architect/ArchitectProjects";
-import ArchitectProposals from "./pages/architect/ArchitectProposals";
-import ArchitectMessages from "./pages/architect/ArchitectMessages";
-import ArchitectBidRoom from "./pages/architect/ArchitectBidRoom";
-import ArchitectBidSubmissions from "./pages/architect/ArchitectBidSubmissions";
-import InteriorDesignerBidRoom from "./pages/interiordesigner/InteriorDesignerBidRoom";
-import InteriorDesignerDashboard from "./pages/interiordesigner/InteriorDesignerDashboard";
-import InteriorDesignerAuth from "./pages/interiordesigner/InteriorDesignerAuth";
+import DesignProfessionalAuth from "./pages/design-professional/DesignProfessionalAuth";
+import DesignProfessionalDashboard from "./pages/design-professional/DesignProfessionalDashboard";
+import DesignProfessionalProfile from "./pages/design-professional/DesignProfessionalProfile";
+import DesignProfessionalPortfolio from "./pages/design-professional/DesignProfessionalPortfolio";
+import DesignProfessionalOpportunities from "./pages/design-professional/DesignProfessionalOpportunities";
+import DesignProfessionalProjects from "./pages/design-professional/DesignProfessionalProjects";
+import DesignProfessionalMessages from "./pages/design-professional/DesignProfessionalMessages";
+import DesignProfessionalDocuments from "./pages/design-professional/DesignProfessionalDocuments";
+import DesignProfessionalSettings from "./pages/design-professional/DesignProfessionalSettings";
+import { DesignProfessionalLayout } from "./components/design-professional/DesignProfessionalLayout";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import TestDashboard from "./pages/TestDashboard";
 
