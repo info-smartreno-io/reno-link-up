@@ -93,7 +93,21 @@ export function useHomeownerProjectDetail(projectId: string | undefined) {
         .eq("project_id", projectId!)
         .order("start_date", { ascending: true });
 
-      return { project, contractor, recentLogs: logs || [], timelineTasks: tasks || [] };
+      // Get recent activity
+      const { data: activities } = await supabase
+        .from("project_activity_log")
+        .select("*")
+        .eq("project_id", projectId!)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      return {
+        project,
+        contractor,
+        recentLogs: logs || [],
+        timelineTasks: tasks || [],
+        recentActivity: activities || [],
+      };
     },
   });
 }
@@ -152,6 +166,15 @@ export function useSelectContractor(projectId: string | undefined) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (bidId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // Get bid details for notification
+      const { data: bid } = await supabase
+        .from("bid_submissions")
+        .select("bidder_id, bid_amount, bid_opportunity_id")
+        .eq("id", bidId)
+        .single();
+
       // Update bid status
       const { error: bidError } = await supabase
         .from("bid_submissions")
@@ -159,13 +182,54 @@ export function useSelectContractor(projectId: string | undefined) {
         .eq("id", bidId);
       if (bidError) throw bidError;
 
-      // Update project status
+      // Update project status and assign contractor
       if (projectId) {
+        const updates: Record<string, any> = { status: "contractor_selected" };
+        if (bid?.bidder_id) updates.contractor_id = bid.bidder_id;
+
         const { error: projError } = await supabase
           .from("contractor_projects")
-          .update({ status: "contractor_selected" })
+          .update(updates)
           .eq("id", projectId);
         if (projError) throw projError;
+
+        // Log activity
+        await supabase.from("project_activity_log").insert({
+          project_id: projectId,
+          activity_type: "contractor_selected",
+          description: "Homeowner selected a contractor for the project",
+          performed_by: user?.id,
+          role: "homeowner",
+          metadata: { bid_id: bidId, bid_amount: bid?.bid_amount },
+        });
+
+        // Notify contractor
+        if (bid?.bidder_id) {
+          await supabase.from("notifications").insert({
+            user_id: bid.bidder_id,
+            title: "You've Been Selected!",
+            message: "A homeowner has selected you for their project. Check your projects for details.",
+            type: "milestone",
+            link: `/contractor/projects/${projectId}`,
+          });
+        }
+
+        // Notify admins
+        const { data: admins } = await supabase
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin");
+
+        if (admins?.length) {
+          const adminNotifs = admins.map(a => ({
+            user_id: a.user_id,
+            title: "Contractor Selected",
+            message: `Homeowner selected a contractor for project. Bid: $${bid?.bid_amount?.toLocaleString()}`,
+            type: "milestone" as const,
+            link: `/admin/live-projects`,
+          }));
+          await supabase.from("notifications").insert(adminNotifs);
+        }
       }
     },
     onSuccess: () => {
@@ -173,6 +237,8 @@ export function useSelectContractor(projectId: string | undefined) {
       queryClient.invalidateQueries({ queryKey: ["homeowner-proposals", projectId] });
       queryClient.invalidateQueries({ queryKey: ["homeowner-project-detail", projectId] });
       queryClient.invalidateQueries({ queryKey: ["homeowner-projects"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unread-notification-count"] });
     },
     onError: () => toast.error("Failed to select contractor"),
   });
@@ -181,20 +247,33 @@ export function useSelectContractor(projectId: string | undefined) {
 // Map internal statuses to homeowner-friendly labels
 export const HOMEOWNER_STATUS_MAP: Record<string, { label: string; step: number }> = {
   intake: { label: "Project Submitted", step: 0 },
+  new: { label: "Project Submitted", step: 0 },
+  needs_info: { label: "Project Submitted", step: 0 },
   payment_confirmed: { label: "Project Submitted", step: 0 },
-  rfp_out: { label: "Gathering Proposals", step: 3 },
+  paid: { label: "Project Submitted", step: 0 },
+  field_visit_needed: { label: "Site Visit Scheduled", step: 1 },
+  field_visit_scheduled: { label: "Site Visit Scheduled", step: 1 },
   walkthrough_scheduled: { label: "Site Visit Scheduled", step: 1 },
   walkthrough_complete: { label: "Preparing Your Estimate", step: 2 },
+  estimate_in_progress: { label: "Preparing Your Estimate", step: 2 },
   estimating: { label: "Preparing Your Estimate", step: 2 },
+  scope_review: { label: "Preparing Your Estimate", step: 2 },
   estimate_ready: { label: "Gathering Proposals", step: 3 },
+  ready_for_rfp: { label: "Gathering Proposals", step: 3 },
   estimate_approved: { label: "Gathering Proposals", step: 3 },
+  rfp_out: { label: "Gathering Proposals", step: 3 },
+  bids_received: { label: "Gathering Proposals", step: 3 },
+  homeowner_review: { label: "Waiting for Your Selection", step: 3 },
   contractor_selected: { label: "Contractor Selected", step: 4 },
   contract_signed: { label: "Contractor Selected", step: 4 },
   pre_construction: { label: "Construction Scheduled", step: 5 },
+  active: { label: "Construction In Progress", step: 5 },
   in_progress: { label: "Construction In Progress", step: 5 },
   punch_list: { label: "Final Review", step: 6 },
+  final_walkthrough: { label: "Final Review", step: 6 },
   complete: { label: "Completed", step: 7 },
   completed: { label: "Completed", step: 7 },
+  archived: { label: "Completed", step: 7 },
 };
 
 export const HOMEOWNER_MILESTONES = [
@@ -215,20 +294,33 @@ export function getHomeownerStatus(status: string) {
 export function getNextStep(status: string): string {
   const steps: Record<string, string> = {
     intake: "We're reviewing your project details.",
+    new: "We're reviewing your project details.",
+    needs_info: "We need some additional information about your project. Please check your messages.",
     payment_confirmed: "Your project is being prepared for site visit scheduling.",
+    paid: "Your project is being prepared for site visit scheduling.",
+    field_visit_needed: "A site visit will be scheduled to assess your project scope.",
+    field_visit_scheduled: "Your site visit is scheduled. We'll assess the project scope.",
     walkthrough_scheduled: "Your site visit is scheduled. We'll assess the project scope.",
     walkthrough_complete: "Our team is preparing a detailed estimate for your project.",
+    estimate_in_progress: "Your estimate is being finalized.",
     estimating: "Your estimate is being finalized.",
+    scope_review: "Your project scope is under final review.",
     estimate_ready: "Your estimate is ready. Contractor proposals are being gathered.",
+    ready_for_rfp: "Your estimate is ready. Contractor proposals are being gathered.",
     estimate_approved: "Contractor proposals are being collected for your review.",
-    rfp_out: "Please review the contractor proposals and select your preferred contractor.",
+    rfp_out: "Contractor proposals are being collected for your review.",
+    bids_received: "Contractor proposals have been received and are being reviewed.",
+    homeowner_review: "Please review the contractor proposals and select your preferred contractor.",
     contractor_selected: "Your contractor has been selected. Contract signing is next.",
     contract_signed: "Construction scheduling is underway.",
     pre_construction: "Pre-construction preparations are in progress.",
+    active: "Construction is underway. Check daily logs for progress updates.",
     in_progress: "Construction is underway. Check daily logs for progress updates.",
     punch_list: "Final details are being completed.",
+    final_walkthrough: "Your final walkthrough is being scheduled.",
     complete: "Your project is complete! Thank you for choosing SmartReno.",
     completed: "Your project is complete! Thank you for choosing SmartReno.",
+    archived: "Your project is complete and archived.",
   };
   return steps[status] || "Your project is being processed.";
 }

@@ -16,6 +16,8 @@ export function useAdminKPIs() {
   return useQuery({
     queryKey: ["admin-kpis"],
     queryFn: async (): Promise<AdminKPIs> => {
+      const { data: { user } } = await supabase.auth.getUser();
+
       const results = await Promise.all([
         supabase.from("leads").select("id", { count: "exact", head: true }).eq("status", "new_lead"),
         supabase.from("leads").select("id", { count: "exact", head: true }).in("status", ["estimate_in_progress", "walkthrough_scheduled"]),
@@ -24,6 +26,10 @@ export function useAdminKPIs() {
         supabase.from("bid_submissions").select("id", { count: "exact", head: true }).eq("status", "submitted"),
         supabase.from("contractor_projects").select("id", { count: "exact", head: true }).in("status", ["active", "awarded", "in_progress"]),
         supabase.from("contractor_projects").select("id", { count: "exact", head: true }).eq("status", "delayed"),
+        // Unread notifications for this admin
+        user
+          ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false)
+          : Promise.resolve({ count: 0 }),
       ]);
 
       return {
@@ -34,7 +40,7 @@ export function useAdminKPIs() {
         bidsDueSoon: results[4].count ?? 0,
         activeProjects: results[5].count ?? 0,
         needingAttention: results[6].count ?? 0,
-        unreadMessages: 0,
+        unreadMessages: results[7].count ?? 0,
       };
     },
     refetchInterval: 30000,

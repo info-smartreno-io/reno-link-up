@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +10,8 @@ import {
   getNextStep,
   HOMEOWNER_MILESTONES,
 } from "@/hooks/useHomeownerData";
+import { useRecentActivityForUser } from "@/hooks/useProjectActivityLog";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import {
   ArrowRight,
   MapPin,
@@ -19,11 +21,26 @@ import {
   ClipboardList,
   CheckCircle2,
   Circle,
-  Loader2,
+  Bell,
+  Wrench,
+  FileText,
+  Users,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
+const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
+  status_change: ArrowRight,
+  daily_log: Wrench,
+  contractor_selected: Users,
+  file_upload: FileText,
+  message: MessageSquare,
+  bid_submitted: ClipboardList,
+};
 
 export default function HomeownerDashboard() {
   const { data: projects, isLoading } = useHomeownerProjects();
+  const { data: recentActivity } = useRecentActivityForUser(5);
+  const { data: unreadNotifs } = useUnreadNotificationCount();
   const navigate = useNavigate();
 
   const activeProject = projects?.[0];
@@ -44,9 +61,22 @@ export default function HomeownerDashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Welcome back</h1>
-        <p className="text-muted-foreground mt-1">Here's the latest on your renovation.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Welcome back</h1>
+          <p className="text-muted-foreground mt-1">Here's the latest on your renovation.</p>
+        </div>
+        {(unreadNotifs ?? 0) > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/homeowner/notifications")}
+            className="gap-2"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadNotifs} unread
+          </Button>
+        )}
       </div>
 
       {activeProject ? (
@@ -127,6 +157,33 @@ export default function HomeownerDashboard() {
               </Button>
             ))}
           </div>
+
+          {/* Recent Activity Feed */}
+          {recentActivity && recentActivity.length > 0 && (
+            <Card>
+              <CardContent className="p-5 space-y-3">
+                <h3 className="text-sm font-medium text-foreground">Recent Updates</h3>
+                <div className="space-y-3">
+                  {recentActivity.map((activity: any) => {
+                    const Icon = ACTIVITY_ICONS[activity.activity_type] || ArrowRight;
+                    return (
+                      <div key={activity.id} className="flex items-start gap-3 text-sm">
+                        <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-foreground">{activity.description}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </>
       ) : (
         <Card>
