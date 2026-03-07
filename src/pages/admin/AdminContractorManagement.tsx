@@ -59,7 +59,7 @@ export default function AdminContractorManagement() {
     switch (status) {
       case "approved": return <Badge className="bg-accent text-accent-foreground">Approved</Badge>;
       case "rejected": return <Badge variant="destructive">Rejected</Badge>;
-      case "needs_info": return <Badge className="bg-yellow-500/20 text-yellow-700 border-yellow-500/30">Needs Info</Badge>;
+      case "needs_info": return <Badge variant="outline" className="border-primary/30 text-primary">Needs Info</Badge>;
       default: return <Badge variant="secondary">Pending</Badge>;
     }
   };
