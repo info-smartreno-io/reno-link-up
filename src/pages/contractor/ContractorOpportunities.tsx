@@ -1,43 +1,56 @@
 import { ContractorLayout } from "@/components/contractor/ContractorLayout";
 import { useOpportunities } from "@/hooks/contractor/useOpportunities";
+import { useSmartMatchScores, useCalculateSmartMatch, getMatchLabel } from "@/hooks/contractor/useSmartMatch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Calendar, DollarSign, MapPin, Building2, FileText, Eye } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Loader2, Calendar, DollarSign, MapPin, Building2, FileText, Eye, Sparkles, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function ContractorOpportunities() {
   const { data: opportunities, isLoading } = useOpportunities();
+  const { data: matchScores = [], isLoading: scoresLoading } = useSmartMatchScores();
+  const calculateMatch = useCalculateSmartMatch();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [minMatchScore, setMinMatchScore] = useState(0);
 
-  const isDeadlineSoon = (deadline: string) => {
-    const daysUntil = Math.ceil(
-      (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
-    return daysUntil <= 3;
-  };
+  // Auto-calculate matches when opportunities load
+  useEffect(() => {
+    if (opportunities && opportunities.length > 0 && matchScores.length === 0 && !scoresLoading) {
+      calculateMatch.mutate(undefined);
+    }
+  }, [opportunities?.length]);
 
-  const daysUntilDeadline = (deadline: string) => {
-    return Math.ceil(
-      (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
-  };
+  const scoreMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    matchScores.forEach((s) => { map[s.bid_opportunity_id] = s.match_score; });
+    return map;
+  }, [matchScores]);
 
   const projectTypes = [...new Set(opportunities?.map((o) => o.project_type) || [])];
 
-  const filtered = (opportunities || []).filter((opp) => {
-    const matchesSearch =
-      !search ||
-      opp.title.toLowerCase().includes(search.toLowerCase()) ||
-      opp.location.toLowerCase().includes(search.toLowerCase());
-    const matchesType = typeFilter === "all" || opp.project_type === typeFilter;
-    return matchesSearch && matchesType;
-  });
+  const filtered = useMemo(() => {
+    return (opportunities || [])
+      .filter((opp) => {
+        const matchesSearch = !search ||
+          opp.title.toLowerCase().includes(search.toLowerCase()) ||
+          opp.location.toLowerCase().includes(search.toLowerCase());
+        const matchesType = typeFilter === "all" || opp.project_type === typeFilter;
+        const score = scoreMap[opp.id] ?? 50;
+        const matchesScore = score >= minMatchScore;
+        return matchesSearch && matchesType && matchesScore;
+      })
+      .sort((a, b) => (scoreMap[b.id] ?? 0) - (scoreMap[a.id] ?? 0));
+  }, [opportunities, search, typeFilter, minMatchScore, scoreMap]);
+
+  const daysUntilDeadline = (deadline: string) =>
+    Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
   if (isLoading) {
     return (
@@ -52,15 +65,24 @@ export default function ContractorOpportunities() {
   return (
     <ContractorLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Opportunities</h1>
-          <p className="text-muted-foreground mt-1">
-            Browse matched projects and submit bids
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Opportunities</h1>
+            <p className="text-muted-foreground mt-1">Sorted by Smart Match score</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => calculateMatch.mutate(undefined)}
+            disabled={calculateMatch.isPending}
+          >
+            {calculateMatch.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Refresh Scores
+          </Button>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 items-end">
           <Input
             placeholder="Search by title or location..."
             value={search}
@@ -74,12 +96,15 @@ export default function ContractorOpportunities() {
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               {projectTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
+                <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+          <div className="flex items-center gap-3 sm:max-w-[240px] w-full">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Min Match:</span>
+            <Slider value={[minMatchScore]} onValueChange={([v]) => setMinMatchScore(v)} max={100} step={10} className="flex-1" />
+            <span className="text-sm font-medium text-foreground w-10 text-right">{minMatchScore}%</span>
+          </div>
         </div>
 
         {/* Results */}
@@ -87,7 +112,7 @@ export default function ContractorOpportunities() {
           <Card>
             <CardContent className="py-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No open opportunities at this time</p>
+              <p className="text-muted-foreground">No matching opportunities found</p>
             </CardContent>
           </Card>
         ) : (
@@ -95,6 +120,8 @@ export default function ContractorOpportunities() {
             {filtered.map((opp) => {
               const days = daysUntilDeadline(opp.bid_deadline);
               const urgent = days <= 3;
+              const score = scoreMap[opp.id] ?? 0;
+              const { label: matchLabel, color: matchColor } = getMatchLabel(score);
 
               return (
                 <Card key={opp.id} className="hover:shadow-lg transition-shadow flex flex-col">
@@ -104,20 +131,30 @@ export default function ContractorOpportunities() {
                         <CardTitle className="text-lg truncate">{opp.title}</CardTitle>
                         <CardDescription>{opp.project_type}</CardDescription>
                       </div>
-                      {urgent && (
-                        <Badge variant="destructive" className="shrink-0">
-                          {days <= 0 ? "Expired" : `${days}d left`}
-                        </Badge>
-                      )}
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        {score > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Sparkles className={`h-4 w-4 ${matchColor}`} />
+                            <span className={`text-sm font-bold ${matchColor}`}>{score}%</span>
+                          </div>
+                        )}
+                        {urgent && (
+                          <Badge variant="destructive" className="text-xs">
+                            {days <= 0 ? "Expired" : `${days}d left`}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
+                    {score > 0 && (
+                      <Badge variant="outline" className={`w-fit text-xs ${matchColor}`}>
+                        {matchLabel}
+                      </Badge>
+                    )}
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between space-y-4">
                     {opp.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {opp.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{opp.description}</p>
                     )}
-
                     <div className="space-y-2">
                       <div className="flex items-center text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 mr-2 shrink-0" />
@@ -142,11 +179,7 @@ export default function ContractorOpportunities() {
                         </span>
                       </div>
                     </div>
-
-                    <Button
-                      className="w-full"
-                      onClick={() => navigate(`/contractor/rfp/${opp.id}`)}
-                    >
+                    <Button className="w-full" onClick={() => navigate(`/contractor/rfp/${opp.id}`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Packet
                     </Button>

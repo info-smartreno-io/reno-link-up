@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { useSmartMatchScores, useCalculateSmartMatch, getMatchLabel } from "@/hooks/contractor/useSmartMatch";
+import { useOpportunities } from "@/hooks/contractor/useOpportunities";
 import { useDemoMode } from "@/context/DemoModeContext";
 import { ContractorLayout } from "@/components/contractor/ContractorLayout";
 import { ContractorDashboardToolbar } from "@/components/contractor/ContractorDashboardToolbar";
@@ -58,10 +60,24 @@ export default function ContractorDashboard() {
   // Subcontractor notifications
   const { notifications: subNotifications, unreadCount: subUnreadCount, markAsRead } = useSubcontractorNotifications();
   
+  // Smart Match
+  const { data: matchScores = [] } = useSmartMatchScores();
+  const { data: opportunities = [] } = useOpportunities();
+  const calculateMatch = useCalculateSmartMatch();
+
+  const topMatches = useMemo(() => {
+    const scoreMap: Record<string, number> = {};
+    matchScores.forEach((s: any) => { scoreMap[s.bid_opportunity_id] = s.match_score; });
+    return opportunities
+      .map((opp: any) => ({ ...opp, matchScore: scoreMap[opp.id] ?? 0 }))
+      .sort((a: any, b: any) => b.matchScore - a.matchScore)
+      .slice(0, 3);
+  }, [matchScores, opportunities]);
+
   // Recent leads
   const { data: leadsData, isLoading: leadsLoading } = useContractorLeads();
   const recentLeads = leadsData?.slice(0, 5) || [];
-  
+
   // Demo stats
   const demoStats = isDemoMode ? getDemoStats() : null;
   
@@ -330,6 +346,44 @@ export default function ContractorDashboard() {
             ))
           )}
         </div>
+
+        {/* Top Matched Opportunities */}
+        {topMatches.length > 0 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <div>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-accent" />
+                  Top Matches for You
+                </CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => navigate("/contractor/opportunities")}>
+                View All <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {topMatches.map((opp: any) => {
+                const { label, color } = getMatchLabel(opp.matchScore);
+                return (
+                  <div key={opp.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate(`/contractor/rfp/${opp.id}`)}>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{opp.title}</p>
+                      <p className="text-sm text-muted-foreground">{opp.location}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {opp.estimated_budget && (
+                        <span className="text-sm text-muted-foreground">${(opp.estimated_budget / 1000).toFixed(0)}k</span>
+                      )}
+                      <Badge variant="outline" className={color}>
+                        {opp.matchScore}% – {label}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

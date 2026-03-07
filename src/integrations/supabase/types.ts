@@ -3048,6 +3048,60 @@ export type Database = {
         }
         Relationships: []
       }
+      contractor_opportunity_matches: {
+        Row: {
+          bid_opportunity_id: string
+          budget_score: number | null
+          calculated_at: string | null
+          capacity_score: number | null
+          contractor_id: string
+          id: string
+          location_score: number | null
+          match_score: number
+          trade_score: number | null
+          type_score: number | null
+        }
+        Insert: {
+          bid_opportunity_id: string
+          budget_score?: number | null
+          calculated_at?: string | null
+          capacity_score?: number | null
+          contractor_id: string
+          id?: string
+          location_score?: number | null
+          match_score?: number
+          trade_score?: number | null
+          type_score?: number | null
+        }
+        Update: {
+          bid_opportunity_id?: string
+          budget_score?: number | null
+          calculated_at?: string | null
+          capacity_score?: number | null
+          contractor_id?: string
+          id?: string
+          location_score?: number | null
+          match_score?: number
+          trade_score?: number | null
+          type_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_opportunity_matches_bid_opportunity_id_fkey"
+            columns: ["bid_opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "bid_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_opportunity_matches_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_portfolio_images: {
         Row: {
           caption: string | null
@@ -3526,52 +3580,145 @@ export type Database = {
       }
       contractors: {
         Row: {
+          avg_projects_per_year: number | null
+          business_email: string | null
+          business_phone: string | null
+          business_type: string | null
           created_at: string
+          designer_count: number | null
           email: string | null
+          facebook_url: string | null
+          google_business_url: string | null
+          google_rating: number | null
+          google_review_count: number | null
+          has_dedicated_estimator: boolean | null
+          has_in_house_designer: boolean | null
+          has_office: boolean | null
+          houzz_url: string | null
           id: string
+          instagram_url: string | null
           is_active: boolean | null
+          is_bonded: boolean | null
+          lead_foreman_count: number | null
           legal_name: string | null
           license_number: string | null
+          linkedin_url: string | null
           logo_url: string | null
           name: string
+          office_address: string | null
+          office_staff_count: number | null
           owner_name: string | null
           phone: string | null
+          profile_completion_pct: number | null
+          project_manager_count: number | null
+          project_types: string[] | null
           service_areas: string[] | null
+          service_counties: string[] | null
+          service_zip_codes: string[] | null
+          subcontracted_trades: string[] | null
           trade_focus: string | null
+          typical_budget_range: string | null
+          typical_project_duration: string | null
           updated_at: string
+          uses_subcontractors: boolean | null
           website: string | null
+          work_type: string | null
+          workers_comp_verified: boolean | null
+          youtube_url: string | null
         }
         Insert: {
+          avg_projects_per_year?: number | null
+          business_email?: string | null
+          business_phone?: string | null
+          business_type?: string | null
           created_at?: string
+          designer_count?: number | null
           email?: string | null
+          facebook_url?: string | null
+          google_business_url?: string | null
+          google_rating?: number | null
+          google_review_count?: number | null
+          has_dedicated_estimator?: boolean | null
+          has_in_house_designer?: boolean | null
+          has_office?: boolean | null
+          houzz_url?: string | null
           id?: string
+          instagram_url?: string | null
           is_active?: boolean | null
+          is_bonded?: boolean | null
+          lead_foreman_count?: number | null
           legal_name?: string | null
           license_number?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           name: string
+          office_address?: string | null
+          office_staff_count?: number | null
           owner_name?: string | null
           phone?: string | null
+          profile_completion_pct?: number | null
+          project_manager_count?: number | null
+          project_types?: string[] | null
           service_areas?: string[] | null
+          service_counties?: string[] | null
+          service_zip_codes?: string[] | null
+          subcontracted_trades?: string[] | null
           trade_focus?: string | null
+          typical_budget_range?: string | null
+          typical_project_duration?: string | null
           updated_at?: string
+          uses_subcontractors?: boolean | null
           website?: string | null
+          work_type?: string | null
+          workers_comp_verified?: boolean | null
+          youtube_url?: string | null
         }
         Update: {
+          avg_projects_per_year?: number | null
+          business_email?: string | null
+          business_phone?: string | null
+          business_type?: string | null
           created_at?: string
+          designer_count?: number | null
           email?: string | null
+          facebook_url?: string | null
+          google_business_url?: string | null
+          google_rating?: number | null
+          google_review_count?: number | null
+          has_dedicated_estimator?: boolean | null
+          has_in_house_designer?: boolean | null
+          has_office?: boolean | null
+          houzz_url?: string | null
           id?: string
+          instagram_url?: string | null
           is_active?: boolean | null
+          is_bonded?: boolean | null
+          lead_foreman_count?: number | null
           legal_name?: string | null
           license_number?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           name?: string
+          office_address?: string | null
+          office_staff_count?: number | null
           owner_name?: string | null
           phone?: string | null
+          profile_completion_pct?: number | null
+          project_manager_count?: number | null
+          project_types?: string[] | null
           service_areas?: string[] | null
+          service_counties?: string[] | null
+          service_zip_codes?: string[] | null
+          subcontracted_trades?: string[] | null
           trade_focus?: string | null
+          typical_budget_range?: string | null
+          typical_project_duration?: string | null
           updated_at?: string
+          uses_subcontractors?: boolean | null
           website?: string | null
+          work_type?: string | null
+          workers_comp_verified?: boolean | null
+          youtube_url?: string | null
         }
         Relationships: []
       }
