@@ -368,6 +368,14 @@ export function AdminDesignPackageDetail({ packageId, onClose }: Props) {
       <div className="flex justify-end">
         <Button variant="outline" onClick={onClose}>Close</Button>
       </div>
+
+      <GenerateBidPacketDialog
+        open={bidPacketDialogOpen}
+        onOpenChange={setBidPacketDialogOpen}
+        packageId={packageId}
+        packageData={pkg}
+        isApproved={pkg.package_status === "approved" || pkg.package_status === "ready_for_rfp"}
+      />
     </div>
   );
 }
