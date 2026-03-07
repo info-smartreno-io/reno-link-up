@@ -87,7 +87,6 @@ export default function DesignProfessionalProfile() {
           <div><Label>Instagram / Portfolio Link</Label><Input value={form.instagram_or_portfolio_link || ""} onChange={(e) => update("instagram_or_portfolio_link", e.target.value)} /></div>
           <div><Label>Business Address</Label><Input value={form.business_address || ""} onChange={(e) => update("business_address", e.target.value)} /></div>
           <div><Label>Years in Business</Label><Input type="number" value={form.years_in_business || ""} onChange={(e) => update("years_in_business", parseInt(e.target.value) || null)} /></div>
-          <div><Label>Team Size</Label><Input type="number" value={form.team_size || ""} onChange={(e) => update("team_size", parseInt(e.target.value) || null)} /></div>
           <div className="md:col-span-2 space-y-3 border border-border rounded-lg p-4 bg-muted/20">
             <div className="flex items-center gap-2">
               <Switch checked={form.has_showroom || false} onCheckedChange={(v) => update("has_showroom", v)} />
