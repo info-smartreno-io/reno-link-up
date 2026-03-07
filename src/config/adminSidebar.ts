@@ -62,6 +62,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
       { id: "ops.estimating", label: "Estimating Hub", to: "/admin/estimating", icon: Calculator },
       { id: "ops.contractors", label: "Contractors", to: "/admin/contractors", icon: Users },
       { id: "ops.designers", label: "Design Professionals", to: "/admin/design-professionals", icon: Palette },
+      { id: "ops.design_packages", label: "Design Packages", to: "/admin/design-packages", icon: FolderKanban },
       { id: "ops.vendors_monitor", label: "Vendors", to: "/admin/vendor-monitoring", icon: Package },
       { id: "ops.rfps", label: "RFPs", to: "/admin/rfps", icon: FileText, badgeKey: "bids_open" },
       { id: "ops.bids", label: "Bid Review", to: "/admin/bids", icon: Gavel },
