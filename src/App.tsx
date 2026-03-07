@@ -370,9 +370,9 @@ function AppRoutes() {
             <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
-            <Route path="/architects" element={<ArchitectLanding />} />
-          <Route path="/interiordesigners" element={<InteriorDesignerLanding />} />
-          <Route path="/interiordesigner/apply" element={<InteriorDesignerApplication />} />
+            <Route path="/architects" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
             <Route path="/about" element={<About />} />
             <Route path="/careers" element={<Careers />} />
