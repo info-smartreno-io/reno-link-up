@@ -425,7 +425,7 @@ function AppRoutes() {
             } />
             <Route path="/admin" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
+                <AdminDashboardHome />
               </ProtectedRoute>
             } />
             <Route path="/admin/agents" element={
