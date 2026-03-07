@@ -64,6 +64,7 @@ export default function AdminSmartEstimateDetail() {
   const [newTradeItem, setNewTradeItem] = useState({ trade_category: "", line_item_name: "", scope_description: "", quantity: 1, unit: "EA" });
   const [revisionNotes, setRevisionNotes] = useState("");
   const [showRevisionDialog, setShowRevisionDialog] = useState(false);
+  const [showDownstreamDialog, setShowDownstreamDialog] = useState(false);
   const [aiGenerating, setAiGenerating] = useState<string | null>(null);
 
   // Recalculate completion/confidence when sections change
