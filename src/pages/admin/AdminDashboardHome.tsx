@@ -1,11 +1,12 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useAdminKPIs } from "@/hooks/useAdminKPIs";
 import { useAdminIntake } from "@/hooks/useAdminIntake";
 import {
   ClipboardList, Users, FileText, Gavel, Building2, AlertTriangle,
-  TrendingUp, MessageSquare, Clock, ArrowRight
+  TrendingUp, MessageSquare, Clock, ArrowRight, ExternalLink
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
