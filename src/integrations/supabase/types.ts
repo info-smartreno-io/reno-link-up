@@ -11362,6 +11362,342 @@ export type Database = {
           },
         ]
       }
+      smart_estimate_activity_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          actor_id: string | null
+          actor_role: string | null
+          created_at: string
+          id: string
+          smart_estimate_id: string
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          id?: string
+          smart_estimate_id: string
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          id?: string
+          smart_estimate_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimate_activity_log_smart_estimate_id_fkey"
+            columns: ["smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_estimate_files: {
+        Row: {
+          created_at: string
+          file_category: string | null
+          file_name: string | null
+          file_url: string
+          id: string
+          smart_estimate_id: string
+          uploaded_by: string | null
+          visible_to_roles: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          file_category?: string | null
+          file_name?: string | null
+          file_url: string
+          id?: string
+          smart_estimate_id: string
+          uploaded_by?: string | null
+          visible_to_roles?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          file_category?: string | null
+          file_name?: string | null
+          file_url?: string
+          id?: string
+          smart_estimate_id?: string
+          uploaded_by?: string | null
+          visible_to_roles?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimate_files_smart_estimate_id_fkey"
+            columns: ["smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_estimate_rooms: {
+        Row: {
+          ceiling_height: number | null
+          created_at: string
+          dimensions: Json | null
+          floor_level: string | null
+          id: string
+          notes: string | null
+          photos: Json | null
+          room_name: string
+          room_type: string | null
+          smart_estimate_id: string
+          sort_order: number | null
+          square_footage: number | null
+          updated_at: string
+        }
+        Insert: {
+          ceiling_height?: number | null
+          created_at?: string
+          dimensions?: Json | null
+          floor_level?: string | null
+          id?: string
+          notes?: string | null
+          photos?: Json | null
+          room_name: string
+          room_type?: string | null
+          smart_estimate_id: string
+          sort_order?: number | null
+          square_footage?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ceiling_height?: number | null
+          created_at?: string
+          dimensions?: Json | null
+          floor_level?: string | null
+          id?: string
+          notes?: string | null
+          photos?: Json | null
+          room_name?: string
+          room_type?: string | null
+          smart_estimate_id?: string
+          sort_order?: number | null
+          square_footage?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimate_rooms_smart_estimate_id_fkey"
+            columns: ["smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_estimate_sections: {
+        Row: {
+          ai_generated: boolean | null
+          completion_percent: number | null
+          created_at: string
+          id: string
+          is_complete: boolean | null
+          last_edited_by: string | null
+          section_data: Json | null
+          section_key: string
+          smart_estimate_id: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          completion_percent?: number | null
+          created_at?: string
+          id?: string
+          is_complete?: boolean | null
+          last_edited_by?: string | null
+          section_data?: Json | null
+          section_key: string
+          smart_estimate_id: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          completion_percent?: number | null
+          created_at?: string
+          id?: string
+          is_complete?: boolean | null
+          last_edited_by?: string | null
+          section_data?: Json | null
+          section_key?: string
+          smart_estimate_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimate_sections_smart_estimate_id_fkey"
+            columns: ["smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_estimate_trade_items: {
+        Row: {
+          allowance_value: number | null
+          created_at: string
+          id: string
+          labor_complexity: string | null
+          line_item_name: string
+          material_complexity: string | null
+          notes: string | null
+          pricing_confidence: string | null
+          quantity: number | null
+          room_id: string | null
+          scope_description: string | null
+          smart_estimate_id: string
+          sort_order: number | null
+          trade_category: string
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          allowance_value?: number | null
+          created_at?: string
+          id?: string
+          labor_complexity?: string | null
+          line_item_name: string
+          material_complexity?: string | null
+          notes?: string | null
+          pricing_confidence?: string | null
+          quantity?: number | null
+          room_id?: string | null
+          scope_description?: string | null
+          smart_estimate_id: string
+          sort_order?: number | null
+          trade_category: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allowance_value?: number | null
+          created_at?: string
+          id?: string
+          labor_complexity?: string | null
+          line_item_name?: string
+          material_complexity?: string | null
+          notes?: string | null
+          pricing_confidence?: string | null
+          quantity?: number | null
+          room_id?: string | null
+          scope_description?: string | null
+          smart_estimate_id?: string
+          sort_order?: number | null
+          trade_category?: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimate_trade_items_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimate_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_estimate_trade_items_smart_estimate_id_fkey"
+            columns: ["smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_estimates: {
+        Row: {
+          ai_budget_guidance: string | null
+          ai_missing_info_summary: string | null
+          ai_scope_summary: string | null
+          assigned_estimator_id: string | null
+          created_at: string
+          estimate_completion_percent: number | null
+          estimate_confidence_score: number | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          internal_notes: string | null
+          lead_id: string | null
+          project_id: string | null
+          review_notes: string | null
+          status: string
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          ai_budget_guidance?: string | null
+          ai_missing_info_summary?: string | null
+          ai_scope_summary?: string | null
+          assigned_estimator_id?: string | null
+          created_at?: string
+          estimate_completion_percent?: number | null
+          estimate_confidence_score?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          project_id?: string | null
+          review_notes?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          ai_budget_guidance?: string | null
+          ai_missing_info_summary?: string | null
+          ai_scope_summary?: string | null
+          assigned_estimator_id?: string | null
+          created_at?: string
+          estimate_completion_percent?: number | null
+          estimate_confidence_score?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          project_id?: string | null
+          review_notes?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_estimates_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_estimates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_estimates_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "estimate_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       smartplan_items: {
         Row: {
           assigned_to_user_id: string | null

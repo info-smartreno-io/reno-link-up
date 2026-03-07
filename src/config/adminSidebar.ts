@@ -60,6 +60,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
       { id: "ops.dashboard", label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
       { id: "ops.intake", label: "Intake Review", to: "/admin/intake", icon: ClipboardList, badgeKey: "leads_new" },
       { id: "ops.estimating", label: "Estimating Hub", to: "/admin/estimating", icon: Calculator },
+      { id: "ops.smart_estimates", label: "Smart Estimates", to: "/admin/smart-estimates", icon: Brain },
       { id: "ops.contractors", label: "Contractors", to: "/admin/contractors", icon: Users },
       { id: "ops.designers", label: "Design Professionals", to: "/admin/design-professionals", icon: Palette },
       { id: "ops.design_packages", label: "Design Packages", to: "/admin/design-packages", icon: FolderKanban },

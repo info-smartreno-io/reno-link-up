@@ -28,6 +28,8 @@ export const WORKFLOW_STATUS = {
   PAYMENT_CONFIRMED: "payment_confirmed",
   ESTIMATOR_SCHEDULED: "estimator_scheduled",
   SITE_VISIT_COMPLETE: "site_visit_complete",
+  SMART_ESTIMATE_IN_PROGRESS: "smart_estimate_in_progress",
+  SMART_ESTIMATE_REVIEW: "smart_estimate_review",
   DESIGN_PACKAGE_IN_PROGRESS: "design_package_in_progress",
   DESIGN_PACKAGE_REVIEW: "design_package_review",
   DESIGN_PACKAGE_APPROVED: "design_package_approved",
