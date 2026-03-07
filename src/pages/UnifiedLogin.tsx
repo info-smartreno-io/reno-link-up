@@ -207,12 +207,16 @@ export default function UnifiedLogin() {
       }
 
       if (data.user) {
-        // Verify the user has the selected role
+        // For design_professional, also accept legacy roles
+        const acceptedRoles: string[] = role === 'design_professional'
+          ? ['design_professional', 'architect', 'interior_designer']
+          : [role];
+
         const { data: roles, error: roleError } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', data.user.id)
-          .eq('role', role as AppRole);
+          .in('role', acceptedRoles);
 
         if (roleError) {
           toast({
@@ -226,14 +230,21 @@ export default function UnifiedLogin() {
         }
 
         if (!roles || roles.length === 0) {
-          toast({
-            title: "Access Denied",
-            description: `You don't have ${role.replace(/_/g, ' ')} access. Please select the correct role or contact an administrator.`,
-            variant: "destructive",
-          });
-          await supabase.auth.signOut();
-          setPending(false);
-          return;
+          // Auto-assign role if user has none (e.g. signed up via dedicated auth page)
+          const { error: assignError } = await supabase
+            .from('user_roles')
+            .insert({ user_id: data.user.id, role: role as AppRole });
+
+          if (assignError) {
+            toast({
+              title: "Access Denied",
+              description: `You don't have ${role.replace(/_/g, ' ')} access. Please select the correct role or contact an administrator.`,
+              variant: "destructive",
+            });
+            await supabase.auth.signOut();
+            setPending(false);
+            return;
+          }
         }
 
         toast({
