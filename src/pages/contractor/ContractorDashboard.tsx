@@ -60,10 +60,24 @@ export default function ContractorDashboard() {
   // Subcontractor notifications
   const { notifications: subNotifications, unreadCount: subUnreadCount, markAsRead } = useSubcontractorNotifications();
   
+  // Smart Match
+  const { data: matchScores = [] } = useSmartMatchScores();
+  const { data: opportunities = [] } = useOpportunities();
+  const calculateMatch = useCalculateSmartMatch();
+
+  const topMatches = useMemo(() => {
+    const scoreMap: Record<string, number> = {};
+    matchScores.forEach((s: any) => { scoreMap[s.bid_opportunity_id] = s.match_score; });
+    return opportunities
+      .map((opp: any) => ({ ...opp, matchScore: scoreMap[opp.id] ?? 0 }))
+      .sort((a: any, b: any) => b.matchScore - a.matchScore)
+      .slice(0, 3);
+  }, [matchScores, opportunities]);
+
   // Recent leads
   const { data: leadsData, isLoading: leadsLoading } = useContractorLeads();
   const recentLeads = leadsData?.slice(0, 5) || [];
-  
+
   // Demo stats
   const demoStats = isDemoMode ? getDemoStats() : null;
   
