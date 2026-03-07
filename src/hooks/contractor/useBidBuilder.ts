@@ -61,13 +61,13 @@ export function useBidBuilder(opportunityId: string) {
     queryKey: ["bid-line-items", existingSubmission?.id],
     enabled: !!existingSubmission?.id,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("bid_line_items")
         .select("*")
         .eq("bid_submission_id", existingSubmission!.id)
         .order("sort_order");
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
@@ -78,7 +78,7 @@ export function useBidBuilder(opportunityId: string) {
       setEstimatedTimeline(existingSubmission.estimated_timeline || "");
     }
     if (existingLineItems && existingLineItems.length > 0) {
-      setLineItems(existingLineItems.map((li) => ({
+      setLineItems(existingLineItems.map((li: any) => ({
         id: li.id,
         cost_code_id: li.cost_code_id,
         description: li.description,
@@ -120,7 +120,7 @@ export function useBidBuilder(opportunityId: string) {
 
   const populateFromCostCodes = useCallback(() => {
     if (!costCodes || costCodes.length === 0) return;
-    const items: BidLineItem[] = costCodes.map((cc, i) => ({
+    const items: BidLineItem[] = costCodes.map((cc: any, i: number) => ({
       cost_code_id: cc.id,
       description: cc.description,
       unit: cc.unit,
@@ -145,7 +145,6 @@ export function useBidBuilder(opportunityId: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Upsert bid submission
       const submissionData = {
         bid_opportunity_id: opportunityId,
         bidder_id: user.id,
@@ -176,13 +175,13 @@ export function useBidBuilder(opportunityId: string) {
       }
 
       // Delete existing line items and re-insert
-      await supabase
+      await (supabase as any)
         .from("bid_line_items")
         .delete()
         .eq("bid_submission_id", submissionId!);
 
       if (lineItems.length > 0) {
-        const { error: lineError } = await supabase
+        const { error: lineError } = await (supabase as any)
           .from("bid_line_items")
           .insert(
             lineItems.map((li, i) => ({

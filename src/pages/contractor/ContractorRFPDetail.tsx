@@ -33,13 +33,13 @@ export default function ContractorRFPDetail() {
     queryKey: ["rfp-scope-items", rfpId],
     enabled: !!rfpId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("rfp_scope_items")
         .select("*")
         .eq("bid_opportunity_id", rfpId!)
         .order("sort_order");
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
@@ -144,7 +144,7 @@ export default function ContractorRFPDetail() {
                 </CardContent>
               </Card>
 
-              {opportunity.requirements && Array.isArray(opportunity.requirements) && opportunity.requirements.length > 0 && (
+              {opportunity.requirements && Array.isArray(opportunity.requirements) && (opportunity.requirements as any[]).length > 0 && (
                 <Card className="md:col-span-2">
                   <CardHeader>
                     <CardTitle className="text-lg">Requirements</CardTitle>
@@ -190,7 +190,7 @@ export default function ContractorRFPDetail() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {scopeItems.map((item, i) => (
+                        {scopeItems.map((item: any, i: number) => (
                           <TableRow key={item.id}>
                             <TableCell className="text-muted-foreground">{i + 1}</TableCell>
                             <TableCell>{item.description}</TableCell>
