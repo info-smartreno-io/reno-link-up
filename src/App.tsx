@@ -84,6 +84,7 @@ import AdminEstimatingHub from "./pages/admin/AdminEstimatingHub";
 import EstimatingFieldMode from "./pages/admin/EstimatingFieldMode";
 import EstimatingBidPacket from "./pages/admin/EstimatingBidPacket";
 import AdminDesignProfessionals from "./pages/admin/AdminDesignProfessionals";
+import AdminDesignPackages from "./pages/admin/AdminDesignPackages";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
@@ -453,6 +454,11 @@ function AppRoutes() {
             <Route path="/admin/design-professionals" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminDesignProfessionals />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/design-packages" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesignPackages />
               </ProtectedRoute>
             } />
             <Route path="/admin/vendor-monitoring" element={

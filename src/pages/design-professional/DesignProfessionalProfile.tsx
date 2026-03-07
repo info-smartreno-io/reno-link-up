@@ -25,6 +25,11 @@ import {
   ENGINEERING_SERVICES_OPTIONS,
   ENGINEERING_SPECIALIZATION_OPTIONS,
   STAGING_SERVICES_OPTIONS,
+  SURVEYING_SERVICES_OPTIONS,
+  DESIGN_SOFTWARE_OPTIONS,
+  CAD_SOFTWARE_OPTIONS,
+  RENDERING_SOFTWARE_OPTIONS,
+  PROJECT_MANAGEMENT_SOFTWARE_OPTIONS,
   getCredentialFieldsForSpecialties,
 } from "@/config/designProfessionalOptions";
 
@@ -391,6 +396,93 @@ export default function DesignProfessionalProfile() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Surveying & Software */}
+      <Card>
+        <CardHeader><CardTitle>Surveying & Software</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/20">
+            <Switch checked={form.offers_surveying || false} onCheckedChange={(v) => update("offers_surveying", v)} />
+            <div>
+              <Label className="font-medium">We offer surveying / as-built measurement services</Label>
+              <p className="text-xs text-muted-foreground">Toggle on if your firm provides site surveys, laser scanning, or as-built documentation</p>
+            </div>
+          </div>
+          {form.offers_surveying && (
+            <>
+              <div>
+                <Label>Surveying Services</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
+                  {SURVEYING_SERVICES_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <Checkbox checked={(form.surveying_services || []).includes(s)} onCheckedChange={() => toggleArrayItem("surveying_services", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Surveying Equipment (comma-separated)</Label>
+                <Input value={(form.surveying_equipment || []).join(", ")} onChange={(e) => update("surveying_equipment", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="e.g. Leica BLK360, Matterport Pro2, Total Station" />
+              </div>
+            </>
+          )}
+
+          <div className="border-t border-border pt-4">
+            <p className="text-sm font-medium mb-3">What software does your team currently use?</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Design / BIM Software</Label>
+                <div className="grid grid-cols-2 gap-1 mt-1">
+                  {DESIGN_SOFTWARE_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-xs cursor-pointer">
+                      <Checkbox checked={(form.design_software || []).includes(s)} onCheckedChange={() => toggleArrayItem("design_software", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>CAD / Drafting Software</Label>
+                <div className="grid grid-cols-2 gap-1 mt-1">
+                  {CAD_SOFTWARE_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-xs cursor-pointer">
+                      <Checkbox checked={(form.cad_software || []).includes(s)} onCheckedChange={() => toggleArrayItem("cad_software", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Rendering / Visualization</Label>
+                <div className="grid grid-cols-2 gap-1 mt-1">
+                  {RENDERING_SOFTWARE_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-xs cursor-pointer">
+                      <Checkbox checked={(form.rendering_software || []).includes(s)} onCheckedChange={() => toggleArrayItem("rendering_software", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Project Management</Label>
+                <div className="grid grid-cols-2 gap-1 mt-1">
+                  {PROJECT_MANAGEMENT_SOFTWARE_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-xs cursor-pointer">
+                      <Checkbox checked={(form.project_management_software || []).includes(s)} onCheckedChange={() => toggleArrayItem("project_management_software", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3">
+              <Label>Other Software / Tools</Label>
+              <Input value={form.other_software || ""} onChange={(e) => update("other_software", e.target.value)} placeholder="Any other tools not listed above" />
+            </div>
+          </div>
         </CardContent>
       </Card>
 

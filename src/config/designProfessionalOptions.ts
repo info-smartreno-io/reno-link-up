@@ -132,6 +132,62 @@ export const ENGINEERING_SERVICES_OPTIONS = [
   "Foundation design",
 ] as const;
 
+export const SURVEYING_SERVICES_OPTIONS = [
+  "As-built measurements",
+  "3D laser scanning",
+  "Site survey",
+  "Topographic survey",
+  "Floor plan verification",
+  "Elevation documentation",
+  "Property boundary verification",
+] as const;
+
+export const DESIGN_SOFTWARE_OPTIONS = [
+  "AutoCAD",
+  "Revit",
+  "SketchUp",
+  "Chief Architect",
+  "Vectorworks",
+  "ArchiCAD",
+  "Rhino",
+  "Bluebeam",
+] as const;
+
+export const CAD_SOFTWARE_OPTIONS = [
+  "AutoCAD",
+  "AutoCAD LT",
+  "Revit",
+  "MicroStation",
+  "DraftSight",
+  "BricsCAD",
+  "SolidWorks",
+] as const;
+
+export const RENDERING_SOFTWARE_OPTIONS = [
+  "Lumion",
+  "Enscape",
+  "V-Ray",
+  "Twinmotion",
+  "3ds Max",
+  "Blender",
+  "KeyShot",
+  "D5 Render",
+  "Cinema 4D",
+] as const;
+
+export const PROJECT_MANAGEMENT_SOFTWARE_OPTIONS = [
+  "Procore",
+  "Buildertrend",
+  "CoConstruct",
+  "Monday.com",
+  "Asana",
+  "Basecamp",
+  "Houzz Pro",
+  "Studio Designer",
+  "Ivy (Design Manager)",
+  "SmartReno",
+] as const;
+
 export const STAGING_SERVICES_OPTIONS = [
   "Full home staging",
   "Partial staging",
