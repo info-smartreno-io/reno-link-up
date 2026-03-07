@@ -83,7 +83,7 @@ import AdminLiveProjects from "./pages/admin/AdminLiveProjects";
 import AdminEstimatingHub from "./pages/admin/AdminEstimatingHub";
 import EstimatingFieldMode from "./pages/admin/EstimatingFieldMode";
 import EstimatingBidPacket from "./pages/admin/EstimatingBidPacket";
-import AdminDesigners from "./pages/admin/AdminDesigners";
+import AdminDesignProfessionals from "./pages/admin/AdminDesignProfessionals";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
@@ -255,16 +255,16 @@ import ContractorLeads from "./pages/contractor/ContractorLeads";
 import ContractorLeadDetail from "./pages/contractor/ContractorLeadDetail";
 import MarketingDashboard from "./pages/contractor/MarketingDashboard";
 
-import ArchitectAuth from "./pages/architect/ArchitectAuth";
-import ArchitectDashboard from "./pages/architect/ArchitectDashboard";
-import ArchitectProjects from "./pages/architect/ArchitectProjects";
-import ArchitectProposals from "./pages/architect/ArchitectProposals";
-import ArchitectMessages from "./pages/architect/ArchitectMessages";
-import ArchitectBidRoom from "./pages/architect/ArchitectBidRoom";
-import ArchitectBidSubmissions from "./pages/architect/ArchitectBidSubmissions";
-import InteriorDesignerBidRoom from "./pages/interiordesigner/InteriorDesignerBidRoom";
-import InteriorDesignerDashboard from "./pages/interiordesigner/InteriorDesignerDashboard";
-import InteriorDesignerAuth from "./pages/interiordesigner/InteriorDesignerAuth";
+import DesignProfessionalAuth from "./pages/design-professional/DesignProfessionalAuth";
+import DesignProfessionalDashboard from "./pages/design-professional/DesignProfessionalDashboard";
+import DesignProfessionalProfile from "./pages/design-professional/DesignProfessionalProfile";
+import DesignProfessionalPortfolio from "./pages/design-professional/DesignProfessionalPortfolio";
+import DesignProfessionalOpportunities from "./pages/design-professional/DesignProfessionalOpportunities";
+import DesignProfessionalProjects from "./pages/design-professional/DesignProfessionalProjects";
+import DesignProfessionalMessages from "./pages/design-professional/DesignProfessionalMessages";
+import DesignProfessionalDocuments from "./pages/design-professional/DesignProfessionalDocuments";
+import DesignProfessionalSettings from "./pages/design-professional/DesignProfessionalSettings";
+import { DesignProfessionalLayout } from "./components/design-professional/DesignProfessionalLayout";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import TestDashboard from "./pages/TestDashboard";
 
@@ -370,9 +370,9 @@ function AppRoutes() {
             <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
-            <Route path="/architects" element={<ArchitectLanding />} />
-          <Route path="/interiordesigners" element={<InteriorDesignerLanding />} />
-          <Route path="/interiordesigner/apply" element={<InteriorDesignerApplication />} />
+            <Route path="/architects" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
             <Route path="/about" element={<About />} />
             <Route path="/careers" element={<Careers />} />
@@ -446,7 +446,12 @@ function AppRoutes() {
             } />
             <Route path="/admin/designers" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDesigners />
+                <AdminDesignProfessionals />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/design-professionals" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesignProfessionals />
               </ProtectedRoute>
             } />
             <Route path="/admin/vendor-monitoring" element={
@@ -1211,51 +1216,59 @@ function AppRoutes() {
                 <ProfessionalChangeOrders />
               </ProtectedRoute>
             } />
-            <Route path="/interiordesigner/auth" element={<InteriorDesignerAuth />} />
-            <Route path="/interiordesigner/dashboard" element={
-              <ProtectedRoute requiredRole="interior_designer">
-                <InteriorDesignerDashboard />
+            {/* Old architect/designer routes → redirect to unified portal */}
+            <Route path="/interiordesigner/auth" element={<Navigate to="/design-professional/auth" replace />} />
+            <Route path="/interiordesigner/dashboard" element={<Navigate to="/design-professional/dashboard" replace />} />
+            <Route path="/interiordesigner/bid-room" element={<Navigate to="/design-professional/opportunities" replace />} />
+            <Route path="/interiordesigner/bids" element={<Navigate to="/design-professional/opportunities" replace />} />
+            <Route path="/architect/auth" element={<Navigate to="/design-professional/auth" replace />} />
+            <Route path="/architect/dashboard" element={<Navigate to="/design-professional/dashboard" replace />} />
+            <Route path="/architect/projects" element={<Navigate to="/design-professional/projects" replace />} />
+            <Route path="/architect/proposals" element={<Navigate to="/design-professional/opportunities" replace />} />
+            <Route path="/architect/messages" element={<Navigate to="/design-professional/messages" replace />} />
+            <Route path="/architect/bid-room" element={<Navigate to="/design-professional/opportunities" replace />} />
+            <Route path="/architect/bid-submissions" element={<Navigate to="/design-professional/opportunities" replace />} />
+
+            {/* Design Professional Portal */}
+            <Route path="/design-professional/auth" element={<DesignProfessionalAuth />} />
+            <Route path="/design-professional/dashboard" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalDashboard /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/interiordesigner/bid-room" element={
-              <ProtectedRoute requiredRole="interior_designer">
-                <InteriorDesignerBidRoom />
+            <Route path="/design-professional/profile" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalProfile /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/interiordesigner/bids" element={
-              <ProtectedRoute requiredRole="interior_designer">
-                <InteriorDesignerBidRoom />
+            <Route path="/design-professional/portfolio" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalPortfolio /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/architect/auth" element={<ArchitectAuth />} />
-            <Route path="/architect/dashboard" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectDashboard />
+            <Route path="/design-professional/opportunities" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalOpportunities /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/architect/projects" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectProjects />
+            <Route path="/design-professional/projects" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalProjects /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/architect/proposals" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectProposals />
+            <Route path="/design-professional/messages" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalMessages /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/architect/messages" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectMessages />
+            <Route path="/design-professional/documents" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalDocuments /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
-            <Route path="/architect/bid-room" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectBidRoom />
-              </ProtectedRoute>
-            } />
-            <Route path="/architect/bid-submissions" element={
-              <ProtectedRoute requiredRole="architect">
-                <ArchitectBidSubmissions />
+            <Route path="/design-professional/settings" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignProfessionalSettings /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
             <Route path="/invite/:token" element={<InviteAccept />} />

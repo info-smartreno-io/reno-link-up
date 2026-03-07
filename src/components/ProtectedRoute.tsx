@@ -146,10 +146,8 @@ export default function ProtectedRoute({
       ? "/estimator/auth"
       : requiredRole === "contractor"
       ? "/contractor/auth"
-      : requiredRole === "architect"
-      ? "/architect/auth"
-      : requiredRole === "interior_designer"
-      ? "/interiordesigner/auth"
+      : requiredRole === "design_professional"
+      ? "/design-professional/auth"
       : "/auth";
     return <Navigate to={authPath} state={{ from: location }} replace />;
   }
