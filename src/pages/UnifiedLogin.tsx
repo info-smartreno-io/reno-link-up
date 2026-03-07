@@ -208,9 +208,9 @@ export default function UnifiedLogin() {
 
       if (data.user) {
         // For design_professional, also accept legacy roles
-        const acceptedRoles: string[] = role === 'design_professional'
+        const acceptedRoles = (role === 'design_professional'
           ? ['design_professional', 'architect', 'interior_designer']
-          : [role];
+          : [role]) as AppRole[];
 
         const { data: roles, error: roleError } = await supabase
           .from('user_roles')
