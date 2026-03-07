@@ -851,6 +851,16 @@ function AppRoutes() {
                 <EstimatorWalkthroughs />
               </ProtectedRoute>
             } />
+            <Route path="/estimator/smart-estimates" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorSmartEstimates />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/smart-estimates/:estimateId" element={
+              <ProtectedRoute requiredRole="estimator">
+                <AdminSmartEstimateDetail />
+              </ProtectedRoute>
+            }
             <Route path="/estimator/calendar" element={
               <ProtectedRoute requiredRole="estimator">
                 <EstimatorCalendar />
