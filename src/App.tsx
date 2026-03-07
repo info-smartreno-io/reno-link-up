@@ -83,7 +83,7 @@ import AdminLiveProjects from "./pages/admin/AdminLiveProjects";
 import AdminEstimatingHub from "./pages/admin/AdminEstimatingHub";
 import EstimatingFieldMode from "./pages/admin/EstimatingFieldMode";
 import EstimatingBidPacket from "./pages/admin/EstimatingBidPacket";
-import AdminDesigners from "./pages/admin/AdminDesigners";
+import AdminDesignProfessionals from "./pages/admin/AdminDesignProfessionals";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
