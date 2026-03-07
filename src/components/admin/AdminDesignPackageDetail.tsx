@@ -9,9 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, Shield, Send } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, Shield, Send, Package } from "lucide-react";
 import { toast } from "sonner";
 import { DESIGN_PACKAGE_SECTIONS, isPackageReadyForRFP } from "@/config/designProfessionalOptions";
+import { GenerateBidPacketDialog } from "./GenerateBidPacketDialog";
 
 interface Props {
   packageId: string;
@@ -24,6 +25,7 @@ export function AdminDesignPackageDetail({ packageId, onClose }: Props) {
   const [overrideReason, setOverrideReason] = useState("");
   const [assignDesigner, setAssignDesigner] = useState("");
   const [assignEstimator, setAssignEstimator] = useState("");
+  const [bidPacketDialogOpen, setBidPacketDialogOpen] = useState(false);
 
   const { data: pkg, isLoading } = useQuery({
     queryKey: ["admin-design-package", packageId],
