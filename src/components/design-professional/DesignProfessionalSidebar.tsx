@@ -7,6 +7,7 @@ import {
   MessageSquare,
   FileText,
   Settings,
+  Package,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ const navItems = [
   { title: "Overview", url: "/design-professional/dashboard", icon: LayoutDashboard },
   { title: "My Profile", url: "/design-professional/profile", icon: User },
   { title: "Portfolio", url: "/design-professional/portfolio", icon: Images },
+  { title: "Design Packages", url: "/design-professional/design-packages", icon: Package },
   { title: "Opportunities", url: "/design-professional/opportunities", icon: Briefcase },
   { title: "Projects", url: "/design-professional/projects", icon: FolderOpen },
   { title: "Messages", url: "/design-professional/messages", icon: MessageSquare },
