@@ -85,6 +85,11 @@ import EstimatingFieldMode from "./pages/admin/EstimatingFieldMode";
 import EstimatingBidPacket from "./pages/admin/EstimatingBidPacket";
 import AdminDesignProfessionals from "./pages/admin/AdminDesignProfessionals";
 import AdminDesignPackages from "./pages/admin/AdminDesignPackages";
+import AdminBidPackets from "./pages/admin/AdminBidPackets";
+import AdminBidPacketDetail from "./pages/admin/AdminBidPacketDetail";
+import AdminBidComparison from "./pages/admin/AdminBidComparison";
+import ContractorBidPackets from "./pages/contractor/ContractorBidPackets";
+import ContractorBidPacketView from "./pages/contractor/ContractorBidPacketView";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
@@ -459,6 +464,21 @@ function AppRoutes() {
             <Route path="/admin/design-packages" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminDesignPackages />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bid-packets" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidPackets />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bid-packets/:packetId" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidPacketDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bid-comparison/:packetId" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidComparison />
               </ProtectedRoute>
             } />
             <Route path="/admin/vendor-monitoring" element={
@@ -1000,6 +1020,16 @@ function AppRoutes() {
             <Route path="/contractor/bids" element={
               <ProtectedRoute requiredRole="contractor">
                 <ContractorMyBids />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/bid-packets" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBidPackets />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/bid-packets/:packetId" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBidPacketView />
               </ProtectedRoute>
             } />
             <Route path="/contractor/estimates" element={

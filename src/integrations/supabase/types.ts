@@ -1612,6 +1612,53 @@ export type Database = {
           },
         ]
       }
+      bid_packet_contractor_invites: {
+        Row: {
+          bid_packet_id: string
+          contractor_id: string
+          created_at: string | null
+          id: string
+          invited_at: string | null
+          invited_by: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          bid_packet_id: string
+          contractor_id: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          bid_packet_id?: string
+          contractor_id?: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packet_contractor_invites_bid_packet_id_fkey"
+            columns: ["bid_packet_id"]
+            isOneToOne: false
+            referencedRelation: "bid_packets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_packet_line_items: {
         Row: {
           cost_code_id: string | null
@@ -1711,6 +1758,7 @@ export type Database = {
         Row: {
           allowances: Json | null
           assumptions: string | null
+          bid_deadline: string | null
           bid_due_date: string | null
           bid_instructions: string | null
           created_at: string
@@ -1739,6 +1787,7 @@ export type Database = {
         Insert: {
           allowances?: Json | null
           assumptions?: string | null
+          bid_deadline?: string | null
           bid_due_date?: string | null
           bid_instructions?: string | null
           created_at?: string
@@ -1767,6 +1816,7 @@ export type Database = {
         Update: {
           allowances?: Json | null
           assumptions?: string | null
+          bid_deadline?: string | null
           bid_due_date?: string | null
           bid_instructions?: string | null
           created_at?: string
