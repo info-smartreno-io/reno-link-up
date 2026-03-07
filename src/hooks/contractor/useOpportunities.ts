@@ -24,7 +24,7 @@ export function useOpportunities() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Check contractor approval status
+      // Check contractor approval status and get matching criteria
       const { data: contractor } = await (supabase
         .from("contractors" as any)
         .select("id, is_active, trade_focus, service_areas")
@@ -54,7 +54,28 @@ export function useOpportunities() {
 
       const biddedIds = new Set(existingBids?.map(b => b.bid_opportunity_id) || []);
 
-      return ((data || []) as Opportunity[]).filter(opp => !biddedIds.has(opp.id));
+      let filtered = ((data || []) as Opportunity[]).filter(opp => !biddedIds.has(opp.id));
+
+      // Apply trade matching if contractor has a trade_focus
+      if (contractor?.trade_focus) {
+        const contractorTrade = contractor.trade_focus.toLowerCase();
+        filtered = filtered.filter(opp => {
+          const oppType = opp.project_type?.toLowerCase() || "";
+          // Match if trade focus is contained in project type or vice versa, or if it's a general match
+          return oppType.includes(contractorTrade) || contractorTrade.includes(oppType) || contractorTrade === "general";
+        });
+      }
+
+      // Apply service area matching if contractor has service_areas
+      if (contractor?.service_areas && Array.isArray(contractor.service_areas) && contractor.service_areas.length > 0) {
+        const areas = contractor.service_areas.map((a: string) => a.toLowerCase());
+        filtered = filtered.filter(opp => {
+          const oppLocation = opp.location?.toLowerCase() || "";
+          return areas.some((area: string) => oppLocation.includes(area) || area.includes(oppLocation));
+        });
+      }
+
+      return filtered;
     },
   });
 }
