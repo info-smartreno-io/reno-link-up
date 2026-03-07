@@ -1,0 +1,22 @@
+
+ALTER TABLE public.contractors
+  ADD COLUMN IF NOT EXISTS contact_name text,
+  ADD COLUMN IF NOT EXISTS contact_role text DEFAULT 'owner',
+  ADD COLUMN IF NOT EXISTS estimator_count integer DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS operating_days text DEFAULT 'mon_fri',
+  ADD COLUMN IF NOT EXISTS operating_hours_start text DEFAULT '08:00',
+  ADD COLUMN IF NOT EXISTS operating_hours_end text DEFAULT '17:00',
+  ADD COLUMN IF NOT EXISTS bid_turnaround text,
+  ADD COLUMN IF NOT EXISTS concurrent_projects integer,
+  ADD COLUMN IF NOT EXISTS largest_project_value numeric,
+  ADD COLUMN IF NOT EXISTS largest_project_duration text,
+  ADD COLUMN IF NOT EXISTS contract_sample_url text,
+  ADD COLUMN IF NOT EXISTS estimate_sample_url text,
+  ADD COLUMN IF NOT EXISTS tos_accepted_at timestamptz,
+  ADD COLUMN IF NOT EXISTS tos_version text,
+  ADD COLUMN IF NOT EXISTS approval_status text DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS approval_notes text,
+  ADD COLUMN IF NOT EXISTS approved_at timestamptz,
+  ADD COLUMN IF NOT EXISTS approved_by uuid,
+  ADD COLUMN IF NOT EXISTS license_expiration text,
+  ADD COLUMN IF NOT EXISTS crew_size integer;
