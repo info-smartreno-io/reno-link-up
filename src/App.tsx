@@ -88,6 +88,9 @@ import AdminDesignPackages from "./pages/admin/AdminDesignPackages";
 import AdminBidPackets from "./pages/admin/AdminBidPackets";
 import AdminBidPacketDetail from "./pages/admin/AdminBidPacketDetail";
 import AdminBidComparison from "./pages/admin/AdminBidComparison";
+import AdminSmartEstimates from "./pages/admin/AdminSmartEstimates";
+import AdminSmartEstimateDetail from "./pages/admin/AdminSmartEstimateDetail";
+import EstimatorSmartEstimates from "./pages/estimator/EstimatorSmartEstimates";
 import ContractorBidPackets from "./pages/contractor/ContractorBidPackets";
 import ContractorBidPacketView from "./pages/contractor/ContractorBidPacketView";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
@@ -464,6 +467,16 @@ function AppRoutes() {
             <Route path="/admin/design-packages" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminDesignPackages />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/smart-estimates" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminSmartEstimates />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/smart-estimates/:estimateId" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminSmartEstimateDetail />
               </ProtectedRoute>
             } />
             <Route path="/admin/bid-packets" element={
