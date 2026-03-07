@@ -466,6 +466,21 @@ function AppRoutes() {
                 <AdminDesignPackages />
               </ProtectedRoute>
             } />
+            <Route path="/admin/bid-packets" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidPackets />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bid-packets/:packetId" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidPacketDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bid-comparison/:packetId" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidComparison />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/vendor-monitoring" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminVendorMonitoring />
