@@ -4214,6 +4214,162 @@ export type Database = {
           },
         ]
       }
+      design_package_activity_log: {
+        Row: {
+          action_details: string | null
+          action_type: string
+          actor_id: string | null
+          actor_role: string | null
+          created_at: string | null
+          design_package_id: string
+          id: string
+        }
+        Insert: {
+          action_details?: string | null
+          action_type: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string | null
+          design_package_id: string
+          id?: string
+        }
+        Update: {
+          action_details?: string | null
+          action_type?: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string | null
+          design_package_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_package_activity_log_design_package_id_fkey"
+            columns: ["design_package_id"]
+            isOneToOne: false
+            referencedRelation: "design_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_package_files: {
+        Row: {
+          created_at: string | null
+          design_package_id: string
+          file_category: string | null
+          file_url: string
+          id: string
+          section_key: string | null
+          visible_to_roles: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          design_package_id: string
+          file_category?: string | null
+          file_url: string
+          id?: string
+          section_key?: string | null
+          visible_to_roles?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          design_package_id?: string
+          file_category?: string | null
+          file_url?: string
+          id?: string
+          section_key?: string | null
+          visible_to_roles?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_package_files_design_package_id_fkey"
+            columns: ["design_package_id"]
+            isOneToOne: false
+            referencedRelation: "design_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_package_sections: {
+        Row: {
+          completion_percent: number | null
+          design_package_id: string
+          id: string
+          is_complete: boolean | null
+          last_edited_by: string | null
+          section_data: Json | null
+          section_key: string
+          updated_at: string | null
+        }
+        Insert: {
+          completion_percent?: number | null
+          design_package_id: string
+          id?: string
+          is_complete?: boolean | null
+          last_edited_by?: string | null
+          section_data?: Json | null
+          section_key: string
+          updated_at?: string | null
+        }
+        Update: {
+          completion_percent?: number | null
+          design_package_id?: string
+          id?: string
+          is_complete?: boolean | null
+          last_edited_by?: string | null
+          section_data?: Json | null
+          section_key?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_package_sections_design_package_id_fkey"
+            columns: ["design_package_id"]
+            isOneToOne: false
+            referencedRelation: "design_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_packages: {
+        Row: {
+          assigned_design_professional_id: string | null
+          assigned_estimator_id: string | null
+          created_at: string | null
+          id: string
+          internal_review_status: string | null
+          package_completion_percent: number | null
+          package_status: string
+          project_id: string | null
+          ready_for_rfp: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_design_professional_id?: string | null
+          assigned_estimator_id?: string | null
+          created_at?: string | null
+          id?: string
+          internal_review_status?: string | null
+          package_completion_percent?: number | null
+          package_status?: string
+          project_id?: string | null
+          ready_for_rfp?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_design_professional_id?: string | null
+          assigned_estimator_id?: string | null
+          created_at?: string | null
+          id?: string
+          internal_review_status?: string | null
+          package_completion_percent?: number | null
+          package_status?: string
+          project_id?: string | null
+          ready_for_rfp?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       design_professional_matches: {
         Row: {
           created_at: string | null
@@ -4252,6 +4408,8 @@ export type Database = {
       }
       design_professional_portfolio_items: {
         Row: {
+          after_images: string[] | null
+          before_images: string[] | null
           budget_range: string | null
           cover_image_url: string | null
           created_at: string | null
@@ -4260,6 +4418,8 @@ export type Database = {
           id: string
           location: string | null
           project_type: string | null
+          proposal_documents: string[] | null
+          renderings: string[] | null
           scope_of_work: string | null
           sort_order: number | null
           style_tags: string[] | null
@@ -4268,6 +4428,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          after_images?: string[] | null
+          before_images?: string[] | null
           budget_range?: string | null
           cover_image_url?: string | null
           created_at?: string | null
@@ -4276,6 +4438,8 @@ export type Database = {
           id?: string
           location?: string | null
           project_type?: string | null
+          proposal_documents?: string[] | null
+          renderings?: string[] | null
           scope_of_work?: string | null
           sort_order?: number | null
           style_tags?: string[] | null
@@ -4284,6 +4448,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          after_images?: string[] | null
+          before_images?: string[] | null
           budget_range?: string | null
           cover_image_url?: string | null
           created_at?: string | null
@@ -4292,6 +4458,8 @@ export type Database = {
           id?: string
           location?: string | null
           project_type?: string | null
+          proposal_documents?: string[] | null
+          renderings?: string[] | null
           scope_of_work?: string | null
           sort_order?: number | null
           style_tags?: string[] | null
@@ -4349,10 +4517,18 @@ export type Database = {
           application_status: string | null
           approved_at: string | null
           approved_by: string | null
+          architect_certificate_upload: string | null
+          architect_license_document_url: string | null
           architect_license_number: string | null
+          average_staging_cost_range: string | null
+          awards_or_publications: string | null
+          brand_name: string | null
+          brand_positioning: string | null
           budget_ranges: string[] | null
           business_address: string | null
           business_registered: boolean | null
+          business_registration_document: string | null
+          can_coordinate_engineering: boolean | null
           certification_notes: string | null
           company_logo_url: string | null
           company_name: string | null
@@ -4361,36 +4537,53 @@ export type Database = {
           created_at: string | null
           credentials: Json | null
           design_philosophy: string | null
+          do_you_source_materials: boolean | null
+          engineering_services_supported: string[] | null
           featured: boolean | null
           full_bio: string | null
           headline: string | null
           id: string
           ideal_client_type: string | null
           instagram_or_portfolio_link: string | null
+          insurance_certificate_upload: string | null
           insurance_status: string | null
+          inventory_available: boolean | null
           leed_accredited: boolean | null
           licensed_states: string[] | null
+          material_sourcing_notes: string | null
           minimum_project_size: number | null
           ncarb: boolean | null
           nkba_member: boolean | null
+          notable_projects_summary: string | null
           preferred_communication: string[] | null
           preferred_lead_types: string[] | null
           pricing_model: string[] | null
           pricing_notes: string | null
           primary_service_area: string | null
+          primary_service_city: string | null
+          primary_service_state: string | null
+          primary_service_zip: string | null
           profile_completion_percent: number | null
           profile_photo_url: string | null
           project_types: string[] | null
+          region_notes: string | null
+          service_area_type: string | null
           service_mode: string | null
+          service_radius_miles: number | null
           services_offered: string[] | null
           specialties: string[] | null
+          staging_services_offered: string[] | null
+          staging_turnaround_time_days: number | null
           starting_consultation_fee: number | null
           team_size: number | null
           travel_radius_miles: number | null
+          unique_value_proposition: string | null
           updated_at: string | null
           user_id: string
           website: string | null
           willing_to_travel_for_premium_projects: boolean | null
+          works_with_mep_engineer: boolean | null
+          works_with_structural_engineer: boolean | null
           years_in_business: number | null
           zip_codes_served: string[] | null
         }
@@ -4400,10 +4593,18 @@ export type Database = {
           application_status?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          architect_certificate_upload?: string | null
+          architect_license_document_url?: string | null
           architect_license_number?: string | null
+          average_staging_cost_range?: string | null
+          awards_or_publications?: string | null
+          brand_name?: string | null
+          brand_positioning?: string | null
           budget_ranges?: string[] | null
           business_address?: string | null
           business_registered?: boolean | null
+          business_registration_document?: string | null
+          can_coordinate_engineering?: boolean | null
           certification_notes?: string | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -4412,36 +4613,53 @@ export type Database = {
           created_at?: string | null
           credentials?: Json | null
           design_philosophy?: string | null
+          do_you_source_materials?: boolean | null
+          engineering_services_supported?: string[] | null
           featured?: boolean | null
           full_bio?: string | null
           headline?: string | null
           id?: string
           ideal_client_type?: string | null
           instagram_or_portfolio_link?: string | null
+          insurance_certificate_upload?: string | null
           insurance_status?: string | null
+          inventory_available?: boolean | null
           leed_accredited?: boolean | null
           licensed_states?: string[] | null
+          material_sourcing_notes?: string | null
           minimum_project_size?: number | null
           ncarb?: boolean | null
           nkba_member?: boolean | null
+          notable_projects_summary?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
           pricing_model?: string[] | null
           pricing_notes?: string | null
           primary_service_area?: string | null
+          primary_service_city?: string | null
+          primary_service_state?: string | null
+          primary_service_zip?: string | null
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
           project_types?: string[] | null
+          region_notes?: string | null
+          service_area_type?: string | null
           service_mode?: string | null
+          service_radius_miles?: number | null
           services_offered?: string[] | null
           specialties?: string[] | null
+          staging_services_offered?: string[] | null
+          staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
           team_size?: number | null
           travel_radius_miles?: number | null
+          unique_value_proposition?: string | null
           updated_at?: string | null
           user_id: string
           website?: string | null
           willing_to_travel_for_premium_projects?: boolean | null
+          works_with_mep_engineer?: boolean | null
+          works_with_structural_engineer?: boolean | null
           years_in_business?: number | null
           zip_codes_served?: string[] | null
         }
@@ -4451,10 +4669,18 @@ export type Database = {
           application_status?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          architect_certificate_upload?: string | null
+          architect_license_document_url?: string | null
           architect_license_number?: string | null
+          average_staging_cost_range?: string | null
+          awards_or_publications?: string | null
+          brand_name?: string | null
+          brand_positioning?: string | null
           budget_ranges?: string[] | null
           business_address?: string | null
           business_registered?: boolean | null
+          business_registration_document?: string | null
+          can_coordinate_engineering?: boolean | null
           certification_notes?: string | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -4463,36 +4689,53 @@ export type Database = {
           created_at?: string | null
           credentials?: Json | null
           design_philosophy?: string | null
+          do_you_source_materials?: boolean | null
+          engineering_services_supported?: string[] | null
           featured?: boolean | null
           full_bio?: string | null
           headline?: string | null
           id?: string
           ideal_client_type?: string | null
           instagram_or_portfolio_link?: string | null
+          insurance_certificate_upload?: string | null
           insurance_status?: string | null
+          inventory_available?: boolean | null
           leed_accredited?: boolean | null
           licensed_states?: string[] | null
+          material_sourcing_notes?: string | null
           minimum_project_size?: number | null
           ncarb?: boolean | null
           nkba_member?: boolean | null
+          notable_projects_summary?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
           pricing_model?: string[] | null
           pricing_notes?: string | null
           primary_service_area?: string | null
+          primary_service_city?: string | null
+          primary_service_state?: string | null
+          primary_service_zip?: string | null
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
           project_types?: string[] | null
+          region_notes?: string | null
+          service_area_type?: string | null
           service_mode?: string | null
+          service_radius_miles?: number | null
           services_offered?: string[] | null
           specialties?: string[] | null
+          staging_services_offered?: string[] | null
+          staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
           team_size?: number | null
           travel_radius_miles?: number | null
+          unique_value_proposition?: string | null
           updated_at?: string | null
           user_id?: string
           website?: string | null
           willing_to_travel_for_premium_projects?: boolean | null
+          works_with_mep_engineer?: boolean | null
+          works_with_structural_engineer?: boolean | null
           years_in_business?: number | null
           zip_codes_served?: string[] | null
         }

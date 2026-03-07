@@ -12,6 +12,8 @@ export const SPECIALTY_OPTIONS = [
   "Landscape Design",
   "Lighting Design",
   "Custom Millwork / Cabinet Design",
+  "Home Staging",
+  "Engineering Consultant",
 ] as const;
 
 export const SERVICE_OPTIONS = [
@@ -34,6 +36,8 @@ export const SERVICE_OPTIONS = [
   "Contractor handoff package",
   "Ongoing construction support",
   "Site visits during construction",
+  "Home staging",
+  "Material sourcing",
 ] as const;
 
 export const PROJECT_TYPE_OPTIONS = [
@@ -95,13 +99,49 @@ export const SERVICE_MODE_OPTIONS = [
   { value: "both", label: "Both" },
 ] as const;
 
+export const SERVICE_AREA_TYPE_OPTIONS = [
+  { value: "radius", label: "Radius from primary location" },
+  { value: "zip_codes", label: "Specific zip codes" },
+  { value: "hybrid", label: "Radius + specific zip codes" },
+] as const;
+
+export const ENGINEERING_SERVICES_OPTIONS = [
+  "Structural",
+  "Mechanical",
+  "Electrical",
+  "Plumbing",
+  "Energy compliance",
+  "Seismic",
+  "Foundation design",
+] as const;
+
+export const STAGING_SERVICES_OPTIONS = [
+  "Full home staging",
+  "Partial staging",
+  "Consultation only",
+  "Listing staging",
+  "Vacant home staging",
+] as const;
+
+export const DESIGN_PACKAGE_SECTIONS = [
+  { key: "project_overview", label: "Project Overview", weight: 10 },
+  { key: "homeowner_vision", label: "Homeowner Vision", weight: 10 },
+  { key: "existing_conditions", label: "Existing Conditions", weight: 15 },
+  { key: "design_direction", label: "Design Direction", weight: 20 },
+  { key: "permit_technical", label: "Permit / Technical Needs", weight: 10 },
+  { key: "renderings", label: "Renderings", weight: 10 },
+  { key: "selections", label: "Selections / Finishes", weight: 15 },
+  { key: "contractor_handoff", label: "Contractor Handoff", weight: 10 },
+] as const;
+
 // Credential fields shown per specialty
 export const CREDENTIAL_FIELDS_BY_SPECIALTY: Record<string, string[]> = {
-  "Architecture": ["architect_license_number", "licensed_states", "aia_member", "ncarb"],
+  "Architecture": ["architect_license_number", "licensed_states", "aia_member", "ncarb", "architect_license_document_url", "architect_certificate_upload"],
   "Kitchen Design": ["nkba_member"],
   "Bath Design": ["nkba_member"],
   "Interior Design": ["leed_accredited"],
   "Drafting / Permit Plans": ["architect_license_number", "licensed_states"],
+  "Engineering Consultant": ["engineering_services_supported"],
 };
 
 export function getCredentialFieldsForSpecialties(specialties: string[]): string[] {
@@ -126,7 +166,7 @@ export function calculateProfileCompletion(profile: any): number {
   if (profile?.specialties?.length > 0) score += 8;
   if (profile?.services_offered?.length > 0) score += 7;
   // Service area (10%)
-  if (profile?.zip_codes_served?.length > 0 || profile?.counties_served?.length > 0) score += 10;
+  if (profile?.zip_codes_served?.length > 0 || profile?.counties_served?.length > 0 || profile?.primary_service_zip) score += 10;
   // Credentials (15%)
   if (profile?.insurance_status || profile?.architect_license_number) score += 15;
   // Portfolio (20%) - handled separately
@@ -139,4 +179,20 @@ export function calculateProfileCompletion(profile: any): number {
   if (profile?.headline) score += 5;
   if (profile?.full_bio) score += 5;
   return Math.min(score, 80); // Max 80 without portfolio
+}
+
+export function calculatePackageCompletion(sections: Array<{ section_key: string; is_complete: boolean }>): number {
+  let total = 0;
+  for (const sec of DESIGN_PACKAGE_SECTIONS) {
+    const found = sections.find(s => s.section_key === sec.key);
+    if (found?.is_complete) total += sec.weight;
+  }
+  return total;
+}
+
+export function isPackageReadyForRFP(sections: Array<{ section_key: string; is_complete: boolean }>, requireRenderings = false, requirePermit = false): boolean {
+  const required = ["existing_conditions", "design_direction", "contractor_handoff"];
+  if (requirePermit) required.push("permit_technical");
+  if (requireRenderings) required.push("renderings");
+  return required.every(key => sections.find(s => s.section_key === key)?.is_complete);
 }

@@ -264,6 +264,7 @@ import DesignProfessionalProjects from "./pages/design-professional/DesignProfes
 import DesignProfessionalMessages from "./pages/design-professional/DesignProfessionalMessages";
 import DesignProfessionalDocuments from "./pages/design-professional/DesignProfessionalDocuments";
 import DesignProfessionalSettings from "./pages/design-professional/DesignProfessionalSettings";
+import DesignPackages from "./pages/design-professional/DesignPackages";
 import { DesignProfessionalLayout } from "./components/design-professional/DesignProfessionalLayout";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import TestDashboard from "./pages/TestDashboard";
@@ -1269,6 +1270,11 @@ function AppRoutes() {
             <Route path="/design-professional/settings" element={
               <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
                 <DesignProfessionalLayout><DesignProfessionalSettings /></DesignProfessionalLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/design-professional/design-packages" element={
+              <ProtectedRoute requiredRoles={["design_professional", "architect", "interior_designer"]}>
+                <DesignProfessionalLayout><DesignPackages /></DesignProfessionalLayout>
               </ProtectedRoute>
             } />
             <Route path="/invite/:token" element={<InviteAccept />} />
