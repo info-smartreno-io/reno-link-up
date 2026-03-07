@@ -860,7 +860,7 @@ function AppRoutes() {
               <ProtectedRoute requiredRole="estimator">
                 <AdminSmartEstimateDetail />
               </ProtectedRoute>
-            }
+            } />
             <Route path="/estimator/calendar" element={
               <ProtectedRoute requiredRole="estimator">
                 <EstimatorCalendar />
