@@ -456,6 +456,10 @@ function AppRoutes() {
                 <AdminDesignProfessionals />
               </ProtectedRoute>
             } />
+            <Route path="/admin/design-packages" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesignPackages />
+              </ProtectedRoute>
             <Route path="/admin/vendor-monitoring" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminVendorMonitoring />
