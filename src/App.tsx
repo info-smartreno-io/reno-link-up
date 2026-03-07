@@ -162,6 +162,9 @@ import ContractorProjects from "./pages/contractor/ContractorProjects";
 import ContractorProjectDashboard from "./pages/contractor/ContractorProjectDashboard";
 import ContractorProjectDetail from "./pages/contractor/ContractorProjectDetail";
 import ContractorBids from "./pages/contractor/ContractorBids";
+import ContractorOpportunities from "./pages/contractor/ContractorOpportunities";
+import ContractorRFPDetail from "./pages/contractor/ContractorRFPDetail";
+import ContractorMyBids from "./pages/contractor/ContractorMyBids";
 import ContractorCalendar from "./pages/contractor/ContractorCalendar";
 import ContractorSmartPlan from "./pages/contractor/ContractorSmartPlan";
 import ContractorAIHub from "./pages/contractor/ContractorAIHub";
@@ -773,12 +776,12 @@ function AppRoutes() {
             } />
             <Route path="/contractor/opportunities" element={
               <ProtectedRoute requiredRole="contractor">
-                <ContractorBids />
+                <ContractorOpportunities />
               </ProtectedRoute>
             } />
             <Route path="/contractor/rfp/:rfpId" element={
               <ProtectedRoute requiredRole="contractor">
-                <ContractorBidRoom />
+                <ContractorRFPDetail />
               </ProtectedRoute>
             } />
             <Route path="/contractor/leads" element={
@@ -838,7 +841,7 @@ function AppRoutes() {
             } />
             <Route path="/contractor/bids" element={
               <ProtectedRoute requiredRole="contractor">
-                <ContractorBids />
+                <ContractorMyBids />
               </ProtectedRoute>
             } />
             <Route path="/contractor/estimates" element={
