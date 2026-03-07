@@ -224,7 +224,7 @@ export default function HomeownerAppointments() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate("/homeowner-portal")}
+                onClick={() => navigate("/homeowner/dashboard")}
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>

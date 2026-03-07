@@ -71,7 +71,7 @@ export function CreateAccountPrompt({ email, name, estimateRequestId }: CreateAc
           data: {
             full_name: name,
           },
-          emailRedirectTo: `${window.location.origin}/homeowner/portal`
+          emailRedirectTo: `${window.location.origin}/homeowner/dashboard`
         }
       });
 
@@ -113,7 +113,7 @@ export function CreateAccountPrompt({ email, name, estimateRequestId }: CreateAc
 
       // Small delay before redirect for toast to show
       setTimeout(() => {
-        navigate('/homeowner/portal');
+        navigate('/homeowner/dashboard');
       }, 1500);
 
     } catch (error: any) {
