@@ -80,10 +80,10 @@ function useMyProjects(contractorId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contractor_projects")
-        .select("id, project_name, status, location, project_type, start_date")
+        .select("id, project_name, status, location, project_type, created_at")
         .eq("contractor_id", contractorId!)
         .in("status", ["active", "in_progress", "planning"])
-        .order("start_date", { ascending: true })
+        .order("created_at", { ascending: false })
         .limit(5);
       if (error) throw error;
       return data || [];
