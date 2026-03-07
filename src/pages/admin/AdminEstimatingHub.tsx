@@ -102,13 +102,14 @@ export default function AdminEstimatingHub() {
                       <TableHead>Stage</TableHead>
                       <TableHead>Budget</TableHead>
                       <TableHead>Updated</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
                     ) : filtered?.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No estimates found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No estimates found</TableCell></TableRow>
                     ) : (
                       filtered?.map((lead) => (
                         <TableRow key={lead.id}>
@@ -120,6 +121,20 @@ export default function AdminEstimatingHub() {
                           </TableCell>
                           <TableCell>{lead.estimated_budget ? `$${Number(lead.estimated_budget).toLocaleString()}` : "—"}</TableCell>
                           <TableCell>{lead.updated_at ? format(new Date(lead.updated_at), "MMM d") : "—"}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Link to={`/admin/estimating/${lead.id}/field-mode`}>
+                                <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                                  <Eye className="h-3.5 w-3.5" /> Field Mode
+                                </Button>
+                              </Link>
+                              <Link to={`/admin/estimating/${lead.id}/bid-packet`}>
+                                <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                                  <FileText className="h-3.5 w-3.5" /> Bid Packet
+                                </Button>
+                              </Link>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
@@ -137,13 +152,18 @@ export default function AdminEstimatingHub() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">Field mode workspaces for on-site measurements, photos, and notes.</p>
-                  {estimatingLeads?.filter(l => l.status === "walkthrough_scheduled").map((lead) => (
+                   {estimatingLeads?.filter(l => l.status === "walkthrough_scheduled").map((lead) => (
                     <div key={lead.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
                       <div>
                         <p className="font-medium text-foreground">{lead.name}</p>
                         <p className="text-sm text-muted-foreground">{lead.project_type} • {lead.location}</p>
                       </div>
-                      <Badge variant="outline">Walkthrough Scheduled</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">Walkthrough Scheduled</Badge>
+                        <Link to={`/admin/estimating/${lead.id}/field-mode`}>
+                          <Button size="sm">Open Field Mode</Button>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                   {!estimatingLeads?.some(l => l.status === "walkthrough_scheduled") && (
@@ -162,15 +182,20 @@ export default function AdminEstimatingHub() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">Convert field data into contractor-facing bid packages.</p>
-                  {estimatingLeads?.filter(l => l.status === "estimate_in_progress" || l.status === "estimate_sent").map((lead) => (
+                   {estimatingLeads?.filter(l => l.status === "estimate_in_progress" || l.status === "estimate_sent").map((lead) => (
                     <div key={lead.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
                       <div>
                         <p className="font-medium text-foreground">{lead.name}</p>
                         <p className="text-sm text-muted-foreground">{lead.project_type} • {lead.location}</p>
                       </div>
-                      <Badge variant={lead.status === "estimate_sent" ? "default" : "outline"}>
-                        {lead.status?.replace(/_/g, " ")}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={lead.status === "estimate_sent" ? "default" : "outline"}>
+                          {lead.status?.replace(/_/g, " ")}
+                        </Badge>
+                        <Link to={`/admin/estimating/${lead.id}/bid-packet`}>
+                          <Button size="sm">Open Bid Packet</Button>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                   {!estimatingLeads?.some(l => ["estimate_in_progress", "estimate_sent"].includes(l.status || "")) && (

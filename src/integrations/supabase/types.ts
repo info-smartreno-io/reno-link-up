@@ -1612,6 +1612,173 @@ export type Database = {
           },
         ]
       }
+      bid_packet_line_items: {
+        Row: {
+          cost_code_id: string | null
+          created_at: string
+          description: string
+          id: string
+          notes: string | null
+          quantity: number
+          sort_order: number
+          trade_section_id: string
+          unit: string
+        }
+        Insert: {
+          cost_code_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          sort_order?: number
+          trade_section_id: string
+          unit?: string
+        }
+        Update: {
+          cost_code_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          sort_order?: number
+          trade_section_id?: string
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packet_line_items_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_packet_line_items_trade_section_id_fkey"
+            columns: ["trade_section_id"]
+            isOneToOne: false
+            referencedRelation: "bid_packet_trade_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bid_packet_trade_sections: {
+        Row: {
+          allowance_amount: number | null
+          bid_packet_id: string
+          created_at: string
+          exclusions: string | null
+          id: string
+          inclusions: string | null
+          scope_notes: string | null
+          sort_order: number
+          trade: string
+        }
+        Insert: {
+          allowance_amount?: number | null
+          bid_packet_id: string
+          created_at?: string
+          exclusions?: string | null
+          id?: string
+          inclusions?: string | null
+          scope_notes?: string | null
+          sort_order?: number
+          trade: string
+        }
+        Update: {
+          allowance_amount?: number | null
+          bid_packet_id?: string
+          created_at?: string
+          exclusions?: string | null
+          id?: string
+          inclusions?: string | null
+          scope_notes?: string | null
+          sort_order?: number
+          trade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packet_trade_sections_bid_packet_id_fkey"
+            columns: ["bid_packet_id"]
+            isOneToOne: false
+            referencedRelation: "bid_packets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bid_packets: {
+        Row: {
+          allowances: Json | null
+          bid_due_date: string | null
+          bid_instructions: string | null
+          created_at: string
+          estimated_budget_max: number | null
+          estimated_budget_min: number | null
+          exclusions: string | null
+          id: string
+          inclusions: string | null
+          lead_id: string
+          published_at: string | null
+          scope_summary: string | null
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          allowances?: Json | null
+          bid_due_date?: string | null
+          bid_instructions?: string | null
+          created_at?: string
+          estimated_budget_max?: number | null
+          estimated_budget_min?: number | null
+          exclusions?: string | null
+          id?: string
+          inclusions?: string | null
+          lead_id: string
+          published_at?: string | null
+          scope_summary?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          allowances?: Json | null
+          bid_due_date?: string | null
+          bid_instructions?: string | null
+          created_at?: string
+          estimated_budget_max?: number | null
+          estimated_budget_min?: number | null
+          exclusions?: string | null
+          id?: string
+          inclusions?: string | null
+          lead_id?: string
+          published_at?: string | null
+          scope_summary?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packets_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_packets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "estimate_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_submissions: {
         Row: {
           admin_notes: string | null
@@ -3939,6 +4106,56 @@ export type Database = {
         }
         Relationships: []
       }
+      estimate_workspaces: {
+        Row: {
+          bid_packet_status: string
+          created_at: string
+          estimator_id: string | null
+          field_mode_status: string
+          follow_up_tasks: Json | null
+          general_conditions: Json | null
+          id: string
+          lead_id: string
+          site_notes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          bid_packet_status?: string
+          created_at?: string
+          estimator_id?: string | null
+          field_mode_status?: string
+          follow_up_tasks?: Json | null
+          general_conditions?: Json | null
+          id?: string
+          lead_id: string
+          site_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          bid_packet_status?: string
+          created_at?: string
+          estimator_id?: string | null
+          field_mode_status?: string
+          follow_up_tasks?: Json | null
+          general_conditions?: Json | null
+          id?: string
+          lead_id?: string
+          site_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimate_workspaces_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       estimates: {
         Row: {
           amount: number
@@ -4006,6 +4223,92 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimating_files: {
+        Row: {
+          category: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+          room_id: string | null
+          uploaded_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          room_id?: string | null
+          uploaded_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          room_id?: string | null
+          uploaded_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimating_files_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "field_mode_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estimating_files_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "estimate_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estimating_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estimating_messages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "estimate_workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -4294,6 +4597,71 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "v_contractor_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      field_mode_rooms: {
+        Row: {
+          cabinetry_notes: string | null
+          created_at: string
+          demolition_notes: string | null
+          dimensions: Json | null
+          electrical_notes: string | null
+          finish_notes: string | null
+          flooring_notes: string | null
+          framing_notes: string | null
+          hidden_conditions: string | null
+          hvac_notes: string | null
+          id: string
+          plumbing_notes: string | null
+          room_name: string
+          sort_order: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          cabinetry_notes?: string | null
+          created_at?: string
+          demolition_notes?: string | null
+          dimensions?: Json | null
+          electrical_notes?: string | null
+          finish_notes?: string | null
+          flooring_notes?: string | null
+          framing_notes?: string | null
+          hidden_conditions?: string | null
+          hvac_notes?: string | null
+          id?: string
+          plumbing_notes?: string | null
+          room_name?: string
+          sort_order?: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          cabinetry_notes?: string | null
+          created_at?: string
+          demolition_notes?: string | null
+          dimensions?: Json | null
+          electrical_notes?: string | null
+          finish_notes?: string | null
+          flooring_notes?: string | null
+          framing_notes?: string | null
+          hidden_conditions?: string | null
+          hvac_notes?: string | null
+          id?: string
+          plumbing_notes?: string | null
+          room_name?: string
+          sort_order?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_mode_rooms_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "estimate_workspaces"
             referencedColumns: ["id"]
           },
         ]
