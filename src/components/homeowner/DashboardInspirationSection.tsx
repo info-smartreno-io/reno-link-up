@@ -100,37 +100,35 @@ export function DashboardInspirationSection() {
         </CardContent>
       </Card>
 
-      {/* Blog / Articles */}
+      {/* Industry Blogs & Resources */}
       <Card>
         <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-primary" />
-              <h4 className="text-sm font-medium text-foreground">Renovation Tips & Guides</h4>
-            </div>
-            <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => navigate("/blog")}>
-              View All <ArrowRight className="h-3 w-3" />
-            </Button>
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <h4 className="text-sm font-medium text-foreground">Industry Trends & Resources</h4>
           </div>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
-              { title: "How to Prepare Your Home for a Renovation", desc: "Steps to take before construction begins to protect your space and streamline the process." },
-              { title: "Understanding Your Renovation Estimate", desc: "What to look for in a contractor estimate and how to compare bids effectively." },
-              { title: "Choosing the Right Materials for Your Kitchen", desc: "A guide to countertops, cabinetry, and flooring options for every budget." },
-            ].map((article, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/30 cursor-pointer transition-colors"
-                onClick={() => navigate("/blog")}
+              { name: "Architectural Digest", url: "https://www.architecturaldigest.com", desc: "Design trends & architecture" },
+              { name: "Houzz", url: "https://www.houzz.com/magazine", desc: "Home renovation ideas & costs" },
+              { name: "Dwell", url: "https://www.dwell.com", desc: "Modern architecture & design" },
+              { name: "Remodeling Magazine", url: "https://www.remodeling.hw.net", desc: "Cost vs. value & industry data" },
+              { name: "This Old House", url: "https://www.thisoldhouse.com", desc: "How-to guides & project planning" },
+              { name: "The Spruce", url: "https://www.thespruce.com/home-renovation-4127611", desc: "Budgeting & renovation tips" },
+            ].map((blog) => (
+              <a
+                key={blog.name}
+                href={blog.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between border border-border rounded-lg p-3 hover:bg-muted/50 transition-colors group"
               >
-                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <BookOpen className="h-4 w-4 text-primary" />
-                </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground">{article.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{article.desc}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{blog.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{blog.desc}</p>
                 </div>
-              </div>
+                <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary flex-shrink-0 ml-2" />
+              </a>
             ))}
           </div>
         </CardContent>
