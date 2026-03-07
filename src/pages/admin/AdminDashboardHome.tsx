@@ -162,6 +162,37 @@ export default function AdminDashboardHome() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Portal Testing */}
+        <Card className="border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ExternalLink className="h-5 w-5 text-muted-foreground" />
+              Portal Testing
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Preview the platform as different user roles — test accounts only</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {[
+                { label: "Contractor Portal", path: "/contractor/dashboard", color: "bg-primary/10 text-primary hover:bg-primary/20" },
+                { label: "Homeowner Portal", path: "/homeowner/dashboard", color: "bg-accent/50 text-accent-foreground hover:bg-accent" },
+                { label: "Designer Portal", path: "/interiordesigner/dashboard", color: "bg-secondary text-secondary-foreground hover:bg-secondary/80" },
+                { label: "Architect Portal", path: "/architect/dashboard", color: "bg-muted text-muted-foreground hover:bg-muted/80" },
+                { label: "Estimator Tools", path: "/admin/estimating", color: "bg-primary/10 text-primary hover:bg-primary/20" },
+              ].map((portal) => (
+                <Link key={portal.path} to={portal.path}>
+                  <Button variant="outline" className={`w-full h-auto py-3 text-xs font-medium ${portal.color} border-border`}>
+                    {portal.label}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">
+              Test accounts: test-contractor@smartreno.io · test-homeowner@smartreno.io · test-designer@smartreno.io · test-architect@smartreno.io — Password: TestUser2025!!
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
