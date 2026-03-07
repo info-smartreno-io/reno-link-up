@@ -40,7 +40,7 @@ export function useSmartEstimate(estimateId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("smart_estimates")
-        .select("*, leads(name, project_type, location, email, phone, client_notes, homeowner_goals)")
+        .select("*, leads(name, project_type, location, email, phone, client_notes)")
         .eq("id", estimateId!)
         .single();
       if (error) throw error;

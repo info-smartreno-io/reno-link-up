@@ -39,7 +39,7 @@ serve(async (req) => {
     // Fetch estimate + lead data
     const { data: estimate } = await supabase
       .from("smart_estimates")
-      .select("*, leads(name, project_type, location, email, phone, client_notes, homeowner_goals, square_footage)")
+      .select("*, leads(name, project_type, location, email, phone, client_notes, square_footage)")
       .eq("id", estimateId)
       .single();
 
@@ -64,7 +64,7 @@ serve(async (req) => {
       `Client: ${lead?.name || "Unknown"}`,
       `Location: ${lead?.location || "NJ"}`,
       lead?.client_notes ? `Client Notes: ${lead.client_notes}` : "",
-      lead?.homeowner_goals ? `Homeowner Goals: ${lead.homeowner_goals}` : "",
+      lead?.client_notes ? `Additional Notes: ${lead.client_notes}` : "",
       lead?.square_footage ? `Square Footage: ${lead.square_footage}` : "",
       rooms && rooms.length > 0 ? `Rooms: ${rooms.map((r: any) => r.room_name).join(", ")}` : "",
     ].filter(Boolean).join("\n");
