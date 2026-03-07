@@ -1381,6 +1381,63 @@ export type Database = {
           },
         ]
       }
+      bid_line_items: {
+        Row: {
+          bid_submission_id: string
+          cost_code_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          is_alternate: boolean | null
+          quantity: number
+          sort_order: number | null
+          total: number | null
+          unit: string
+          unit_price: number
+        }
+        Insert: {
+          bid_submission_id: string
+          cost_code_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          is_alternate?: boolean | null
+          quantity?: number
+          sort_order?: number | null
+          total?: number | null
+          unit?: string
+          unit_price?: number
+        }
+        Update: {
+          bid_submission_id?: string
+          cost_code_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_alternate?: boolean | null
+          quantity?: number
+          sort_order?: number | null
+          total?: number | null
+          unit?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_line_items_bid_submission_id_fkey"
+            columns: ["bid_submission_id"]
+            isOneToOne: false
+            referencedRelation: "bid_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_line_items_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_message_attachments: {
         Row: {
           created_at: string
@@ -9054,6 +9111,47 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      rfp_scope_items: {
+        Row: {
+          bid_opportunity_id: string
+          created_at: string | null
+          description: string
+          estimated_unit_price: number
+          id: string
+          quantity: number
+          sort_order: number
+          unit: string
+        }
+        Insert: {
+          bid_opportunity_id: string
+          created_at?: string | null
+          description: string
+          estimated_unit_price?: number
+          id?: string
+          quantity?: number
+          sort_order?: number
+          unit?: string
+        }
+        Update: {
+          bid_opportunity_id?: string
+          created_at?: string | null
+          description?: string
+          estimated_unit_price?: number
+          id?: string
+          quantity?: number
+          sort_order?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfp_scope_items_bid_opportunity_id_fkey"
+            columns: ["bid_opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "bid_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       risk_scores: {
         Row: {
