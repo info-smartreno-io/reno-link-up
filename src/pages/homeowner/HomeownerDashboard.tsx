@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import {
 } from "@/hooks/useHomeownerData";
 import { useRecentActivityForUser } from "@/hooks/useProjectActivityLog";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowRight,
   MapPin,
@@ -25,8 +27,10 @@ import {
   Wrench,
   FileText,
   Users,
+  Clock,
+  CalendarDays,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format, parseISO } from "date-fns";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -37,10 +41,37 @@ const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   bid_submitted: ClipboardList,
 };
 
+const TIME_SLOT_LABELS: Record<string, string> = {
+  "9-11": "9:00 AM – 11:00 AM",
+  "11-1": "11:00 AM – 1:00 PM",
+  "2-4": "2:00 PM – 4:00 PM",
+  "4-6": "4:00 PM – 6:00 PM",
+};
+
+function useSiteVisitAppointments() {
+  return useQuery({
+    queryKey: ["site-visit-appointments"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("site_visit_appointments")
+        .select("*")
+        .eq("homeowner_id", user.id)
+        .eq("status", "scheduled")
+        .order("appointment_date", { ascending: true })
+        .limit(3);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+}
+
 export default function HomeownerDashboard() {
   const { data: projects, isLoading } = useHomeownerProjects();
   const { data: recentActivity } = useRecentActivityForUser(5);
   const { data: unreadNotifs } = useUnreadNotificationCount();
+  const { data: appointments } = useSiteVisitAppointments();
   const navigate = useNavigate();
 
   const activeProject = projects?.[0];
@@ -78,6 +109,35 @@ export default function HomeownerDashboard() {
           </Button>
         )}
       </div>
+
+      {/* Upcoming Site Visit */}
+      {appointments && appointments.length > 0 && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-5">
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CalendarDays className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">Upcoming Site Visit</p>
+                <p className="text-lg font-semibold text-foreground mt-0.5">
+                  SmartReno Construction Agent Visit
+                </p>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {format(parseISO((appointments[0] as any).appointment_date), "EEEE, MMMM d")}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    {TIME_SLOT_LABELS[(appointments[0] as any).appointment_time] || (appointments[0] as any).appointment_time}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {activeProject ? (
         <>
@@ -141,7 +201,7 @@ export default function HomeownerDashboard() {
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Open Project", icon: ArrowRight, action: () => navigate(`/homeowner/projects/${activeProject.id}/overview`) },
+              { label: "Project", icon: ArrowRight, action: () => navigate(`/homeowner/projects/${activeProject.id}/overview`) },
               { label: "Messages", icon: MessageSquare, action: () => navigate(`/homeowner/projects/${activeProject.id}/messages`) },
               { label: "Files", icon: FolderOpen, action: () => navigate(`/homeowner/projects/${activeProject.id}/files`) },
               { label: "Proposals", icon: ClipboardList, action: () => navigate(`/homeowner/projects/${activeProject.id}/proposals`) },
@@ -189,7 +249,7 @@ export default function HomeownerDashboard() {
         <Card>
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground">No active projects yet.</p>
-            <Button className="mt-4" onClick={() => navigate("/get-estimate")}>
+            <Button className="mt-4" onClick={() => navigate("/start-your-renovation")}>
               Start Your Renovation
             </Button>
           </CardContent>
