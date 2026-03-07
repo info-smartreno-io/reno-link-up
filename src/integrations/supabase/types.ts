@@ -2704,15 +2704,20 @@ export type Database = {
       contractor_onboarding: {
         Row: {
           availability_calendar_setup: boolean | null
+          company_address: string | null
           completion_rate: number | null
           contractor_id: string
           created_at: string | null
+          crew_size: number | null
           id: string
           insurance_document_url: string | null
+          insurance_expiry: string | null
           insurance_verified: boolean | null
           license_document_url: string | null
+          license_expiry: string | null
           license_verified: boolean | null
           onboarding_completion_score: number | null
+          onboarding_status: string
           portfolio_uploaded: boolean | null
           portfolio_urls: string[] | null
           pricing_fairness_index: number | null
@@ -2723,19 +2728,27 @@ export type Database = {
           review_score: number | null
           service_areas_mapped: boolean | null
           trade_specialties_selected: boolean | null
+          trades: string[] | null
           updated_at: string | null
+          w9_url: string | null
+          years_in_business: number | null
         }
         Insert: {
           availability_calendar_setup?: boolean | null
+          company_address?: string | null
           completion_rate?: number | null
           contractor_id: string
           created_at?: string | null
+          crew_size?: number | null
           id?: string
           insurance_document_url?: string | null
+          insurance_expiry?: string | null
           insurance_verified?: boolean | null
           license_document_url?: string | null
+          license_expiry?: string | null
           license_verified?: boolean | null
           onboarding_completion_score?: number | null
+          onboarding_status?: string
           portfolio_uploaded?: boolean | null
           portfolio_urls?: string[] | null
           pricing_fairness_index?: number | null
@@ -2746,19 +2759,27 @@ export type Database = {
           review_score?: number | null
           service_areas_mapped?: boolean | null
           trade_specialties_selected?: boolean | null
+          trades?: string[] | null
           updated_at?: string | null
+          w9_url?: string | null
+          years_in_business?: number | null
         }
         Update: {
           availability_calendar_setup?: boolean | null
+          company_address?: string | null
           completion_rate?: number | null
           contractor_id?: string
           created_at?: string | null
+          crew_size?: number | null
           id?: string
           insurance_document_url?: string | null
+          insurance_expiry?: string | null
           insurance_verified?: boolean | null
           license_document_url?: string | null
+          license_expiry?: string | null
           license_verified?: boolean | null
           onboarding_completion_score?: number | null
+          onboarding_status?: string
           portfolio_uploaded?: boolean | null
           portfolio_urls?: string[] | null
           pricing_fairness_index?: number | null
@@ -2769,9 +2790,47 @@ export type Database = {
           review_score?: number | null
           service_areas_mapped?: boolean | null
           trade_specialties_selected?: boolean | null
+          trades?: string[] | null
           updated_at?: string | null
+          w9_url?: string | null
+          years_in_business?: number | null
         }
         Relationships: []
+      }
+      contractor_portfolio_images: {
+        Row: {
+          caption: string | null
+          contractor_id: string
+          created_at: string
+          id: string
+          image_url: string
+          project_type: string | null
+        }
+        Insert: {
+          caption?: string | null
+          contractor_id: string
+          created_at?: string
+          id?: string
+          image_url: string
+          project_type?: string | null
+        }
+        Update: {
+          caption?: string | null
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          project_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_portfolio_images_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contractor_pricing_items: {
         Row: {
@@ -3511,6 +3570,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      cost_codes: {
+        Row: {
+          code: string
+          contractor_id: string
+          created_at: string
+          description: string
+          id: string
+          labor_rate: number
+          material_rate: number
+          total_unit_price: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          contractor_id: string
+          created_at?: string
+          description: string
+          id?: string
+          labor_rate?: number
+          material_rate?: number
+          total_unit_price?: number
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          contractor_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          labor_rate?: number
+          material_rate?: number
+          total_unit_price?: number
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_codes_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_logs: {
         Row: {

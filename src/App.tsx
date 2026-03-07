@@ -152,6 +152,8 @@ import SmartRenoSsoCallback from "./pages/SmartRenoSsoCallback";
 import ContractorAuth from "./pages/contractor/ContractorAuth";
 import ContractorComingSoon from "./pages/contractor/ContractorComingSoon";
 import ContractorDashboard from "./pages/contractor/ContractorDashboard";
+import NewContractorDashboard from "./pages/contractor/NewContractorDashboard";
+import ContractorOnboardingWizard from "./pages/contractor/ContractorOnboardingWizard";
 import ContractorPortalHub from "./pages/contractor/ContractorPortalHub";
 import SalesPipeline from "./pages/contractor/SalesPipeline";
 import Collections from "./pages/contractor/Collections";
@@ -756,7 +758,27 @@ function AppRoutes() {
             } />
             <Route path="/contractor/dashboard" element={
               <ProtectedRoute requiredRole="contractor">
-                <ContractorDashboard />
+                <NewContractorDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/onboarding" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorOnboardingWizard />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/profile" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorOnboardingWizard />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/opportunities" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBids />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/rfp/:rfpId" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorBidRoom />
               </ProtectedRoute>
             } />
             <Route path="/contractor/leads" element={
