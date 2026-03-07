@@ -27,6 +27,15 @@ export default function DesignProfessionalAuth() {
             For architects, interior designers, kitchen &amp; bath designers, and visualization professionals
           </p>
         </div>
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-sm mb-4">
+          <p className="font-medium text-amber-600 dark:text-amber-400">Test Credentials</p>
+          <p className="text-muted-foreground mt-1">
+            Email: <code className="bg-muted px-1 rounded">test-designer@smartreno.io</code>
+          </p>
+          <p className="text-muted-foreground">
+            Password: <code className="bg-muted px-1 rounded">TestUser2025!!</code>
+          </p>
+        </div>
         <div className="bg-card p-8 rounded-lg shadow-sm border">
           <Auth
             supabaseClient={supabase}
