@@ -7,7 +7,7 @@ import {
   FolderClosed, Clock3, MapPinned, BusFront, Boxes, BarChart3, Sliders,
   Sparkles, FolderKanban, TrendingUp, Shield, UserPlus, Home, Briefcase,
   Palette, Package, Handshake, HardDrive, Calculator, Brain, Network,
-  Clock, FileCheck, ThumbsUp
+  Clock, FileCheck, ThumbsUp, Gavel, FolderOpen, Bell, Settings
 } from "lucide-react";
 
 /** Which roles can see which items */
@@ -42,23 +42,31 @@ export type BadgeKey =
 export type NavItem = {
   id: string;
   label: string;
-  to?: string;                         // route
-  icon?: ComponentType<any>;           // lucide icon (optional on groups)
-  roles?: NavRole[];                   // who can see it (omit => all)
-  badgeKey?: BadgeKey;                 // optional live count key
-  children?: NavItem[];                // nested items
-  separatorAbove?: boolean;            // draw a thin rule before item
+  to?: string;
+  icon?: ComponentType<any>;
+  roles?: NavRole[];
+  badgeKey?: BadgeKey;
+  children?: NavItem[];
+  separatorAbove?: boolean;
 };
 
 export const ADMIN_SIDENAV: NavItem[] = [
+  // ── Operations (Primary Admin Lifecycle) ──
   {
-    id: "project_schedule",
-    label: "Project Schedule",
-    to: "/admin/schedule",
-    icon: CalendarClock,
-    separatorAbove: false,
+    id: "operations",
+    label: "Operations",
+    icon: LayoutDashboard,
+    children: [
+      { id: "ops.dashboard", label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
+      { id: "ops.intake", label: "Intake Review", to: "/admin/intake", icon: ClipboardList, badgeKey: "leads_new" },
+      { id: "ops.contractors", label: "Contractors", to: "/admin/contractors", icon: Users },
+      { id: "ops.rfps", label: "RFPs", to: "/admin/rfps", icon: FileText, badgeKey: "bids_open" },
+      { id: "ops.bids", label: "Bid Review", to: "/admin/bids", icon: Gavel },
+      { id: "ops.live_projects", label: "Live Projects", to: "/admin/live-projects", icon: Building2, badgeKey: "projects_open" },
+    ],
   },
 
+  // ── Financials ──
   {
     id: "financials",
     label: "Financials",
@@ -76,6 +84,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Scheduling ──
   {
     id: "scheduling",
     label: "Scheduling",
@@ -87,6 +96,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Project Tracking ──
   {
     id: "project_tracking",
     label: "Project Tracking",
@@ -99,6 +109,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Communication ──
   {
     id: "communication",
     label: "Communication",
@@ -112,6 +123,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Sales & CRM ──
   {
     id: "sales_crm",
     label: "Sales & CRM",
@@ -123,6 +135,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Files & Photos ──
   {
     id: "files_photos",
     label: "Files & Photos",
@@ -134,6 +147,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Team Management ──
   {
     id: "team_management",
     label: "Team Management",
@@ -147,6 +161,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Planroom & Takeoff ──
   {
     id: "planroom",
     label: "Planroom & Takeoff",
@@ -157,6 +172,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Document Management ──
   {
     id: "document_mgmt",
     label: "Document Management",
@@ -168,6 +184,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── Business Intelligence ──
   {
     id: "business_intelligence",
     label: "Business Intelligence",
@@ -182,6 +199,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
+  // ── SmartReno Applicants ──
   {
     id: "smartreno_applicants",
     label: "SmartReno Applicants",
@@ -200,7 +218,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // SmartReno AI
+  // ── SmartReno AI ──
   {
     id: "smartreno-ai",
     label: "SmartReno AI",
@@ -218,7 +236,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // Web Dev
+  // ── Web Dev ──
   {
     id: "web-dev",
     label: "Web Dev",

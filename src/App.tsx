@@ -61,6 +61,12 @@ import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
+import AdminIntakeReview from "./pages/admin/AdminIntakeReview";
+import AdminContractorManagement from "./pages/admin/AdminContractorManagement";
+import AdminRFPManagement from "./pages/admin/AdminRFPManagement";
+import AdminBidReview from "./pages/admin/AdminBidReview";
+import AdminLiveProjects from "./pages/admin/AdminLiveProjects";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminWorkflow from "./pages/AdminWorkflow";
 import AdminApplications from "./pages/AdminApplications";
@@ -339,7 +345,32 @@ function AppRoutes() {
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
+                <AdminDashboardHome />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/intake" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminIntakeReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contractors" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminContractorManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/rfps" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminRFPManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/bids" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminBidReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/live-projects" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminLiveProjects />
               </ProtectedRoute>
             } />
             <Route path="/admin/calendars" element={
@@ -394,7 +425,7 @@ function AppRoutes() {
             } />
             <Route path="/admin" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
+                <AdminDashboardHome />
               </ProtectedRoute>
             } />
             <Route path="/admin/agents" element={
@@ -497,11 +528,7 @@ function AppRoutes() {
                 <AdminVendors />
               </ProtectedRoute>
             } />
-            <Route path="/admin/contractors" element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminContractorNetwork />
-              </ProtectedRoute>
-            } />
+            {/* Contractor management moved to /admin/contractors above */}
             <Route path="/admin/revenue-optimization" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminRevenueOptimization />
