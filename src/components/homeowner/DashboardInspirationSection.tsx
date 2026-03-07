@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, ShoppingBag, Palette, BookOpen, ArrowRight, Pin } from "lucide-react";
+import { ExternalLink, ShoppingBag, BookOpen, Pin } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -17,7 +18,6 @@ const VENDOR_LINKS = [
 ];
 
 export function DashboardInspirationSection() {
-  const navigate = useNavigate();
   const [pinterestUrl, setPinterestUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
