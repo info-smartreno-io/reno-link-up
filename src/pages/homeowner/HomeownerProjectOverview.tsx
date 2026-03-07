@@ -1,0 +1,169 @@
+import { useParams } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useHomeownerProjectDetail,
+  getHomeownerStatus,
+  getNextStep,
+  HOMEOWNER_MILESTONES,
+} from "@/hooks/useHomeownerData";
+import {
+  CheckCircle2,
+  Circle,
+  User,
+  Phone,
+  Mail,
+  CalendarDays,
+  Wrench,
+  FileText,
+} from "lucide-react";
+
+export default function HomeownerProjectOverview() {
+  const { projectId } = useParams();
+  const { data, isLoading } = useHomeownerProjectDetail(projectId);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    );
+  }
+
+  const { project, contractor, recentLogs, timelineTasks } = data!;
+  const status = getHomeownerStatus(project.status || "intake");
+  const nextStep = getNextStep(project.status || "intake");
+  const progressPercent = Math.round((status.step / (HOMEOWNER_MILESTONES.length - 1)) * 100);
+
+  const completedTasks = timelineTasks.filter((t: any) => t.status === "completed").length;
+  const totalTasks = timelineTasks.length;
+
+  return (
+    <div className="space-y-6">
+      {/* What Happens Next - signature trust card */}
+      <Card className="border-primary/20 bg-primary/5 shadow-none">
+        <CardContent className="p-5">
+          <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-2">What Happens Next</p>
+          <p className="text-sm text-foreground leading-relaxed">{nextStep}</p>
+        </CardContent>
+      </Card>
+
+      {/* Progress */}
+      <Card>
+        <CardContent className="p-5 space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-medium text-foreground">Project Progress</h3>
+            <span className="text-xs text-muted-foreground">{progressPercent}%</span>
+          </div>
+          <Progress value={progressPercent} className="h-2" />
+          <div className="flex justify-between">
+            {HOMEOWNER_MILESTONES.map((m, i) => (
+              <div key={m} className="flex flex-col items-center" style={{ width: `${100 / HOMEOWNER_MILESTONES.length}%` }}>
+                {i <= status.step ? (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                ) : (
+                  <Circle className="h-3.5 w-3.5 text-muted-foreground/30" />
+                )}
+                <span className="text-[9px] text-muted-foreground mt-1 text-center leading-tight hidden lg:block">
+                  {m}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* Timeline Snapshot */}
+        <Card>
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              Timeline Snapshot
+            </h3>
+            {totalTasks > 0 ? (
+              <>
+                <p className="text-xs text-muted-foreground">{completedTasks} of {totalTasks} milestones completed</p>
+                <div className="space-y-2">
+                  {timelineTasks.slice(0, 4).map((task: any) => (
+                    <div key={task.id} className="flex items-center gap-2 text-sm">
+                      {task.status === "completed" ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      ) : (
+                        <Circle className="h-3.5 w-3.5 text-muted-foreground/40 flex-shrink-0" />
+                      )}
+                      <span className="text-foreground truncate">{task.task_name}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground">Timeline will appear once construction begins.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Key Contacts */}
+        <Card>
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              Key Contacts
+            </h3>
+            {contractor ? (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">Your Contractor</p>
+                <p className="text-sm font-medium text-foreground">{contractor.company_name}</p>
+                {contractor.contact_name && (
+                  <p className="text-xs text-muted-foreground">{contractor.contact_name}</p>
+                )}
+                {contractor.contact_phone && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Phone className="h-3 w-3" /> {contractor.contact_phone}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">Contractor will be assigned after selection.</p>
+            )}
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs font-medium text-muted-foreground">SmartReno Support</p>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+                <Mail className="h-3 w-3" /> support@smartreno.com
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Updates */}
+      {recentLogs.length > 0 && (
+        <Card>
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+              <Wrench className="h-4 w-4 text-muted-foreground" />
+              Recent Updates
+            </h3>
+            <div className="space-y-3">
+              {recentLogs.map((log: any) => (
+                <div key={log.id} className="flex gap-3 text-sm">
+                  <div className="text-xs text-muted-foreground whitespace-nowrap pt-0.5">
+                    {new Date(log.log_date).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <p className="text-foreground">{log.work_performed}</p>
+                    {log.trade && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{log.trade}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
