@@ -303,7 +303,7 @@ export function GenerateBidPacketDialog({ open, onOpenChange, packageId, package
                     {contractorVisibleFiles.map(f => (
                       <div key={f.id} className="flex items-center gap-2 text-sm py-1">
                         <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{f.file_name}</span>
+                        <span>{f.file_url.split("/").pop() || f.file_category}</span>
                       </div>
                     ))}
                   </div>
@@ -352,7 +352,7 @@ export function GenerateBidPacketDialog({ open, onOpenChange, packageId, package
                   {contractorVisibleFiles.map(f => (
                     <div key={f.id} className="flex items-center gap-2 text-sm py-1 px-2 rounded border border-border">
                       <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>{f.file_name}</span>
+                      <span>{f.file_url.split("/").pop() || f.file_category}</span>
                     </div>
                   ))}
                 </div>
