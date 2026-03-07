@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow, format, parseISO } from "date-fns";
 import { DashboardInspirationSection } from "@/components/homeowner/DashboardInspirationSection";
+import { HomeownerNotebook } from "@/components/homeowner/HomeownerNotebook";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -103,17 +104,23 @@ export default function HomeownerDashboard() {
           <h1 className="text-2xl font-semibold text-foreground">Welcome back</h1>
           <p className="text-muted-foreground mt-1">Here's the latest on your renovation.</p>
         </div>
-        {(unreadNotifs ?? 0) > 0 && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/homeowner/notifications")}
-            className="gap-2"
-          >
-            <Bell className="h-4 w-4" />
-            {unreadNotifs} unread
+        <div className="flex items-center gap-2">
+          {(unreadNotifs ?? 0) > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/homeowner/notifications")}
+              className="gap-2"
+            >
+              <Bell className="h-4 w-4" />
+              {unreadNotifs} unread
+            </Button>
+          )}
+          <Button size="sm" className="gap-2" onClick={() => navigate("/start-your-renovation")}>
+            <ArrowRight className="h-4 w-4" />
+            Start Your Renovation
           </Button>
-        )}
+        </div>
       </div>
 
       {/* Upcoming Site Visit */}
@@ -268,6 +275,9 @@ export default function HomeownerDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Notebook */}
+      <HomeownerNotebook />
 
       {/* Inspiration & Materials Section - always visible */}
       <DashboardInspirationSection />
