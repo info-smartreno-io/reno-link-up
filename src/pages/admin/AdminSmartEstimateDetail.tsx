@@ -21,8 +21,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, Brain, CheckCircle2, AlertTriangle, Plus, Trash2,
-  Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock,
+  Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock, ArrowRight,
 } from "lucide-react";
+import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
