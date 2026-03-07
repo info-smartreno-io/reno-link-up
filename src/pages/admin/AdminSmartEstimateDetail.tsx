@@ -413,6 +413,15 @@ export default function AdminSmartEstimateDetail() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Downstream Workflow Dialog */}
+      <SmartEstimateDownstreamDialog
+        open={showDownstreamDialog}
+        onOpenChange={setShowDownstreamDialog}
+        estimate={estimate}
+        sections={sections}
+        rooms={rooms}
+        tradeItems={tradeItems}
+      />
     </AdminLayout>
   );
 }
