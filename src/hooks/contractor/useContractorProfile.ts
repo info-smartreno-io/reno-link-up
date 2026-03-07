@@ -48,6 +48,25 @@ export interface ContractorProfile {
   profile_completion_pct: number;
   workers_comp_verified: boolean;
   crew_size: number | null;
+  // New qualification fields
+  contact_name: string | null;
+  contact_role: string | null;
+  estimator_count: number;
+  operating_days: string | null;
+  operating_hours_start: string | null;
+  operating_hours_end: string | null;
+  bid_turnaround: string | null;
+  concurrent_projects: number | null;
+  largest_project_value: number | null;
+  largest_project_duration: string | null;
+  contract_sample_url: string | null;
+  estimate_sample_url: string | null;
+  tos_accepted_at: string | null;
+  tos_version: string | null;
+  approval_status: string | null;
+  approval_notes: string | null;
+  approved_at: string | null;
+  license_expiration: string | null;
 }
 
 export function useContractorProfile() {
@@ -74,7 +93,6 @@ export function useContractorProfile() {
     mutationFn: async (updates: Partial<ContractorProfile>) => {
       if (!contractorId) throw new Error("No contractor ID");
 
-      // Calculate profile completion
       const merged = { ...query.data, ...updates };
       const completionPct = calculateProfileCompletion(merged as ContractorProfile);
 
@@ -97,18 +115,22 @@ export function useContractorProfile() {
 
 function calculateProfileCompletion(p: ContractorProfile): number {
   let filled = 0;
-  let total = 10;
+  const total = 14;
 
   if (p.name) filled++;
   if (p.phone || p.business_phone) filled++;
   if (p.email || p.business_email) filled++;
-  if (p.trade_focus) filled++;
+  if (p.trade_focus || (p.project_types?.length || 0) > 0) filled++;
   if ((p.service_areas?.length || 0) > 0 || (p.service_zip_codes?.length || 0) > 0) filled++;
   if (p.license_number) filled++;
-  if ((p.project_types?.length || 0) > 0) filled++;
-  if (p.typical_budget_range) filled++;
   if (p.business_type) filled++;
   if ((p.crew_size || 0) > 0) filled++;
+  if (p.typical_budget_range) filled++;
+  if (p.contact_name) filled++;
+  if (p.operating_days) filled++;
+  if (p.bid_turnaround) filled++;
+  if (p.tos_accepted_at) filled++;
+  if (p.contract_sample_url || p.estimate_sample_url) filled++;
 
   return Math.round((filled / total) * 100);
 }
