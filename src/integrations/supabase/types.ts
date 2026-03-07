@@ -4333,6 +4333,8 @@ export type Database = {
       }
       design_packages: {
         Row: {
+          admin_override_reason: string | null
+          admin_override_rfp: boolean | null
           assigned_design_professional_id: string | null
           assigned_estimator_id: string | null
           created_at: string | null
@@ -4340,11 +4342,16 @@ export type Database = {
           internal_review_status: string | null
           package_completion_percent: number | null
           package_status: string
+          permit_required: boolean | null
           project_id: string | null
           ready_for_rfp: boolean | null
+          renderings_required: boolean | null
+          revision_notes: string | null
           updated_at: string | null
         }
         Insert: {
+          admin_override_reason?: string | null
+          admin_override_rfp?: boolean | null
           assigned_design_professional_id?: string | null
           assigned_estimator_id?: string | null
           created_at?: string | null
@@ -4352,11 +4359,16 @@ export type Database = {
           internal_review_status?: string | null
           package_completion_percent?: number | null
           package_status?: string
+          permit_required?: boolean | null
           project_id?: string | null
           ready_for_rfp?: boolean | null
+          renderings_required?: boolean | null
+          revision_notes?: string | null
           updated_at?: string | null
         }
         Update: {
+          admin_override_reason?: string | null
+          admin_override_rfp?: boolean | null
           assigned_design_professional_id?: string | null
           assigned_estimator_id?: string | null
           created_at?: string | null
@@ -4364,8 +4376,11 @@ export type Database = {
           internal_review_status?: string | null
           package_completion_percent?: number | null
           package_status?: string
+          permit_required?: boolean | null
           project_id?: string | null
           ready_for_rfp?: boolean | null
+          renderings_required?: boolean | null
+          revision_notes?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -4528,6 +4543,7 @@ export type Database = {
           business_address: string | null
           business_registered: boolean | null
           business_registration_document: string | null
+          cad_software: string[] | null
           can_coordinate_engineering: boolean | null
           can_stamp_plans: boolean | null
           certification_notes: string | null
@@ -4539,6 +4555,7 @@ export type Database = {
           created_at: string | null
           credentials: Json | null
           design_philosophy: string | null
+          design_software: string[] | null
           do_you_source_materials: boolean | null
           engineering_in_house: boolean | null
           engineering_insurance_status: string | null
@@ -4578,6 +4595,8 @@ export type Database = {
           num_project_managers: number | null
           num_renderers: number | null
           num_structural_engineers: number | null
+          offers_surveying: boolean | null
+          other_software: string | null
           pe_license_number: string | null
           preferred_communication: string[] | null
           preferred_lead_types: string[] | null
@@ -4589,9 +4608,11 @@ export type Database = {
           primary_service_zip: string | null
           profile_completion_percent: number | null
           profile_photo_url: string | null
+          project_management_software: string[] | null
           project_types: string[] | null
           recent_estimate_url: string | null
           region_notes: string | null
+          rendering_software: string[] | null
           service_area_type: string | null
           service_mode: string | null
           service_radius_miles: number | null
@@ -4602,6 +4623,8 @@ export type Database = {
           staging_services_offered: string[] | null
           staging_turnaround_time_days: number | null
           starting_consultation_fee: number | null
+          surveying_equipment: string[] | null
+          surveying_services: string[] | null
           team_size: number | null
           team_structure_notes: string | null
           travel_radius_miles: number | null
@@ -4632,6 +4655,7 @@ export type Database = {
           business_address?: string | null
           business_registered?: boolean | null
           business_registration_document?: string | null
+          cad_software?: string[] | null
           can_coordinate_engineering?: boolean | null
           can_stamp_plans?: boolean | null
           certification_notes?: string | null
@@ -4643,6 +4667,7 @@ export type Database = {
           created_at?: string | null
           credentials?: Json | null
           design_philosophy?: string | null
+          design_software?: string[] | null
           do_you_source_materials?: boolean | null
           engineering_in_house?: boolean | null
           engineering_insurance_status?: string | null
@@ -4682,6 +4707,8 @@ export type Database = {
           num_project_managers?: number | null
           num_renderers?: number | null
           num_structural_engineers?: number | null
+          offers_surveying?: boolean | null
+          other_software?: string | null
           pe_license_number?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
@@ -4693,9 +4720,11 @@ export type Database = {
           primary_service_zip?: string | null
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
+          project_management_software?: string[] | null
           project_types?: string[] | null
           recent_estimate_url?: string | null
           region_notes?: string | null
+          rendering_software?: string[] | null
           service_area_type?: string | null
           service_mode?: string | null
           service_radius_miles?: number | null
@@ -4706,6 +4735,8 @@ export type Database = {
           staging_services_offered?: string[] | null
           staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
+          surveying_equipment?: string[] | null
+          surveying_services?: string[] | null
           team_size?: number | null
           team_structure_notes?: string | null
           travel_radius_miles?: number | null
@@ -4736,6 +4767,7 @@ export type Database = {
           business_address?: string | null
           business_registered?: boolean | null
           business_registration_document?: string | null
+          cad_software?: string[] | null
           can_coordinate_engineering?: boolean | null
           can_stamp_plans?: boolean | null
           certification_notes?: string | null
@@ -4747,6 +4779,7 @@ export type Database = {
           created_at?: string | null
           credentials?: Json | null
           design_philosophy?: string | null
+          design_software?: string[] | null
           do_you_source_materials?: boolean | null
           engineering_in_house?: boolean | null
           engineering_insurance_status?: string | null
@@ -4786,6 +4819,8 @@ export type Database = {
           num_project_managers?: number | null
           num_renderers?: number | null
           num_structural_engineers?: number | null
+          offers_surveying?: boolean | null
+          other_software?: string | null
           pe_license_number?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
@@ -4797,9 +4832,11 @@ export type Database = {
           primary_service_zip?: string | null
           profile_completion_percent?: number | null
           profile_photo_url?: string | null
+          project_management_software?: string[] | null
           project_types?: string[] | null
           recent_estimate_url?: string | null
           region_notes?: string | null
+          rendering_software?: string[] | null
           service_area_type?: string | null
           service_mode?: string | null
           service_radius_miles?: number | null
@@ -4810,6 +4847,8 @@ export type Database = {
           staging_services_offered?: string[] | null
           staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
+          surveying_equipment?: string[] | null
+          surveying_services?: string[] | null
           team_size?: number | null
           team_structure_notes?: string | null
           travel_radius_miles?: number | null
