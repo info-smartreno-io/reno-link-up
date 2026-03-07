@@ -26,11 +26,17 @@ export function useProjectDailyLogs(projectId: string | undefined) {
     mutationFn: async (log: { log_date: string; log_type?: string; notes?: string; weather_conditions?: string; workers_on_site?: number }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("daily_logs").insert({
-        ...log,
+      const insertData: any = {
+        log_date: log.log_date,
         project_id: projectId!,
         created_by: user.id,
-      });
+      };
+      if (log.log_type) insertData.log_type = log.log_type;
+      if (log.notes) insertData.notes = log.notes;
+      if (log.weather_conditions) insertData.weather_conditions = log.weather_conditions;
+      if (log.workers_on_site) insertData.workers_on_site = log.workers_on_site;
+      
+      const { error } = await supabase.from("daily_logs").insert(insertData);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Daily log added"); },

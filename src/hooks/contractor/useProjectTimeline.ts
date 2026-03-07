@@ -10,22 +10,22 @@ export function useProjectTimeline(projectId: string | undefined) {
     queryKey,
     queryFn: async () => {
       if (!projectId) return [];
-      const { data, error } = await supabase
-        .from("timeline_tasks")
+      const { data, error } = await (supabase
+        .from("timeline_tasks" as any)
         .select("*")
         .eq("project_id", projectId)
-        .order("sort_order", { ascending: true });
+        .order("sort_order", { ascending: true }) as any);
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     enabled: !!projectId,
   });
 
   const addTask = useMutation({
     mutationFn: async (task: { phase_name: string; start_date?: string; duration_days?: number; assigned_trade?: string; sort_order?: number }) => {
-      const { error } = await supabase
-        .from("timeline_tasks")
-        .insert({ ...task, project_id: projectId! });
+      const { error } = await (supabase
+        .from("timeline_tasks" as any)
+        .insert({ ...task, project_id: projectId! }) as any);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Phase added"); },
@@ -34,7 +34,7 @@ export function useProjectTimeline(projectId: string | undefined) {
 
   const updateTask = useMutation({
     mutationFn: async ({ id, ...updates }: { id: string; phase_name?: string; start_date?: string | null; duration_days?: number; status?: string; assigned_trade?: string }) => {
-      const { error } = await supabase.from("timeline_tasks").update(updates).eq("id", id);
+      const { error } = await (supabase.from("timeline_tasks" as any).update(updates).eq("id", id) as any);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
@@ -43,7 +43,7 @@ export function useProjectTimeline(projectId: string | undefined) {
 
   const deleteTask = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("timeline_tasks").delete().eq("id", id);
+      const { error } = await (supabase.from("timeline_tasks" as any).delete().eq("id", id) as any);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Phase removed"); },
