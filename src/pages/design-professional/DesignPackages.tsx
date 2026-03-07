@@ -82,7 +82,7 @@ export default function DesignPackages() {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold">Package #{pkg.id.slice(0, 8)}</h3>
                       <Badge variant={statusColor(pkg.package_status)}>{pkg.package_status}</Badge>
-                      {pkg.ready_for_rfp && <Badge className="bg-green-600">RFP Ready</Badge>}
+                      {pkg.ready_for_rfp && <Badge variant="default">RFP Ready</Badge>}
                     </div>
                     <Progress value={pkg.package_completion_percent} className="h-2 mt-2" />
                     <p className="text-xs text-muted-foreground mt-1">{pkg.package_completion_percent}% complete</p>
