@@ -67,6 +67,10 @@ import AdminContractorManagement from "./pages/admin/AdminContractorManagement";
 import AdminRFPManagement from "./pages/admin/AdminRFPManagement";
 import AdminBidReview from "./pages/admin/AdminBidReview";
 import AdminLiveProjects from "./pages/admin/AdminLiveProjects";
+import AdminEstimatingHub from "./pages/admin/AdminEstimatingHub";
+import AdminDesigners from "./pages/admin/AdminDesigners";
+import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
+import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminWorkflow from "./pages/AdminWorkflow";
 import AdminApplications from "./pages/AdminApplications";
@@ -371,6 +375,26 @@ function AppRoutes() {
             <Route path="/admin/live-projects" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminLiveProjects />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/estimating" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminEstimatingHub />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/designers" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDesigners />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/vendor-monitoring" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminVendorMonitoring />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/file-storage" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminFileStorage />
               </ProtectedRoute>
             } />
             <Route path="/admin/calendars" element={
