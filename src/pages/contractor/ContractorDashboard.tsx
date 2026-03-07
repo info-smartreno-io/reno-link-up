@@ -347,6 +347,44 @@ export default function ContractorDashboard() {
           )}
         </div>
 
+        {/* Top Matched Opportunities */}
+        {topMatches.length > 0 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <div>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-accent" />
+                  Top Matches for You
+                </CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => navigate("/contractor/opportunities")}>
+                View All <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {topMatches.map((opp: any) => {
+                const { label, color } = getMatchLabel(opp.matchScore);
+                return (
+                  <div key={opp.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate(`/contractor/rfp/${opp.id}`)}>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{opp.title}</p>
+                      <p className="text-sm text-muted-foreground">{opp.location}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {opp.estimated_budget && (
+                        <span className="text-sm text-muted-foreground">${(opp.estimated_budget / 1000).toFixed(0)}k</span>
+                      )}
+                      <Badge variant="outline" className={color}>
+                        {opp.matchScore}% – {label}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Recent Leads & Active Projects */}
