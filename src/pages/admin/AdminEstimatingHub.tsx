@@ -152,13 +152,18 @@ export default function AdminEstimatingHub() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">Field mode workspaces for on-site measurements, photos, and notes.</p>
-                  {estimatingLeads?.filter(l => l.status === "walkthrough_scheduled").map((lead) => (
+                   {estimatingLeads?.filter(l => l.status === "walkthrough_scheduled").map((lead) => (
                     <div key={lead.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
                       <div>
                         <p className="font-medium text-foreground">{lead.name}</p>
                         <p className="text-sm text-muted-foreground">{lead.project_type} • {lead.location}</p>
                       </div>
-                      <Badge variant="outline">Walkthrough Scheduled</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">Walkthrough Scheduled</Badge>
+                        <Link to={`/admin/estimating/${lead.id}/field-mode`}>
+                          <Button size="sm">Open Field Mode</Button>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                   {!estimatingLeads?.some(l => l.status === "walkthrough_scheduled") && (
@@ -177,15 +182,20 @@ export default function AdminEstimatingHub() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">Convert field data into contractor-facing bid packages.</p>
-                  {estimatingLeads?.filter(l => l.status === "estimate_in_progress" || l.status === "estimate_sent").map((lead) => (
+                   {estimatingLeads?.filter(l => l.status === "estimate_in_progress" || l.status === "estimate_sent").map((lead) => (
                     <div key={lead.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
                       <div>
                         <p className="font-medium text-foreground">{lead.name}</p>
                         <p className="text-sm text-muted-foreground">{lead.project_type} • {lead.location}</p>
                       </div>
-                      <Badge variant={lead.status === "estimate_sent" ? "default" : "outline"}>
-                        {lead.status?.replace(/_/g, " ")}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={lead.status === "estimate_sent" ? "default" : "outline"}>
+                          {lead.status?.replace(/_/g, " ")}
+                        </Badge>
+                        <Link to={`/admin/estimating/${lead.id}/bid-packet`}>
+                          <Button size="sm">Open Bid Packet</Button>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                   {!estimatingLeads?.some(l => ["estimate_in_progress", "estimate_sent"].includes(l.status || "")) && (
