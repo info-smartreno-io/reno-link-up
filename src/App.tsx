@@ -16,6 +16,7 @@ import { LeadDataProvider } from "@/context/LeadDataContext";
 import Index from "./pages/Index";
 import GetEstimate from "./pages/GetEstimate";
 import NotFound from "./pages/NotFound";
+import SubBidPublicForm from "./pages/SubBidPublicForm";
 import Partner from "./pages/Partner";
 import ContractorDemo from "./pages/ContractorDemo";
 import ContractorOnboarding from "./pages/ContractorOnboarding";
