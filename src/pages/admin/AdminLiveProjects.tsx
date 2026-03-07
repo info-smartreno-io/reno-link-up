@@ -27,9 +27,9 @@ export default function AdminLiveProjects() {
 
   const filtered = projects?.filter((p) =>
     !search ||
-    p.homeowner_name?.toLowerCase().includes(search.toLowerCase()) ||
+    p.client_name?.toLowerCase().includes(search.toLowerCase()) ||
     p.project_type?.toLowerCase().includes(search.toLowerCase()) ||
-    p.address?.toLowerCase().includes(search.toLowerCase())
+    p.location?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -88,10 +88,10 @@ export default function AdminLiveProjects() {
                     const HealthIcon = health.icon;
                     return (
                       <TableRow key={project.id}>
-                        <TableCell className="font-medium">{project.project_type || "Project"}</TableCell>
-                        <TableCell>{project.homeowner_name || "—"}</TableCell>
+                        <TableCell className="font-medium">{project.project_name || "Project"}</TableCell>
+                        <TableCell>{project.client_name || "—"}</TableCell>
                         <TableCell>{project.project_type || "—"}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{project.address || "—"}</TableCell>
+                        <TableCell className="max-w-[200px] truncate">{project.location || "—"}</TableCell>
                         <TableCell>
                           <Badge className={health.color}>
                             <HealthIcon className="h-3 w-3 mr-1" />{health.label}
