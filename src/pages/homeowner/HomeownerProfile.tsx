@@ -16,7 +16,6 @@ export default function HomeownerProfile() {
     full_name: "",
     email: "",
     phone: "",
-    address: "",
   });
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function HomeownerProfile() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, email, phone, address")
+        .select("full_name, email, phone")
         .eq("id", user.id)
         .single();
 
@@ -39,7 +38,6 @@ export default function HomeownerProfile() {
           full_name: data.full_name || "",
           email: data.email || user.email || "",
           phone: data.phone || "",
-          address: data.address || "",
         });
       }
     } catch (err) {
@@ -60,7 +58,6 @@ export default function HomeownerProfile() {
         .update({
           full_name: profile.full_name,
           phone: profile.phone,
-          address: profile.address,
         })
         .eq("id", user.id);
 
@@ -126,18 +123,6 @@ export default function HomeownerProfile() {
               value={profile.phone}
               onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               placeholder="(555) 123-4567"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address" className="flex items-center gap-1.5">
-              <MapPin className="h-3 w-3" /> Address
-            </Label>
-            <Input
-              id="address"
-              value={profile.address}
-              onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-              placeholder="Your home address"
             />
           </div>
 
