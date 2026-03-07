@@ -7491,6 +7491,39 @@ export type Database = {
         }
         Relationships: []
       }
+      project_activity_log: {
+        Row: {
+          activity_type: string
+          created_at: string
+          description: string
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+          project_id: string
+          role: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          project_id: string
+          role?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          project_id?: string
+          role?: string | null
+        }
+        Relationships: []
+      }
       project_assignments: {
         Row: {
           assigned_type: string
