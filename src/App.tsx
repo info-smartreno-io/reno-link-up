@@ -69,6 +69,7 @@ import ServicesIndex from "./pages/services/ServicesIndex";
 import ServiceDetailPage from "./pages/services/ServiceDetailPage";
 import Software from "./pages/Software";
 import StartYourRenovation from "./pages/StartYourRenovation";
+import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import AdminAuth from "./pages/AdminAuth";
@@ -404,6 +405,7 @@ function AppRoutes() {
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
             <Route path="/software" element={<Software />} />
             <Route path="/start-your-renovation" element={<StartYourRenovation />} />
+            <Route path="/start-your-renovation/confirmation" element={<IntakeConfirmation />} />
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
               <ProtectedRoute requiredRole="admin">
