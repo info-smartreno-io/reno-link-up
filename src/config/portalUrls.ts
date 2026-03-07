@@ -1,7 +1,7 @@
 export type PortalKey = "homeowner" | "contractor" | "estimator" | "admin" | "architect" | "interiordesigner" | "vendor";
 
 export const PORTAL_URLS: Record<PortalKey, string> = {
-  homeowner: "/homeowner/portal",
+  homeowner: "/homeowner/dashboard",
   contractor: "/contractor/dashboard",
   estimator: "/estimator/dashboard",
   admin: "/admin/dashboard",

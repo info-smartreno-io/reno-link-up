@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -303,16 +303,8 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/project/:projectId/timeline" element={<HomeownerTimeline />} />
-            <Route path="/homeowner-portal" element={
-              <ProtectedRoute>
-                <HomeownerPortal />
-              </ProtectedRoute>
-            } />
-            <Route path="/homeowner/portal" element={
-              <ProtectedRoute>
-                <HomeownerPortal />
-              </ProtectedRoute>
-            } />
+            <Route path="/homeowner-portal" element={<Navigate to="/homeowner/dashboard" replace />} />
+            <Route path="/homeowner/portal" element={<Navigate to="/homeowner/dashboard" replace />} />
             <Route path="/homeowner/account-settings" element={
               <ProtectedRoute>
                 <AccountSettings />

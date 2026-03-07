@@ -155,7 +155,7 @@ export default function HomeownerWarrantyClaim() {
 
       // Reset form
       setTimeout(() => {
-        navigate("/homeowner-portal");
+        navigate("/homeowner/dashboard");
       }, 3000);
 
     } catch (error: any) {
@@ -183,7 +183,7 @@ export default function HomeownerWarrantyClaim() {
                 Your warranty claim has been submitted successfully. Our team will review it and contact you soon.
               </p>
             </div>
-            <Button onClick={() => navigate("/homeowner-portal")} className="w-full">
+            <Button onClick={() => navigate("/homeowner/dashboard")} className="w-full">
               Back to Portal
             </Button>
           </CardContent>
@@ -198,7 +198,7 @@ export default function HomeownerWarrantyClaim() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate("/homeowner-portal")}>
+            <Button variant="ghost" onClick={() => navigate("/homeowner/dashboard")}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Portal
             </Button>
@@ -363,7 +363,7 @@ export default function HomeownerWarrantyClaim() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/homeowner-portal")}
+                  onClick={() => navigate("/homeowner/dashboard")}
                   className="flex-1"
                 >
                   Cancel

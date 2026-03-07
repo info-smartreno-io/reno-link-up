@@ -40,10 +40,10 @@ export const SettingsDropdown = ({ userRole }: SettingsDropdownProps) => {
 
     const roleSpecificItems = {
       homeowner: [
-        { icon: Home, label: "My Portal", onClick: () => navigate("/homeowner-portal") },
-        { icon: FileText, label: "Projects", onClick: () => navigate("/homeowner-portal") },
+        { icon: Home, label: "My Portal", onClick: () => navigate("/homeowner/dashboard") },
+        { icon: FileText, label: "Projects", onClick: () => navigate("/homeowner/projects") },
         { icon: FolderOpen, label: "Files", onClick: () => navigate("/homeowner/files") },
-        { icon: MessageSquare, label: "Messages", onClick: () => navigate("/homeowner-portal") },
+        { icon: MessageSquare, label: "Messages", onClick: () => navigate("/homeowner/messages") },
       ],
       estimator: [
         { icon: Home, label: "Dashboard", onClick: () => navigate("/estimator/dashboard") },

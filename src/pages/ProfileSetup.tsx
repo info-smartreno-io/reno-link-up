@@ -123,7 +123,7 @@ export default function ProfileSetup() {
 
       // Role-based redirect after profile setup
       const redirectPaths: Record<string, string> = {
-        homeowner: "/homeowner-portal",
+        homeowner: "/homeowner/dashboard",
         contractor: "/contractor/dashboard",
         architect: "/architect/dashboard",
         interior_designer: "/interiordesigner/dashboard",

@@ -20,7 +20,7 @@ export default function HomeownerEstimateConfirmed() {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate('/homeowner/portal');
+          navigate('/homeowner/dashboard');
           return 0;
         }
         return prev - 1;
@@ -68,7 +68,7 @@ export default function HomeownerEstimateConfirmed() {
             <p className="text-sm text-muted-foreground">
               Redirecting to your homeowner portal in {countdown} seconds...
             </p>
-            <Button onClick={() => navigate('/homeowner/portal')} className="w-full">
+            <Button onClick={() => navigate('/homeowner/dashboard')} className="w-full">
               <Home className="mr-2 h-4 w-4" />
               Go to Homeowner Portal
             </Button>
