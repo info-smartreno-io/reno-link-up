@@ -49,7 +49,7 @@ export default function HomeownerProjectDetail() {
           <h1 className="text-xl font-semibold text-foreground">
             {project?.project_type || "Project"}
           </h1>
-          <p className="text-sm text-muted-foreground">{project?.address}</p>
+          <p className="text-sm text-muted-foreground">{(project as any)?.address || (project as any)?.location}</p>
         </div>
         <Badge className="ml-auto bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">
           {status.label}

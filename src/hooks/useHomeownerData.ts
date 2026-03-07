@@ -13,7 +13,7 @@ export function useHomeownerProjects() {
         .from("homeowner_projects")
         .select(`
           id,
-          role,
+          project_id,
           contractor_projects (
             id,
             client_name,
@@ -34,7 +34,6 @@ export function useHomeownerProjects() {
       if (error) throw error;
       return data?.map(hp => ({
         linkId: hp.id,
-        role: hp.role,
         ...hp.contractor_projects as any,
       })) || [];
     },
@@ -64,10 +63,18 @@ export function useHomeownerProjectDetail(projectId: string | undefined) {
       if (project.contractor_id) {
         const { data: cData } = await supabase
           .from("contractors")
-          .select("id, company_name, contact_name, contact_email, contact_phone")
+          .select("id, name, owner_name, email, phone")
           .eq("id", project.contractor_id)
           .single();
-        contractor = cData;
+        if (cData) {
+          contractor = {
+            id: cData.id,
+            company_name: cData.name,
+            contact_name: cData.owner_name,
+            contact_email: cData.email,
+            contact_phone: cData.phone,
+          };
+        }
       }
 
       // Get recent daily logs
@@ -124,12 +131,12 @@ export function useHomeownerProposals(projectId: string | undefined) {
         if (bid.bidder_type === "contractor") {
           const { data: c } = await supabase
             .from("contractors")
-            .select("company_name, contact_name")
+            .select("name, owner_name")
             .eq("id", bid.bidder_id)
             .single();
           if (c) {
-            contractorName = c.contact_name || "Contractor";
-            companyName = c.company_name || "";
+            contractorName = c.owner_name || "Contractor";
+            companyName = c.name || "";
           }
         }
         return { ...bid, contractorName, companyName };

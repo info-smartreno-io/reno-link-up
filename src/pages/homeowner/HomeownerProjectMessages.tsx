@@ -23,7 +23,7 @@ export default function HomeownerProjectMessages() {
           Communicate with your contractor and SmartReno team.
         </p>
       </div>
-      <ProjectMessaging projectId={projectId} />
+      <ProjectMessaging projectId={projectId} projectName="Project" />
     </div>
   );
 }
