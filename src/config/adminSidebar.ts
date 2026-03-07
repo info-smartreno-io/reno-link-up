@@ -65,6 +65,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
       { id: "ops.design_packages", label: "Design Packages", to: "/admin/design-packages", icon: FolderKanban },
       { id: "ops.vendors_monitor", label: "Vendors", to: "/admin/vendor-monitoring", icon: Package },
       { id: "ops.rfps", label: "RFPs", to: "/admin/rfps", icon: FileText, badgeKey: "bids_open" },
+      { id: "ops.bid_packets", label: "Bid Packets", to: "/admin/bid-packets", icon: Package },
       { id: "ops.bids", label: "Bid Review", to: "/admin/bids", icon: Gavel },
       { id: "ops.live_projects", label: "Live Projects", to: "/admin/live-projects", icon: Building2, badgeKey: "projects_open" },
       { id: "ops.files", label: "File Storage", to: "/admin/file-storage", icon: FolderOpen },
