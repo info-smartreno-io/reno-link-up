@@ -87,6 +87,18 @@ export default function DesignProfessionalProfile() {
           <div><Label>Business Address</Label><Input value={form.business_address || ""} onChange={(e) => update("business_address", e.target.value)} /></div>
           <div><Label>Years in Business</Label><Input type="number" value={form.years_in_business || ""} onChange={(e) => update("years_in_business", parseInt(e.target.value) || null)} /></div>
           <div><Label>Team Size</Label><Input type="number" value={form.team_size || ""} onChange={(e) => update("team_size", parseInt(e.target.value) || null)} /></div>
+          <div className="md:col-span-2 space-y-3 border border-border rounded-lg p-4 bg-muted/20">
+            <div className="flex items-center gap-2">
+              <Switch checked={form.has_showroom || false} onCheckedChange={(v) => update("has_showroom", v)} />
+              <Label className="font-medium">Brick & Mortar Showroom / Design Studio</Label>
+            </div>
+            {form.has_showroom && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div><Label>Showroom Address</Label><Input value={form.showroom_address || ""} onChange={(e) => update("showroom_address", e.target.value)} placeholder="Full address of your showroom" /></div>
+                <div><Label>Description</Label><Input value={form.showroom_description || ""} onChange={(e) => update("showroom_description", e.target.value)} placeholder="e.g. 2,000 sq ft kitchen & bath showroom" /></div>
+              </div>
+            )}
+          </div>
           <FileUploadField label="Profile Photo" bucket="design-professional-credentials" currentUrl={form.profile_photo_url} onUpload={(url) => update("profile_photo_url", url)} onRemove={() => update("profile_photo_url", null)} accept=".jpg,.jpeg,.png,.webp" />
           <FileUploadField label="Company Logo" bucket="design-professional-credentials" currentUrl={form.company_logo_url} onUpload={(url) => update("company_logo_url", url)} onRemove={() => update("company_logo_url", null)} accept=".jpg,.jpeg,.png,.webp" />
         </CardContent>
@@ -101,7 +113,7 @@ export default function DesignProfessionalProfile() {
           <div><Label>Full Bio</Label><Textarea value={form.full_bio || ""} onChange={(e) => update("full_bio", e.target.value)} rows={4} /></div>
           <div><Label>Design Philosophy</Label><Textarea value={form.design_philosophy || ""} onChange={(e) => update("design_philosophy", e.target.value)} rows={3} /></div>
           <div><Label>Unique Value Proposition</Label><Textarea value={form.unique_value_proposition || ""} onChange={(e) => update("unique_value_proposition", e.target.value)} rows={2} /></div>
-          <div><Label>Ideal Client Type</Label><Input value={form.ideal_client_type || ""} onChange={(e) => update("ideal_client_type", e.target.value)} /></div>
+          
           <div><Label>Notable Projects Summary</Label><Textarea value={form.notable_projects_summary || ""} onChange={(e) => update("notable_projects_summary", e.target.value)} rows={2} /></div>
           <div><Label>Awards / Publications</Label><Textarea value={form.awards_or_publications || ""} onChange={(e) => update("awards_or_publications", e.target.value)} rows={2} /></div>
         </CardContent>
@@ -340,6 +352,46 @@ export default function DesignProfessionalProfile() {
         </Card>
       )}
 
+      {/* Licensed Architecture Firm */}
+      {hasArchitecture && (
+        <Card>
+          <CardHeader><CardTitle>Licensed Architecture Firm</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">If your firm is a licensed architecture practice that can stamp and seal construction documents and carries professional liability insurance, complete this section.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Switch checked={form.is_licensed_architecture_firm || false} onCheckedChange={(v) => update("is_licensed_architecture_firm", v)} />
+                <Label>Licensed Architecture Firm</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={form.can_stamp_plans || false} onCheckedChange={(v) => update("can_stamp_plans", v)} />
+                <Label>Can Stamp & Seal Plans</Label>
+              </div>
+              <div>
+                <Label>Professional Liability / E&O Insurance</Label>
+                <Select value={form.firm_insurance_type || ""} onValueChange={(v) => update("firm_insurance_type", v)}>
+                  <SelectTrigger><SelectValue placeholder="Select coverage type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="professional_liability">Professional Liability (E&O)</SelectItem>
+                    <SelectItem value="general_liability">General Liability</SelectItem>
+                    <SelectItem value="both">Both Professional & General Liability</SelectItem>
+                    <SelectItem value="none">No Coverage</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Liability Coverage Amount</Label>
+                <Input value={form.firm_liability_coverage || ""} onChange={(e) => update("firm_liability_coverage", e.target.value)} placeholder="e.g. $1M / $2M aggregate" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FileUploadField label="Recent Estimate / Proposal Sample" bucket="design-professional-proposals" currentUrl={form.recent_estimate_url} onUpload={(url) => update("recent_estimate_url", url)} onRemove={() => update("recent_estimate_url", null)} />
+              <FileUploadField label="Contract Template" bucket="design-professional-proposals" currentUrl={form.contract_template_url} onUpload={(url) => update("contract_template_url", url)} onRemove={() => update("contract_template_url", null)} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Availability */}
       <Card>
         <CardHeader><CardTitle>Availability & Lead Preferences</CardTitle></CardHeader>
@@ -401,7 +453,34 @@ export default function DesignProfessionalProfile() {
             <div><Label>Starting Consultation Fee ($)</Label><Input type="number" value={form.starting_consultation_fee || ""} onChange={(e) => update("starting_consultation_fee", parseFloat(e.target.value) || null)} /></div>
             <div><Label>Minimum Project Size ($)</Label><Input type="number" value={form.minimum_project_size || ""} onChange={(e) => update("minimum_project_size", parseFloat(e.target.value) || null)} /></div>
           </div>
-          <div><Label>Pricing Notes</Label><Textarea value={form.pricing_notes || ""} onChange={(e) => update("pricing_notes", e.target.value)} rows={2} /></div>
+          <div>
+            <Label>Pricing Notes</Label>
+            <Textarea
+              value={form.pricing_notes || ""}
+              onChange={(e) => update("pricing_notes", e.target.value)}
+              rows={2}
+              placeholder="e.g. Charge $250 for initial in-person consultation"
+            />
+            {!form.pricing_notes && form.starting_consultation_fee && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-1"
+                type="button"
+                onClick={() => update("pricing_notes", `Charge $${form.starting_consultation_fee} for initial in-person consultation`)}
+              >
+                Auto-fill consultation note
+              </Button>
+            )}
+          </div>
+          <div>
+            <Label>Initial Consultation Fee Note (shown to homeowners)</Label>
+            <Input
+              value={form.initial_consultation_fee_note || ""}
+              onChange={(e) => update("initial_consultation_fee_note", e.target.value)}
+              placeholder={`e.g. Charge $${form.starting_consultation_fee || '___'} for initial in-person consultation`}
+            />
+          </div>
         </CardContent>
       </Card>
 
