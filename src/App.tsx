@@ -1125,6 +1125,7 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/invite/:token" element={<InviteAccept />} />
+            <Route path="/sub-bid/:projectId/:trade" element={<SubBidPublicForm />} />
             <Route path="/admin/applicants/homeowner" element={
               <ProtectedRoute requiredRole="admin">
                 <HomeownerApplicants />
