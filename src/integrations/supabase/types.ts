@@ -10207,6 +10207,91 @@ export type Database = {
         }
         Relationships: []
       }
+      subcontractor_bids: {
+        Row: {
+          bid_amount: number
+          company_name: string
+          contact_name: string
+          created_at: string | null
+          duration: string | null
+          email: string | null
+          exclusions_url: string | null
+          id: string
+          meeting_date: string | null
+          notes: string | null
+          phone: string | null
+          project_id: string
+          proposal_url: string | null
+          start_date: string | null
+          status: string
+          subcontractor_id: string | null
+          trade: string
+          updated_at: string | null
+        }
+        Insert: {
+          bid_amount?: number
+          company_name: string
+          contact_name: string
+          created_at?: string | null
+          duration?: string | null
+          email?: string | null
+          exclusions_url?: string | null
+          id?: string
+          meeting_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          project_id: string
+          proposal_url?: string | null
+          start_date?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          trade: string
+          updated_at?: string | null
+        }
+        Update: {
+          bid_amount?: number
+          company_name?: string
+          contact_name?: string
+          created_at?: string | null
+          duration?: string | null
+          email?: string | null
+          exclusions_url?: string | null
+          id?: string
+          meeting_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          project_id?: string
+          proposal_url?: string | null
+          start_date?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          trade?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcontractor_bids_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcontractor_bids_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcontractor_bids_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subcontractor_messages: {
         Row: {
           attachments: Json | null
@@ -10668,6 +10753,60 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "pricing_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timeline_tasks: {
+        Row: {
+          assigned_trade: string | null
+          created_at: string | null
+          duration_days: number
+          id: string
+          phase_name: string
+          project_id: string
+          sort_order: number
+          start_date: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_trade?: string | null
+          created_at?: string | null
+          duration_days?: number
+          id?: string
+          phase_name: string
+          project_id: string
+          sort_order?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_trade?: string | null
+          created_at?: string | null
+          duration_days?: number
+          id?: string
+          phase_name?: string
+          project_id?: string
+          sort_order?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timeline_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timeline_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_projects"
             referencedColumns: ["id"]
           },
         ]

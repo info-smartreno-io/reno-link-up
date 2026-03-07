@@ -159,6 +159,8 @@ import SalesPipeline from "./pages/contractor/SalesPipeline";
 import Collections from "./pages/contractor/Collections";
 import ContractorEstimatorDashboard from "./pages/contractor/ContractorEstimatorDashboard";
 import ContractorProjects from "./pages/contractor/ContractorProjects";
+import ContractorProjectsList from "./pages/contractor/ContractorProjectsList";
+import ContractorProjectWorkspace from "./pages/contractor/ContractorProjectWorkspace";
 import ContractorProjectDashboard from "./pages/contractor/ContractorProjectDashboard";
 import ContractorProjectDetail from "./pages/contractor/ContractorProjectDetail";
 import ContractorBids from "./pages/contractor/ContractorBids";
@@ -826,7 +828,17 @@ function AppRoutes() {
             } />
             <Route path="/contractor/projects" element={
               <ProtectedRoute requiredRole="contractor">
-                <ContractorProjects />
+                <ContractorProjectsList />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/projects/:projectId" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorProjectWorkspace />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/projects/:projectId/:tab" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorProjectWorkspace />
               </ProtectedRoute>
             } />
             <Route path="/contractor/project-dashboard" element={
