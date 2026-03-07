@@ -69,7 +69,7 @@ export function GenerateBidPacketDialog({ open, onOpenChange, packageId, package
     const getSection = (key: string) => {
       const sec = sections?.find(s => s.section_key === key);
       if (!sec || sec.internal_only) return "";
-      return sec.content || "";
+      return typeof sec.section_data === "string" ? sec.section_data : JSON.stringify(sec.section_data || "");
     };
 
     return {
