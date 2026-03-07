@@ -49,8 +49,25 @@ export const PROJECT_TYPE_OPTIONS = [
   "Interior reconfiguration",
   "Exterior renovation",
   "Outdoor living",
+  "New construction",
+  "Multi-family development",
   "Commercial interior renovation",
   "Condo / apartment renovation",
+] as const;
+
+export const ENGINEERING_SPECIALIZATION_OPTIONS = [
+  "Residential structural",
+  "Commercial structural",
+  "Foundation design",
+  "Steel / wood framing",
+  "Retaining walls",
+  "Load-bearing modifications",
+  "Seismic retrofitting",
+  "HVAC system design",
+  "Plumbing system design",
+  "Electrical system design",
+  "Energy modeling / Title 24",
+  "Civil / site engineering",
 ] as const;
 
 export const BUDGET_RANGE_OPTIONS = [

@@ -1,0 +1,20 @@
+
+ALTER TABLE public.design_professional_profiles
+ADD COLUMN IF NOT EXISTS num_architects integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_interior_designers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_kitchen_bath_designers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_drafters integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_project_managers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_renderers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_admin_staff integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS team_structure_notes text,
+ADD COLUMN IF NOT EXISTS engineering_in_house boolean DEFAULT false,
+ADD COLUMN IF NOT EXISTS num_structural_engineers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_mep_engineers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS num_civil_engineers integer DEFAULT 0,
+ADD COLUMN IF NOT EXISTS engineering_license_states text[] DEFAULT '{}',
+ADD COLUMN IF NOT EXISTS pe_license_number text,
+ADD COLUMN IF NOT EXISTS engineering_insurance_status text,
+ADD COLUMN IF NOT EXISTS engineering_specializations text[] DEFAULT '{}',
+ADD COLUMN IF NOT EXISTS engineering_turnaround_days integer,
+ADD COLUMN IF NOT EXISTS engineering_notes text;

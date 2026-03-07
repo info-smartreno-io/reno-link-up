@@ -4540,7 +4540,13 @@ export type Database = {
           credentials: Json | null
           design_philosophy: string | null
           do_you_source_materials: boolean | null
+          engineering_in_house: boolean | null
+          engineering_insurance_status: string | null
+          engineering_license_states: string[] | null
+          engineering_notes: string | null
           engineering_services_supported: string[] | null
+          engineering_specializations: string[] | null
+          engineering_turnaround_days: number | null
           featured: boolean | null
           firm_insurance_type: string | null
           firm_liability_coverage: string | null
@@ -4562,6 +4568,17 @@ export type Database = {
           ncarb: boolean | null
           nkba_member: boolean | null
           notable_projects_summary: string | null
+          num_admin_staff: number | null
+          num_architects: number | null
+          num_civil_engineers: number | null
+          num_drafters: number | null
+          num_interior_designers: number | null
+          num_kitchen_bath_designers: number | null
+          num_mep_engineers: number | null
+          num_project_managers: number | null
+          num_renderers: number | null
+          num_structural_engineers: number | null
+          pe_license_number: string | null
           preferred_communication: string[] | null
           preferred_lead_types: string[] | null
           pricing_model: string[] | null
@@ -4586,6 +4603,7 @@ export type Database = {
           staging_turnaround_time_days: number | null
           starting_consultation_fee: number | null
           team_size: number | null
+          team_structure_notes: string | null
           travel_radius_miles: number | null
           unique_value_proposition: string | null
           updated_at: string | null
@@ -4626,7 +4644,13 @@ export type Database = {
           credentials?: Json | null
           design_philosophy?: string | null
           do_you_source_materials?: boolean | null
+          engineering_in_house?: boolean | null
+          engineering_insurance_status?: string | null
+          engineering_license_states?: string[] | null
+          engineering_notes?: string | null
           engineering_services_supported?: string[] | null
+          engineering_specializations?: string[] | null
+          engineering_turnaround_days?: number | null
           featured?: boolean | null
           firm_insurance_type?: string | null
           firm_liability_coverage?: string | null
@@ -4648,6 +4672,17 @@ export type Database = {
           ncarb?: boolean | null
           nkba_member?: boolean | null
           notable_projects_summary?: string | null
+          num_admin_staff?: number | null
+          num_architects?: number | null
+          num_civil_engineers?: number | null
+          num_drafters?: number | null
+          num_interior_designers?: number | null
+          num_kitchen_bath_designers?: number | null
+          num_mep_engineers?: number | null
+          num_project_managers?: number | null
+          num_renderers?: number | null
+          num_structural_engineers?: number | null
+          pe_license_number?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
           pricing_model?: string[] | null
@@ -4672,6 +4707,7 @@ export type Database = {
           staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
           team_size?: number | null
+          team_structure_notes?: string | null
           travel_radius_miles?: number | null
           unique_value_proposition?: string | null
           updated_at?: string | null
@@ -4712,7 +4748,13 @@ export type Database = {
           credentials?: Json | null
           design_philosophy?: string | null
           do_you_source_materials?: boolean | null
+          engineering_in_house?: boolean | null
+          engineering_insurance_status?: string | null
+          engineering_license_states?: string[] | null
+          engineering_notes?: string | null
           engineering_services_supported?: string[] | null
+          engineering_specializations?: string[] | null
+          engineering_turnaround_days?: number | null
           featured?: boolean | null
           firm_insurance_type?: string | null
           firm_liability_coverage?: string | null
@@ -4734,6 +4776,17 @@ export type Database = {
           ncarb?: boolean | null
           nkba_member?: boolean | null
           notable_projects_summary?: string | null
+          num_admin_staff?: number | null
+          num_architects?: number | null
+          num_civil_engineers?: number | null
+          num_drafters?: number | null
+          num_interior_designers?: number | null
+          num_kitchen_bath_designers?: number | null
+          num_mep_engineers?: number | null
+          num_project_managers?: number | null
+          num_renderers?: number | null
+          num_structural_engineers?: number | null
+          pe_license_number?: string | null
           preferred_communication?: string[] | null
           preferred_lead_types?: string[] | null
           pricing_model?: string[] | null
@@ -4758,6 +4811,7 @@ export type Database = {
           staging_turnaround_time_days?: number | null
           starting_consultation_fee?: number | null
           team_size?: number | null
+          team_structure_notes?: string | null
           travel_radius_miles?: number | null
           unique_value_proposition?: string | null
           updated_at?: string | null

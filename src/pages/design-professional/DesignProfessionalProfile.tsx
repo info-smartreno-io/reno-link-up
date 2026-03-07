@@ -23,6 +23,7 @@ import {
   SERVICE_MODE_OPTIONS,
   SERVICE_AREA_TYPE_OPTIONS,
   ENGINEERING_SERVICES_OPTIONS,
+  ENGINEERING_SPECIALIZATION_OPTIONS,
   STAGING_SERVICES_OPTIONS,
   getCredentialFieldsForSpecialties,
 } from "@/config/designProfessionalOptions";
@@ -57,7 +58,6 @@ export default function DesignProfessionalProfile() {
   const credentialFields = getCredentialFieldsForSpecialties(specialties);
   const hasArchitecture = specialties.includes("Architecture") || specialties.includes("Drafting / Permit Plans");
   const hasStaging = specialties.includes("Home Staging");
-  const hasEngineering = specialties.includes("Engineering Consultant");
 
   if (isLoading) {
     return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -86,7 +86,6 @@ export default function DesignProfessionalProfile() {
           <div><Label>Instagram / Portfolio Link</Label><Input value={form.instagram_or_portfolio_link || ""} onChange={(e) => update("instagram_or_portfolio_link", e.target.value)} /></div>
           <div><Label>Business Address</Label><Input value={form.business_address || ""} onChange={(e) => update("business_address", e.target.value)} /></div>
           <div><Label>Years in Business</Label><Input type="number" value={form.years_in_business || ""} onChange={(e) => update("years_in_business", parseInt(e.target.value) || null)} /></div>
-          <div><Label>Team Size</Label><Input type="number" value={form.team_size || ""} onChange={(e) => update("team_size", parseInt(e.target.value) || null)} /></div>
           <div className="md:col-span-2 space-y-3 border border-border rounded-lg p-4 bg-muted/20">
             <div className="flex items-center gap-2">
               <Switch checked={form.has_showroom || false} onCheckedChange={(v) => update("has_showroom", v)} />
@@ -113,9 +112,30 @@ export default function DesignProfessionalProfile() {
           <div><Label>Full Bio</Label><Textarea value={form.full_bio || ""} onChange={(e) => update("full_bio", e.target.value)} rows={4} /></div>
           <div><Label>Design Philosophy</Label><Textarea value={form.design_philosophy || ""} onChange={(e) => update("design_philosophy", e.target.value)} rows={3} /></div>
           <div><Label>Unique Value Proposition</Label><Textarea value={form.unique_value_proposition || ""} onChange={(e) => update("unique_value_proposition", e.target.value)} rows={2} /></div>
-          
           <div><Label>Notable Projects Summary</Label><Textarea value={form.notable_projects_summary || ""} onChange={(e) => update("notable_projects_summary", e.target.value)} rows={2} /></div>
           <div><Label>Awards / Publications</Label><Textarea value={form.awards_or_publications || ""} onChange={(e) => update("awards_or_publications", e.target.value)} rows={2} /></div>
+        </CardContent>
+      </Card>
+
+      {/* Team Composition */}
+      <Card>
+        <CardHeader><CardTitle>Team Composition</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">Break down the roles on your team so we can better match you to the right projects.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div><Label>Total Team Size</Label><Input type="number" value={form.team_size || ""} onChange={(e) => update("team_size", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Licensed Architects</Label><Input type="number" value={form.num_architects || ""} onChange={(e) => update("num_architects", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Interior Designers</Label><Input type="number" value={form.num_interior_designers || ""} onChange={(e) => update("num_interior_designers", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Kitchen / Bath Designers</Label><Input type="number" value={form.num_kitchen_bath_designers || ""} onChange={(e) => update("num_kitchen_bath_designers", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Drafters / CAD</Label><Input type="number" value={form.num_drafters || ""} onChange={(e) => update("num_drafters", parseInt(e.target.value) || null)} /></div>
+            <div><Label>3D Renderers</Label><Input type="number" value={form.num_renderers || ""} onChange={(e) => update("num_renderers", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Project Managers</Label><Input type="number" value={form.num_project_managers || ""} onChange={(e) => update("num_project_managers", parseInt(e.target.value) || null)} /></div>
+            <div><Label>Admin / Support Staff</Label><Input type="number" value={form.num_admin_staff || ""} onChange={(e) => update("num_admin_staff", parseInt(e.target.value) || null)} /></div>
+          </div>
+          <div>
+            <Label>Team Structure Notes</Label>
+            <Textarea value={form.team_structure_notes || ""} onChange={(e) => update("team_structure_notes", e.target.value)} rows={2} placeholder="e.g. 2 principals, 3 junior designers, 1 dedicated permit specialist" />
+          </div>
         </CardContent>
       </Card>
 
@@ -277,8 +297,6 @@ export default function DesignProfessionalProfile() {
             <Label>Certification Notes</Label>
             <Textarea value={form.certification_notes || ""} onChange={(e) => update("certification_notes", e.target.value)} rows={2} />
           </div>
-
-          {/* Credential Document Uploads */}
           {hasArchitecture && (
             <>
               <FileUploadField label="Architect License Document" bucket="design-professional-credentials" currentUrl={form.architect_license_document_url} onUpload={(url) => update("architect_license_document_url", url)} onRemove={() => update("architect_license_document_url", null)} />
@@ -290,39 +308,91 @@ export default function DesignProfessionalProfile() {
         </CardContent>
       </Card>
 
-      {/* Engineering Coordination */}
-      {hasEngineering && (
-        <Card>
-          <CardHeader><CardTitle>Engineering Coordination</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2">
-                <Switch checked={form.can_coordinate_engineering || false} onCheckedChange={(v) => update("can_coordinate_engineering", v)} />
-                <Label>Can coordinate engineering</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={form.works_with_structural_engineer || false} onCheckedChange={(v) => update("works_with_structural_engineer", v)} />
-                <Label>Works with structural engineer</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={form.works_with_mep_engineer || false} onCheckedChange={(v) => update("works_with_mep_engineer", v)} />
-                <Label>Works with MEP engineer</Label>
-              </div>
-            </div>
+      {/* Engineering Capabilities — visible to all */}
+      <Card>
+        <CardHeader><CardTitle>Engineering Capabilities</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/20">
+            <Switch checked={form.engineering_in_house || false} onCheckedChange={(v) => update("engineering_in_house", v)} />
             <div>
-              <Label>Engineering Services Supported</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
-                {ENGINEERING_SERVICES_OPTIONS.map((s) => (
-                  <label key={s} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <Checkbox checked={(form.engineering_services_supported || []).includes(s)} onCheckedChange={() => toggleArrayItem("engineering_services_supported", s)} />
-                    {s}
-                  </label>
-                ))}
+              <Label className="font-medium">We handle engineering in-house</Label>
+              <p className="text-xs text-muted-foreground">Toggle on if your firm employs licensed Professional Engineers (PE) on staff</p>
+            </div>
+          </div>
+
+          {form.engineering_in_house && (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div><Label>Structural Engineers</Label><Input type="number" value={form.num_structural_engineers || ""} onChange={(e) => update("num_structural_engineers", parseInt(e.target.value) || null)} /></div>
+                <div><Label>MEP Engineers</Label><Input type="number" value={form.num_mep_engineers || ""} onChange={(e) => update("num_mep_engineers", parseInt(e.target.value) || null)} /></div>
+                <div><Label>Civil Engineers</Label><Input type="number" value={form.num_civil_engineers || ""} onChange={(e) => update("num_civil_engineers", parseInt(e.target.value) || null)} /></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><Label>PE License Number</Label><Input value={form.pe_license_number || ""} onChange={(e) => update("pe_license_number", e.target.value)} placeholder="Primary PE license #" /></div>
+                <div>
+                  <Label>Engineering Licensed States</Label>
+                  <Input value={(form.engineering_license_states || []).join(", ")} onChange={(e) => update("engineering_license_states", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="e.g. NJ, NY, PA" />
+                </div>
+                <div>
+                  <Label>Engineering Insurance</Label>
+                  <Select value={form.engineering_insurance_status || ""} onValueChange={(v) => update("engineering_insurance_status", v)}>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active — Professional Liability</SelectItem>
+                      <SelectItem value="general_only">General Liability Only</SelectItem>
+                      <SelectItem value="none">No Engineering Coverage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Typical Turnaround (days)</Label><Input type="number" value={form.engineering_turnaround_days || ""} onChange={(e) => update("engineering_turnaround_days", parseInt(e.target.value) || null)} placeholder="e.g. 10" /></div>
+              </div>
+              <div>
+                <Label>Engineering Specializations</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
+                  {ENGINEERING_SPECIALIZATION_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <Checkbox checked={(form.engineering_specializations || []).includes(s)} onCheckedChange={() => toggleArrayItem("engineering_specializations", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div><Label>Engineering Notes</Label><Textarea value={form.engineering_notes || ""} onChange={(e) => update("engineering_notes", e.target.value)} rows={2} placeholder="e.g. We provide stamped structural calcs for all load-bearing wall removals" /></div>
+            </>
+          )}
+
+          {!form.engineering_in_house && (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">If you outsource engineering, tell us about your coordination capabilities.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.can_coordinate_engineering || false} onCheckedChange={(v) => update("can_coordinate_engineering", v)} />
+                  <Label>Can coordinate engineering</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.works_with_structural_engineer || false} onCheckedChange={(v) => update("works_with_structural_engineer", v)} />
+                  <Label>Works with structural engineer</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.works_with_mep_engineer || false} onCheckedChange={(v) => update("works_with_mep_engineer", v)} />
+                  <Label>Works with MEP engineer</Label>
+                </div>
+              </div>
+              <div>
+                <Label>Engineering Services You Can Coordinate</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
+                  {ENGINEERING_SERVICES_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <Checkbox checked={(form.engineering_services_supported || []).includes(s)} onCheckedChange={() => toggleArrayItem("engineering_services_supported", s)} />
+                      {s}
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
       {/* Staging */}
       {hasStaging && (
