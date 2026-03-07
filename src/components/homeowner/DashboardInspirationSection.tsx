@@ -5,8 +5,6 @@ import { ExternalLink, ShoppingBag, BookOpen, Pin } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const VENDOR_LINKS = [
   { name: "Floor & Decor", url: "https://www.flooranddecor.com", category: "Flooring & Tile" },
