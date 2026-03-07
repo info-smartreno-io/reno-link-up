@@ -27,8 +27,21 @@ export function useProjectTimeline(projectId: string | undefined) {
         .from("timeline_tasks" as any)
         .insert({ ...task, project_id: projectId! }) as any);
       if (error) throw error;
+
+      // Log activity
+      await supabase.from("project_activity_log").insert({
+        project_id: projectId!,
+        activity_type: "timeline_update",
+        description: `Phase "${task.phase_name}" added to timeline`,
+        performed_by: (await supabase.auth.getUser()).data.user?.id,
+        role: "contractor",
+      } as any);
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey }); toast.success("Phase added"); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("Phase added");
+    },
     onError: () => toast.error("Failed to add phase"),
   });
 
@@ -36,8 +49,12 @@ export function useProjectTimeline(projectId: string | undefined) {
     mutationFn: async ({ id, ...updates }: { id: string; phase_name?: string; start_date?: string | null; duration_days?: number; status?: string; assigned_trade?: string }) => {
       const { error } = await (supabase.from("timeline_tasks" as any).update(updates).eq("id", id) as any);
       if (error) throw error;
+      // The DB trigger handles activity logging and notifications
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
     onError: () => toast.error("Failed to update"),
   });
 
