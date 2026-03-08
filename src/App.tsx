@@ -52,6 +52,7 @@ import HomeownerEstimateConfirmed from "./pages/HomeownerEstimateConfirmed";
 import HomeownerEstimateCancelled from "./pages/HomeownerEstimateCancelled";
 import AccountSettings from "./pages/homeowner/AccountSettings";
 import HomeownerFiles from "./pages/homeowner/HomeownerFiles";
+import MyHomePage from "./pages/homeowner/MyHomePage";
 import About from "./pages/About";
 import Careers from "./pages/Careers";
 import CareersApply from "./pages/CareersApply";
