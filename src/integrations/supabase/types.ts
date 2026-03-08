@@ -1612,6 +1612,44 @@ export type Database = {
           },
         ]
       }
+      bid_packet_clarifications: {
+        Row: {
+          bid_packet_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          sender_id: string
+          sender_role: string
+        }
+        Insert: {
+          bid_packet_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          sender_id: string
+          sender_role?: string
+        }
+        Update: {
+          bid_packet_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          sender_id?: string
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packet_clarifications_bid_packet_id_fkey"
+            columns: ["bid_packet_id"]
+            isOneToOne: false
+            referencedRelation: "bid_packets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_packet_contractor_invites: {
         Row: {
           bid_packet_id: string
@@ -1892,6 +1930,53 @@ export type Database = {
           },
         ]
       }
+      bid_submission_history: {
+        Row: {
+          attachments: Json | null
+          bid_amount: number | null
+          bid_submission_id: string
+          created_by: string | null
+          estimated_timeline: string | null
+          id: string
+          proposal_text: string | null
+          revision_notes: string | null
+          snapshot_at: string
+          status: string
+        }
+        Insert: {
+          attachments?: Json | null
+          bid_amount?: number | null
+          bid_submission_id: string
+          created_by?: string | null
+          estimated_timeline?: string | null
+          id?: string
+          proposal_text?: string | null
+          revision_notes?: string | null
+          snapshot_at?: string
+          status: string
+        }
+        Update: {
+          attachments?: Json | null
+          bid_amount?: number | null
+          bid_submission_id?: string
+          created_by?: string | null
+          estimated_timeline?: string | null
+          id?: string
+          proposal_text?: string | null
+          revision_notes?: string | null
+          snapshot_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_submission_history_bid_submission_id_fkey"
+            columns: ["bid_submission_id"]
+            isOneToOne: false
+            referencedRelation: "bid_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_submissions: {
         Row: {
           admin_notes: string | null
@@ -1919,6 +2004,9 @@ export type Database = {
           references_count: number | null
           reviewed_at: string | null
           reviewed_by: string | null
+          revision_count: number
+          revision_request_notes: string | null
+          revision_requested_at: string | null
           status: string
           submitted_at: string
           updated_at: string
@@ -1953,6 +2041,9 @@ export type Database = {
           references_count?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          revision_count?: number
+          revision_request_notes?: string | null
+          revision_requested_at?: string | null
           status?: string
           submitted_at?: string
           updated_at?: string
@@ -1987,6 +2078,9 @@ export type Database = {
           references_count?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          revision_count?: number
+          revision_request_notes?: string | null
+          revision_requested_at?: string | null
           status?: string
           submitted_at?: string
           updated_at?: string

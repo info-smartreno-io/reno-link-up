@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,11 +16,15 @@ import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft, Send, Save, FileText, Clock, AlertTriangle, Loader2,
   CheckCircle2, Upload, Paperclip, DollarSign, Calendar, MapPin,
-  Building2, Eye, MessageSquare, X,
+  Building2, Eye, MessageSquare, X, RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, differenceInDays, differenceInHours } from "date-fns";
 import { useDropzone } from "react-dropzone";
+import { ClarificationThread } from "@/components/contractor/bid/ClarificationThread";
+import { RevisionBanner } from "@/components/contractor/bid/RevisionBanner";
+import { SubmissionHistory } from "@/components/contractor/bid/SubmissionHistory";
+import { computeContractorBidStatus, BID_STATUS_CONFIG } from "@/utils/contractorBidStatus";
 
 function DeadlineHeader({ deadline }: { deadline: string | null }) {
   if (!deadline) return null;
@@ -42,17 +46,15 @@ function DeadlineHeader({ deadline }: { deadline: string | null }) {
     return (
       <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
         <Clock className="h-4 w-4 text-destructive shrink-0" />
-        <p className="text-sm text-destructive">
-          <strong>Urgent:</strong> Only {hoursLeft} hours remaining to submit your bid.
-        </p>
+        <p className="text-sm text-destructive"><strong>Urgent:</strong> Only {hoursLeft} hours remaining to submit your bid.</p>
       </div>
     );
   }
   if (daysLeft <= 7) {
     return (
-      <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-800">
-        <Clock className="h-4 w-4 text-amber-600 shrink-0" />
-        <p className="text-sm text-amber-700 dark:text-amber-400">
+      <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/30">
+        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+        <p className="text-sm text-muted-foreground">
           {daysLeft} days remaining to submit — deadline {format(d, "MMM d, yyyy 'at' h:mm a")}
         </p>
       </div>
@@ -95,6 +97,11 @@ export default function ContractorBidPacketView() {
   const [proposalText, setProposalText] = useState("");
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id || null));
+  }, []);
 
   // Fetch packet
   const { data: packet, isLoading: packetLoading } = useQuery({
@@ -161,6 +168,38 @@ export default function ContractorBidPacketView() {
     enabled: !!packetId,
   });
 
+  // Fetch invite data for status
+  const { data: invite } = useQuery({
+    queryKey: ["contractor-packet-invite", packetId],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data } = await (supabase as any)
+        .from("bid_packet_contractor_invites")
+        .select("*")
+        .eq("bid_packet_id", packetId!)
+        .eq("contractor_id", user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!packetId,
+  });
+
+  // Fetch clarification count for tab badge
+  const { data: clarificationCount = 0 } = useQuery({
+    queryKey: ["bid-clarification-count", packetId],
+    queryFn: async () => {
+      const { count } = await (supabase as any)
+        .from("bid_packet_clarifications")
+        .select("*", { count: "exact", head: true })
+        .eq("bid_packet_id", packetId!)
+        .eq("is_read", false)
+        .neq("sender_role", "contractor");
+      return count || 0;
+    },
+    enabled: !!packetId,
+  });
+
   // Fetch trade sections
   const { data: tradeSections = [] } = useQuery({
     queryKey: ["contractor-packet-trade-sections", packetId],
@@ -176,8 +215,18 @@ export default function ContractorBidPacketView() {
   });
 
   const deadlinePassed = packet?.bid_deadline ? new Date(packet.bid_deadline) < new Date() : false;
-  const isSubmitted = existingSubmission?.status === "submitted";
-  const canSubmit = !deadlinePassed && !isSubmitted;
+  const isRevisionRequested = (existingSubmission as any)?.status === "revision_requested";
+  const isSubmitted = existingSubmission?.status === "submitted" && !isRevisionRequested;
+  const canSubmit = (!deadlinePassed && !isSubmitted) || isRevisionRequested;
+
+  // Compute display status
+  const displayStatus = computeContractorBidStatus({
+    inviteStatus: invite?.status || "invited",
+    submissionStatus: existingSubmission?.status || null,
+    submissionRevisionCount: (existingSubmission as any)?.revision_count || 0,
+    deadlinePassed,
+  });
+  const statusConfig = BID_STATUS_CONFIG[displayStatus];
 
   // File upload
   const onDrop = useCallback((files: File[]) => {
@@ -196,10 +245,24 @@ export default function ContractorBidPacketView() {
     mutationFn: async (status: "draft" | "submitted") => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      if (status === "submitted" && deadlinePassed) throw new Error("Bid deadline has passed");
+      if (status === "submitted" && deadlinePassed && !isRevisionRequested) throw new Error("Bid deadline has passed");
       if (status === "submitted" && !scopeConfirmed) throw new Error("You must confirm the scope before submitting");
 
-      // Upload files if any
+      // Snapshot previous submission if resubmitting
+      if (status === "submitted" && existingSubmission?.id && isRevisionRequested) {
+        await (supabase as any).from("bid_submission_history").insert({
+          bid_submission_id: existingSubmission.id,
+          bid_amount: existingSubmission.bid_amount,
+          estimated_timeline: existingSubmission.estimated_timeline,
+          proposal_text: existingSubmission.proposal_text,
+          attachments: existingSubmission.attachments,
+          status: existingSubmission.status,
+          revision_notes: (existingSubmission as any).revision_request_notes,
+          created_by: user.id,
+        });
+      }
+
+      // Upload files
       let fileUrls: string[] = [];
       if (uploadedFiles.length > 0) {
         for (const file of uploadedFiles) {
@@ -213,16 +276,21 @@ export default function ContractorBidPacketView() {
       }
 
       const existingAttachments = (existingSubmission?.attachments as any) || {};
-      const payload = {
+      const newRevisionCount = isRevisionRequested
+        ? ((existingSubmission as any)?.revision_count || 0) + (status === "submitted" ? 1 : 0)
+        : (existingSubmission as any)?.revision_count || 0;
+
+      const payload: any = {
         bid_opportunity_id: packetId!,
         bidder_id: user.id,
-        bidder_type: "contractor" as const,
+        bidder_type: "contractor",
         bid_amount: Number(bidAmount) || 0,
         estimated_timeline: estimatedTimeline || null,
         proposal_text: proposalText || null,
         anticipated_start_date: startDate || null,
         status,
         submitted_at: new Date().toISOString(),
+        revision_count: newRevisionCount,
         attachments: {
           ...existingAttachments,
           scope_confirmed: scopeConfirmed,
@@ -235,6 +303,12 @@ export default function ContractorBidPacketView() {
           file_urls: [...(existingAttachments.file_urls || []), ...fileUrls],
         },
       };
+
+      // Clear revision fields on resubmit
+      if (status === "submitted" && isRevisionRequested) {
+        payload.revision_requested_at = null;
+        payload.revision_request_notes = null;
+      }
 
       if (existingSubmission?.id) {
         const { error } = await supabase.from("bid_submissions").update(payload).eq("id", existingSubmission.id);
@@ -258,8 +332,10 @@ export default function ContractorBidPacketView() {
     onSuccess: (_, status) => {
       queryClient.invalidateQueries({ queryKey: ["contractor-packet-submission", packetId] });
       queryClient.invalidateQueries({ queryKey: ["contractor-bid-packet-invites"] });
+      queryClient.invalidateQueries({ queryKey: ["contractor-packet-invite", packetId] });
+      queryClient.invalidateQueries({ queryKey: ["bid-submission-history"] });
       if (status === "submitted") {
-        toast.success("Bid submitted successfully!");
+        toast.success(isRevisionRequested ? "Revised bid resubmitted!" : "Bid submitted successfully!");
         setShowSubmitConfirm(false);
       } else {
         toast.success("Draft saved");
@@ -268,16 +344,15 @@ export default function ContractorBidPacketView() {
     onError: (err: any) => toast.error(err.message),
   });
 
-  // Bid completeness calculation
+  // Bid completeness
   const bidCompleteness = (() => {
     let score = 0;
-    let total = 5;
     if (Number(bidAmount) > 0) score++;
     if (estimatedTimeline) score++;
     if (startDate) score++;
     if (scopeConfirmed) score++;
     if (proposalText.trim().length > 20) score++;
-    return Math.round((score / total) * 100);
+    return Math.round((score / 5) * 100);
   })();
 
   if (packetLoading) {
@@ -335,21 +410,21 @@ export default function ContractorBidPacketView() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {isSubmitted && (
-              <Badge className="gap-1 bg-green-600 text-white">
-                <CheckCircle2 className="h-3 w-3" /> Submitted
-              </Badge>
-            )}
-            {existingSubmission?.status === "draft" && (
-              <Badge variant="outline" className="gap-1">
-                <FileText className="h-3 w-3" /> Draft Saved
-              </Badge>
-            )}
-          </div>
+          <Badge variant={statusConfig.variant} className="gap-1">
+            {statusConfig.label}
+          </Badge>
         </div>
 
         <DeadlineHeader deadline={deadline} />
+
+        {/* Revision Banner */}
+        {isRevisionRequested && (
+          <RevisionBanner
+            revisionNotes={(existingSubmission as any)?.revision_request_notes}
+            revisionRequestedAt={(existingSubmission as any)?.revision_requested_at}
+            revisionCount={(existingSubmission as any)?.revision_count || 0}
+          />
+        )}
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -360,6 +435,15 @@ export default function ContractorBidPacketView() {
               Your Bid
               {canSubmit && !isSubmitted && bidCompleteness < 100 && (
                 <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5">{bidCompleteness}%</Badge>
+              )}
+              {isRevisionRequested && (
+                <Badge variant="destructive" className="ml-1.5 text-[10px] px-1.5">!</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="clarifications" className="gap-1">
+              Clarifications
+              {clarificationCount > 0 && (
+                <Badge variant="destructive" className="text-[10px] px-1.5 py-0">{clarificationCount}</Badge>
               )}
             </TabsTrigger>
             <TabsTrigger value="attachments">Attachments</TabsTrigger>
@@ -413,9 +497,7 @@ export default function ContractorBidPacketView() {
                           </Badge>
                         )}
                       </div>
-                      {section.scope_notes && (
-                        <CardDescription className="text-xs">{section.scope_notes}</CardDescription>
-                      )}
+                      {section.scope_notes && <CardDescription className="text-xs">{section.scope_notes}</CardDescription>}
                     </CardHeader>
                     <CardContent>
                       {section.inclusions && (
@@ -449,186 +531,166 @@ export default function ContractorBidPacketView() {
 
           {/* Bid Tab */}
           <TabsContent value="bid">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Your Bid</CardTitle>
-                    <CardDescription>
-                      {isSubmitted
-                        ? "Your bid has been submitted. You'll be notified of the outcome."
-                        : deadlinePassed
-                          ? "The deadline has passed."
-                          : "Complete the fields below and submit your bid."}
-                    </CardDescription>
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Your Bid</CardTitle>
+                      <CardDescription>
+                        {isRevisionRequested
+                          ? "A revision has been requested. Update your bid and resubmit."
+                          : isSubmitted
+                            ? "Your bid has been submitted. You'll be notified of the outcome."
+                            : deadlinePassed
+                              ? "The deadline has passed."
+                              : "Complete the fields below and submit your bid."}
+                      </CardDescription>
+                    </div>
+                    {canSubmit && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">{bidCompleteness}%</span>
+                        <Progress value={bidCompleteness} className="w-20 h-2" />
+                      </div>
+                    )}
                   </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Core bid fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="flex items-center gap-1"><DollarSign className="h-3.5 w-3.5" /> Bid Amount</Label>
+                      <Input type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} disabled={!canSubmit} placeholder="0.00" className="text-lg font-semibold" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Estimated Timeline</Label>
+                      <Input value={estimatedTimeline} onChange={(e) => setEstimatedTimeline(e.target.value)} disabled={!canSubmit} placeholder="e.g. 8-10 weeks" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Proposed Start</Label>
+                      <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} disabled={!canSubmit} />
+                    </div>
+                  </div>
+
+                  {/* Confirmations */}
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Scope Confirmations</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex items-start gap-2 p-3 border rounded-lg">
+                        <Checkbox checked={scopeConfirmed} onCheckedChange={(v) => setScopeConfirmed(!!v)} disabled={!canSubmit} id="scope" />
+                        <div>
+                          <Label htmlFor="scope" className="text-sm font-medium cursor-pointer">Scope Confirmed</Label>
+                          <p className="text-xs text-muted-foreground">I have reviewed and confirm the scope of work</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 border rounded-lg">
+                        <Checkbox checked={permitIncluded} onCheckedChange={(v) => setPermitIncluded(!!v)} disabled={!canSubmit} id="permit" />
+                        <div>
+                          <Label htmlFor="permit" className="text-sm font-medium cursor-pointer">Permits Included</Label>
+                          <p className="text-xs text-muted-foreground">My bid includes permit costs</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 border rounded-lg">
+                        <Checkbox checked={engineeringRequired} onCheckedChange={(v) => setEngineeringRequired(!!v)} disabled={!canSubmit} id="eng" />
+                        <div>
+                          <Label htmlFor="eng" className="text-sm font-medium cursor-pointer">Engineering Required</Label>
+                          <p className="text-xs text-muted-foreground">Structural or MEP engineering needed</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 border rounded-lg">
+                        <Checkbox checked={materialsOwnerSupplied} onCheckedChange={(v) => setMaterialsOwnerSupplied(!!v)} disabled={!canSubmit} id="mat" />
+                        <div>
+                          <Label htmlFor="mat" className="text-sm font-medium cursor-pointer">Owner-Supplied Materials</Label>
+                          <p className="text-xs text-muted-foreground">Some materials will be provided by the homeowner</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Proposal */}
+                  <div className="space-y-1.5">
+                    <Label>Proposal / Cover Letter</Label>
+                    <Textarea value={proposalText} onChange={(e) => setProposalText(e.target.value)} disabled={!canSubmit} rows={5} placeholder="Describe your approach, qualifications, relevant experience, and value proposition..." />
+                  </div>
+
+                  {/* Clarifications & Notes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Clarifications & Assumptions</Label>
+                      <Textarea value={clarifications} onChange={(e) => setClarifications(e.target.value)} disabled={!canSubmit} rows={3} placeholder="Any clarifications, assumptions, or conditions..." />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Additional Notes</Label>
+                      <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} disabled={!canSubmit} rows={3} placeholder="Additional notes for the project team..." />
+                    </div>
+                  </div>
+
+                  {/* Actions */}
                   {canSubmit && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{bidCompleteness}%</span>
-                      <Progress value={bidCompleteness} className="w-20 h-2" />
+                    <div className="flex items-center justify-between pt-2 border-t">
+                      <p className="text-xs text-muted-foreground">
+                        {isRevisionRequested ? "Update your bid and resubmit." : existingSubmission ? "You have a saved draft." : "Complete your bid and submit before the deadline."}
+                      </p>
+                      <div className="flex gap-3">
+                        <Button variant="outline" onClick={() => saveBid.mutate("draft")} disabled={saveBid.isPending}>
+                          <Save className="mr-2 h-4 w-4" /> Save Draft
+                        </Button>
+                        <Button onClick={() => setShowSubmitConfirm(true)} disabled={saveBid.isPending || !bidAmount || !scopeConfirmed}>
+                          {isRevisionRequested ? (
+                            <><RotateCcw className="mr-2 h-4 w-4" /> Resubmit Bid</>
+                          ) : (
+                            <><Send className="mr-2 h-4 w-4" /> Submit Bid</>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Core bid fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-1">
-                      <DollarSign className="h-3.5 w-3.5" /> Bid Amount
-                    </Label>
-                    <Input
-                      type="number"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      disabled={!canSubmit}
-                      placeholder="0.00"
-                      className="text-lg font-semibold"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" /> Estimated Timeline
-                    </Label>
-                    <Input
-                      value={estimatedTimeline}
-                      onChange={(e) => setEstimatedTimeline(e.target.value)}
-                      disabled={!canSubmit}
-                      placeholder="e.g. 8-10 weeks"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" /> Proposed Start
-                    </Label>
-                    <Input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      disabled={!canSubmit}
-                    />
-                  </div>
-                </div>
 
-                {/* Confirmations */}
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Scope Confirmations</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="flex items-start gap-2 p-3 border rounded-lg">
-                      <Checkbox checked={scopeConfirmed} onCheckedChange={(v) => setScopeConfirmed(!!v)} disabled={!canSubmit} id="scope" />
-                      <div>
-                        <Label htmlFor="scope" className="text-sm font-medium cursor-pointer">Scope Confirmed</Label>
-                        <p className="text-xs text-muted-foreground">I have reviewed and confirm the scope of work</p>
+                  {isSubmitted && existingSubmission && (
+                    <div className="p-4 bg-muted/50 rounded-lg border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                        <span className="font-medium">Bid Submitted</span>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Amount</p>
+                          <p className="font-semibold">${Number(existingSubmission.bid_amount).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Timeline</p>
+                          <p>{existingSubmission.estimated_timeline || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Status</p>
+                          <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Submitted</p>
+                          <p>{format(new Date(existingSubmission.submitted_at), "MMM d, yyyy")}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2 p-3 border rounded-lg">
-                      <Checkbox checked={permitIncluded} onCheckedChange={(v) => setPermitIncluded(!!v)} disabled={!canSubmit} id="permit" />
-                      <div>
-                        <Label htmlFor="permit" className="text-sm font-medium cursor-pointer">Permits Included</Label>
-                        <p className="text-xs text-muted-foreground">My bid includes permit costs</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 p-3 border rounded-lg">
-                      <Checkbox checked={engineeringRequired} onCheckedChange={(v) => setEngineeringRequired(!!v)} disabled={!canSubmit} id="eng" />
-                      <div>
-                        <Label htmlFor="eng" className="text-sm font-medium cursor-pointer">Engineering Required</Label>
-                        <p className="text-xs text-muted-foreground">Structural or MEP engineering needed</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 p-3 border rounded-lg">
-                      <Checkbox checked={materialsOwnerSupplied} onCheckedChange={(v) => setMaterialsOwnerSupplied(!!v)} disabled={!canSubmit} id="mat" />
-                      <div>
-                        <Label htmlFor="mat" className="text-sm font-medium cursor-pointer">Owner-Supplied Materials</Label>
-                        <p className="text-xs text-muted-foreground">Some materials will be provided by the homeowner</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  )}
+                </CardContent>
+              </Card>
 
-                {/* Proposal */}
-                <div className="space-y-1.5">
-                  <Label>Proposal / Cover Letter</Label>
-                  <Textarea
-                    value={proposalText}
-                    onChange={(e) => setProposalText(e.target.value)}
-                    disabled={!canSubmit}
-                    rows={5}
-                    placeholder="Describe your approach, qualifications, relevant experience, and value proposition..."
-                  />
-                </div>
+              {/* Submission History */}
+              {existingSubmission?.id && (
+                <SubmissionHistory submissionId={existingSubmission.id} />
+              )}
+            </div>
+          </TabsContent>
 
-                {/* Clarifications & Notes */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label>Clarifications & Assumptions</Label>
-                    <Textarea
-                      value={clarifications}
-                      onChange={(e) => setClarifications(e.target.value)}
-                      disabled={!canSubmit}
-                      rows={3}
-                      placeholder="Any clarifications, assumptions, or conditions..."
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Additional Notes</Label>
-                    <Textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      disabled={!canSubmit}
-                      rows={3}
-                      placeholder="Additional notes for the project team..."
-                    />
-                  </div>
-                </div>
-
-                {/* Actions */}
-                {canSubmit && (
-                  <div className="flex items-center justify-between pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      {existingSubmission ? "You have a saved draft." : "Complete your bid and submit before the deadline."}
-                    </p>
-                    <div className="flex gap-3">
-                      <Button variant="outline" onClick={() => saveBid.mutate("draft")} disabled={saveBid.isPending}>
-                        <Save className="mr-2 h-4 w-4" /> Save Draft
-                      </Button>
-                      <Button
-                        onClick={() => setShowSubmitConfirm(true)}
-                        disabled={saveBid.isPending || !bidAmount || !scopeConfirmed}
-                      >
-                        <Send className="mr-2 h-4 w-4" /> Submit Bid
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {isSubmitted && existingSubmission && (
-                  <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      <span className="font-medium text-green-800 dark:text-green-300">Bid Submitted</span>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Amount</p>
-                        <p className="font-semibold">${Number(existingSubmission.bid_amount).toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Timeline</p>
-                        <p>{existingSubmission.estimated_timeline || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Status</p>
-                        <Badge variant="outline">{existingSubmission.status}</Badge>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Submitted</p>
-                        <p>{format(new Date(existingSubmission.submitted_at), "MMM d, yyyy")}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {/* Clarifications Tab */}
+          <TabsContent value="clarifications">
+            {currentUserId ? (
+              <ClarificationThread packetId={packetId!} currentUserId={currentUserId} />
+            ) : (
+              <Card>
+                <CardContent className="py-8 text-center text-muted-foreground">Loading...</CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Attachments Tab */}
@@ -641,7 +703,6 @@ export default function ContractorBidPacketView() {
                 <CardDescription>Upload supporting documents, estimates, or relevant files.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Existing files */}
                 {(() => {
                   const att = existingSubmission?.attachments as any;
                   const existingFiles = att?.file_urls || [];
@@ -652,9 +713,7 @@ export default function ContractorBidPacketView() {
                         {existingFiles.map((url: string, i: number) => (
                           <div key={i} className="flex items-center gap-2 p-2 border rounded">
                             <FileText className="h-4 w-4 text-muted-foreground" />
-                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate">
-                              {url.split("/").pop()}
-                            </a>
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate">{url.split("/").pop()}</a>
                           </div>
                         ))}
                       </div>
@@ -663,23 +722,17 @@ export default function ContractorBidPacketView() {
                   return null;
                 })()}
 
-                {/* Upload zone */}
                 {canSubmit && (
                   <>
                     <div
                       {...getRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                        isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
-                      }`}
+                      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"}`}
                     >
                       <input {...getInputProps()} />
                       <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        {isDragActive ? "Drop files here..." : "Drag & drop files, or click to browse"}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{isDragActive ? "Drop files here..." : "Drag & drop files, or click to browse"}</p>
                       <p className="text-xs text-muted-foreground mt-1">Max 10MB per file • Up to 5 files</p>
                     </div>
-
                     {uploadedFiles.length > 0 && (
                       <div className="space-y-1.5">
                         {uploadedFiles.map((f, i) => (
@@ -715,9 +768,11 @@ export default function ContractorBidPacketView() {
       <Dialog open={showSubmitConfirm} onOpenChange={setShowSubmitConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Bid Submission</DialogTitle>
+            <DialogTitle>{isRevisionRequested ? "Confirm Bid Resubmission" : "Confirm Bid Submission"}</DialogTitle>
             <DialogDescription>
-              Once submitted, your bid cannot be modified. Please review your details.
+              {isRevisionRequested
+                ? "Your revised bid will replace the previous submission."
+                : "Once submitted, your bid cannot be modified. Please review your details."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
@@ -747,12 +802,13 @@ export default function ContractorBidPacketView() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSubmitConfirm(false)}>Cancel</Button>
-            <Button
-              onClick={() => saveBid.mutate("submitted")}
-              disabled={saveBid.isPending || !scopeConfirmed}
-            >
+            <Button onClick={() => saveBid.mutate("submitted")} disabled={saveBid.isPending || !scopeConfirmed}>
               {saveBid.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <Send className="mr-2 h-4 w-4" /> Confirm & Submit
+              {isRevisionRequested ? (
+                <><RotateCcw className="mr-2 h-4 w-4" /> Confirm Resubmission</>
+              ) : (
+                <><Send className="mr-2 h-4 w-4" /> Confirm & Submit</>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
