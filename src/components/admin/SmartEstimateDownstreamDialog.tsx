@@ -296,6 +296,16 @@ export function SmartEstimateDownstreamDialog({
         action_details: JSON.stringify(details),
       });
     }
+    // Bid packet activity logging
+    if (target === "bid_packet" && targetId) {
+      await supabase.from("smart_estimate_activity_log").insert({
+        smart_estimate_id: estimate.id,
+        actor_id: userId,
+        actor_role: "admin",
+        action_type: `bid_packet_${actionType.replace("downstream_bid_packet_", "")}`,
+        action_details: { ...details, logged_for: "bid_packet_audit" },
+      });
+    }
   };
 
   // ---- CREATE NEW ----
