@@ -92,10 +92,10 @@ export default function Index() {
       <SiteNavbar />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="py-16 md:py-24" aria-label="Hero section">
+      <section className="py-20 md:py-32 lg:py-40 bg-gradient-to-b from-muted/30 to-background" aria-label="Hero section">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight">
               The First Step Before You Renovate
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl leading-relaxed">
