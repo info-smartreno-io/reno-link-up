@@ -196,7 +196,12 @@ export default function AdminSmartEstimateDetail() {
 
         {/* Linked Downstream Records */}
         {estimate.status === "approved" && (
-          <LinkedDownstreamRecordsCard estimateId={estimate.id} projectId={estimate.project_id} />
+          <LinkedDownstreamRecordsCard
+            estimateId={estimate.id}
+            projectId={estimate.project_id}
+            estimateUpdatedAt={estimate.updated_at}
+            onSyncRequest={() => setShowDownstreamDialog(true)}
+          />
         )}
 
         {/* Main content tabs */}
