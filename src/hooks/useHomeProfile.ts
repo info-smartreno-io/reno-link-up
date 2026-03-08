@@ -9,7 +9,7 @@ export function useHomeProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       const { data, error } = await supabase
-        .from("home_profiles")
+        .from("home_profiles" as any)
         .select("*")
         .eq("homeowner_user_id", user.id)
         .maybeSingle();
@@ -46,7 +46,7 @@ export function useUpdateHomeProfile() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Record<string, any>) => {
       const { data, error } = await supabase
-        .from("home_profiles")
+        .from("home_profiles" as any)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id)
         .select()
@@ -68,7 +68,7 @@ export function useHomeSystems(profileId: string | undefined) {
     enabled: !!profileId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("home_systems")
+        .from("home_systems" as any)
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("created_at", { ascending: true });
@@ -83,7 +83,7 @@ export function useCreateHomeSystem() {
   return useMutation({
     mutationFn: async (system: Record<string, any>) => {
       const { data, error } = await supabase
-        .from("home_systems")
+        .from("home_systems" as any)
         .insert(system)
         .select()
         .single();
@@ -103,7 +103,7 @@ export function useUpdateHomeSystem() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Record<string, any>) => {
       const { data, error } = await supabase
-        .from("home_systems")
+        .from("home_systems" as any)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id)
         .select()
@@ -125,7 +125,7 @@ export function useHomePhotos(profileId: string | undefined) {
     enabled: !!profileId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("home_photos")
+        .from("home_photos" as any)
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("uploaded_at", { ascending: false });
@@ -141,7 +141,7 @@ export function useHomeDocuments(profileId: string | undefined) {
     enabled: !!profileId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("home_documents")
+        .from("home_documents" as any)
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("uploaded_at", { ascending: false });
@@ -157,7 +157,7 @@ export function useHomeInsights(profileId: string | undefined) {
     enabled: !!profileId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("home_ai_insights")
+        .from("home_ai_insights" as any)
         .select("*")
         .eq("home_profile_id", profileId!)
         .eq("status", "active")
@@ -174,7 +174,7 @@ export function useMaintenanceEvents(profileId: string | undefined) {
     enabled: !!profileId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("home_maintenance_events")
+        .from("home_maintenance_events" as any)
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("event_date", { ascending: false });
@@ -191,7 +191,7 @@ export function useCreateMaintenanceEvent() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
-        .from("home_maintenance_events")
+        .from("home_maintenance_events" as any)
         .insert({ ...event, created_by: user.id })
         .select()
         .single();
@@ -220,7 +220,7 @@ export function useUploadHomePhoto() {
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("home-photos").getPublicUrl(filePath);
       const { data, error } = await supabase
-        .from("home_photos")
+        .from("home_photos" as any)
         .insert({
           home_profile_id: profileId,
           category,
@@ -257,7 +257,7 @@ export function useUploadHomeDocument() {
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("home-documents").getPublicUrl(filePath);
       const { data, error } = await supabase
-        .from("home_documents")
+        .from("home_documents" as any)
         .insert({
           home_profile_id: profileId,
           document_type: documentType,
