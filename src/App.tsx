@@ -422,6 +422,10 @@ function AppRoutes() {
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
             <Route path="/software" element={<Software />} />
             <Route path="/start-your-renovation" element={<StartYourRenovation />} />
+            <Route path="/renovation-costs" element={<RenovationCosts />} />
+            <Route path="/property-renovation-report" element={<PropertyRenovationReport />} />
+            <Route path="/smartreno-process" element={<SmartRenoProcess />} />
+            <Route path="/:slug" element={<CostGuideSlugRouter />} />
             <Route path="/start-your-renovation/confirmation" element={<IntakeConfirmation />} />
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
