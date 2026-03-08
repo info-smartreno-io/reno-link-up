@@ -1772,6 +1772,7 @@ export type Database = {
           generated_from_design_package: boolean
           id: string
           inclusions: string | null
+          last_synced_from_smart_estimate_at: string | null
           lead_id: string
           permit_technical_notes: string | null
           project_id: string | null
@@ -1779,6 +1780,9 @@ export type Database = {
           published_at: string | null
           scope_summary: string | null
           site_logistics: string | null
+          source_mapping_snapshot: Json | null
+          source_smart_estimate_id: string | null
+          source_type: string | null
           status: string
           title: string
           updated_at: string
@@ -1801,6 +1805,7 @@ export type Database = {
           generated_from_design_package?: boolean
           id?: string
           inclusions?: string | null
+          last_synced_from_smart_estimate_at?: string | null
           lead_id: string
           permit_technical_notes?: string | null
           project_id?: string | null
@@ -1808,6 +1813,9 @@ export type Database = {
           published_at?: string | null
           scope_summary?: string | null
           site_logistics?: string | null
+          source_mapping_snapshot?: Json | null
+          source_smart_estimate_id?: string | null
+          source_type?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1830,6 +1838,7 @@ export type Database = {
           generated_from_design_package?: boolean
           id?: string
           inclusions?: string | null
+          last_synced_from_smart_estimate_at?: string | null
           lead_id?: string
           permit_technical_notes?: string | null
           project_id?: string | null
@@ -1837,6 +1846,9 @@ export type Database = {
           published_at?: string | null
           scope_summary?: string | null
           site_logistics?: string | null
+          source_mapping_snapshot?: Json | null
+          source_smart_estimate_id?: string | null
+          source_type?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1862,6 +1874,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_packets_source_smart_estimate_id_fkey"
+            columns: ["source_smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
             referencedColumns: ["id"]
           },
           {
@@ -4452,6 +4471,7 @@ export type Database = {
           created_at: string | null
           id: string
           internal_review_status: string | null
+          last_synced_from_smart_estimate_at: string | null
           package_completion_percent: number | null
           package_status: string
           permit_required: boolean | null
@@ -4459,6 +4479,9 @@ export type Database = {
           ready_for_rfp: boolean | null
           renderings_required: boolean | null
           revision_notes: string | null
+          source_mapping_snapshot: Json | null
+          source_smart_estimate_id: string | null
+          source_type: string | null
           updated_at: string | null
         }
         Insert: {
@@ -4469,6 +4492,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           internal_review_status?: string | null
+          last_synced_from_smart_estimate_at?: string | null
           package_completion_percent?: number | null
           package_status?: string
           permit_required?: boolean | null
@@ -4476,6 +4500,9 @@ export type Database = {
           ready_for_rfp?: boolean | null
           renderings_required?: boolean | null
           revision_notes?: string | null
+          source_mapping_snapshot?: Json | null
+          source_smart_estimate_id?: string | null
+          source_type?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -4486,6 +4513,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           internal_review_status?: string | null
+          last_synced_from_smart_estimate_at?: string | null
           package_completion_percent?: number | null
           package_status?: string
           permit_required?: boolean | null
@@ -4493,9 +4521,20 @@ export type Database = {
           ready_for_rfp?: boolean | null
           renderings_required?: boolean | null
           revision_notes?: string | null
+          source_mapping_snapshot?: Json | null
+          source_smart_estimate_id?: string | null
+          source_type?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "design_packages_source_smart_estimate_id_fkey"
+            columns: ["source_smart_estimate_id"]
+            isOneToOne: false
+            referencedRelation: "smart_estimates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       design_professional_matches: {
         Row: {
