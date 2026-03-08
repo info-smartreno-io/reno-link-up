@@ -1612,6 +1612,54 @@ export type Database = {
           },
         ]
       }
+      bid_packet_activity_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          actor_id: string
+          actor_role: string
+          bid_packet_id: string
+          bid_submission_id: string | null
+          created_at: string
+          id: string
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          actor_id: string
+          actor_role: string
+          bid_packet_id: string
+          bid_submission_id?: string | null
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          actor_id?: string
+          actor_role?: string
+          bid_packet_id?: string
+          bid_submission_id?: string | null
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_packet_activity_log_bid_packet_id_fkey"
+            columns: ["bid_packet_id"]
+            isOneToOne: false
+            referencedRelation: "bid_packets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_packet_activity_log_bid_submission_id_fkey"
+            columns: ["bid_submission_id"]
+            isOneToOne: false
+            referencedRelation: "bid_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_packet_clarifications: {
         Row: {
           bid_packet_id: string
@@ -1619,6 +1667,9 @@ export type Database = {
           id: string
           is_read: boolean
           message: string
+          read_by_admin: boolean
+          read_by_contractor: boolean
+          read_by_estimator: boolean
           sender_id: string
           sender_role: string
         }
@@ -1628,6 +1679,9 @@ export type Database = {
           id?: string
           is_read?: boolean
           message: string
+          read_by_admin?: boolean
+          read_by_contractor?: boolean
+          read_by_estimator?: boolean
           sender_id: string
           sender_role?: string
         }
@@ -1637,6 +1691,9 @@ export type Database = {
           id?: string
           is_read?: boolean
           message?: string
+          read_by_admin?: boolean
+          read_by_contractor?: boolean
+          read_by_estimator?: boolean
           sender_id?: string
           sender_role?: string
         }
@@ -1941,6 +1998,7 @@ export type Database = {
           proposal_text: string | null
           revision_notes: string | null
           snapshot_at: string
+          source_event: string | null
           status: string
         }
         Insert: {
@@ -1953,6 +2011,7 @@ export type Database = {
           proposal_text?: string | null
           revision_notes?: string | null
           snapshot_at?: string
+          source_event?: string | null
           status: string
         }
         Update: {
@@ -1965,6 +2024,7 @@ export type Database = {
           proposal_text?: string | null
           revision_notes?: string | null
           snapshot_at?: string
+          source_event?: string | null
           status?: string
         }
         Relationships: [
