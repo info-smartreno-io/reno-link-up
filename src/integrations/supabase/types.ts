@@ -6202,6 +6202,516 @@ export type Database = {
         }
         Relationships: []
       }
+      home_ai_insights: {
+        Row: {
+          confidence_level: string | null
+          created_at: string
+          home_profile_id: string
+          id: string
+          insight_type: string
+          recommendation: string | null
+          related_system_id: string | null
+          risk_level: string | null
+          source_summary: Json | null
+          status: string | null
+          summary: string
+          supporting_factors: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          confidence_level?: string | null
+          created_at?: string
+          home_profile_id: string
+          id?: string
+          insight_type: string
+          recommendation?: string | null
+          related_system_id?: string | null
+          risk_level?: string | null
+          source_summary?: Json | null
+          status?: string | null
+          summary: string
+          supporting_factors?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          confidence_level?: string | null
+          created_at?: string
+          home_profile_id?: string
+          id?: string
+          insight_type?: string
+          recommendation?: string | null
+          related_system_id?: string | null
+          risk_level?: string | null
+          source_summary?: Json | null
+          status?: string | null
+          summary?: string
+          supporting_factors?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_ai_insights_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_ai_insights_related_system_id_fkey"
+            columns: ["related_system_id"]
+            isOneToOne: false
+            referencedRelation: "home_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          extracted_text: string | null
+          extraction_status: string | null
+          file_name: string
+          file_path: string | null
+          file_size_bytes: number | null
+          file_url: string
+          home_profile_id: string
+          id: string
+          mime_type: string | null
+          related_system_id: string | null
+          updated_at: string
+          upload_source: string | null
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          extracted_text?: string | null
+          extraction_status?: string | null
+          file_name: string
+          file_path?: string | null
+          file_size_bytes?: number | null
+          file_url: string
+          home_profile_id: string
+          id?: string
+          mime_type?: string | null
+          related_system_id?: string | null
+          updated_at?: string
+          upload_source?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          extracted_text?: string | null
+          extraction_status?: string | null
+          file_name?: string
+          file_path?: string | null
+          file_size_bytes?: number | null
+          file_url?: string
+          home_profile_id?: string
+          id?: string
+          mime_type?: string | null
+          related_system_id?: string | null
+          updated_at?: string
+          upload_source?: string | null
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_documents_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_documents_related_system_id_fkey"
+            columns: ["related_system_id"]
+            isOneToOne: false
+            referencedRelation: "home_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_maintenance_events: {
+        Row: {
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          event_date: string | null
+          event_type: string
+          home_profile_id: string
+          id: string
+          notes: string | null
+          related_system_id: string | null
+          updated_at: string
+          vendor_name: string | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          event_date?: string | null
+          event_type: string
+          home_profile_id: string
+          id?: string
+          notes?: string | null
+          related_system_id?: string | null
+          updated_at?: string
+          vendor_name?: string | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          event_date?: string | null
+          event_type?: string
+          home_profile_id?: string
+          id?: string
+          notes?: string | null
+          related_system_id?: string | null
+          updated_at?: string
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_maintenance_events_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_maintenance_events_related_system_id_fkey"
+            columns: ["related_system_id"]
+            isOneToOne: false
+            referencedRelation: "home_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_photos: {
+        Row: {
+          caption: string | null
+          category: string
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_url: string
+          home_profile_id: string
+          id: string
+          is_cover: boolean | null
+          related_system_id: string | null
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          caption?: string | null
+          category: string
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_url: string
+          home_profile_id: string
+          id?: string
+          is_cover?: boolean | null
+          related_system_id?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_url?: string
+          home_profile_id?: string
+          id?: string
+          is_cover?: boolean | null
+          related_system_id?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_photos_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_photos_related_system_id_fkey"
+            columns: ["related_system_id"]
+            isOneToOne: false
+            referencedRelation: "home_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_profile_field_sources: {
+        Row: {
+          confidence_level: string
+          created_at: string
+          field_name: string
+          field_value: string | null
+          home_profile_id: string
+          id: string
+          source_name: string
+          source_reference: string | null
+        }
+        Insert: {
+          confidence_level: string
+          created_at?: string
+          field_name: string
+          field_value?: string | null
+          home_profile_id: string
+          id?: string
+          source_name: string
+          source_reference?: string | null
+        }
+        Update: {
+          confidence_level?: string
+          created_at?: string
+          field_name?: string
+          field_value?: string | null
+          home_profile_id?: string
+          id?: string
+          source_name?: string
+          source_reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_profile_field_sources_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_profiles: {
+        Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          ai_last_run_at: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          block_lot: string | null
+          city: string | null
+          county: string | null
+          created_at: string
+          enrichment_last_run_at: string | null
+          enrichment_status: string | null
+          flood_zone_flag: boolean | null
+          floors: number | null
+          heat_fuel_type: string | null
+          historic_home_flag: boolean | null
+          hoa_flag: boolean | null
+          home_type: string | null
+          homeowner_user_id: string
+          id: string
+          lot_size_sqft: number | null
+          occupancy_status: string | null
+          parcel_id: string | null
+          project_id: string | null
+          property_address: string
+          purchase_year: number | null
+          sewer_type: string | null
+          square_footage: number | null
+          state: string | null
+          updated_at: string
+          water_type: string | null
+          year_built: number | null
+          zip_code: string | null
+        }
+        Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          ai_last_run_at?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          block_lot?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          enrichment_last_run_at?: string | null
+          enrichment_status?: string | null
+          flood_zone_flag?: boolean | null
+          floors?: number | null
+          heat_fuel_type?: string | null
+          historic_home_flag?: boolean | null
+          hoa_flag?: boolean | null
+          home_type?: string | null
+          homeowner_user_id: string
+          id?: string
+          lot_size_sqft?: number | null
+          occupancy_status?: string | null
+          parcel_id?: string | null
+          project_id?: string | null
+          property_address: string
+          purchase_year?: number | null
+          sewer_type?: string | null
+          square_footage?: number | null
+          state?: string | null
+          updated_at?: string
+          water_type?: string | null
+          year_built?: number | null
+          zip_code?: string | null
+        }
+        Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          ai_last_run_at?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          block_lot?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          enrichment_last_run_at?: string | null
+          enrichment_status?: string | null
+          flood_zone_flag?: boolean | null
+          floors?: number | null
+          heat_fuel_type?: string | null
+          historic_home_flag?: boolean | null
+          hoa_flag?: boolean | null
+          home_type?: string | null
+          homeowner_user_id?: string
+          id?: string
+          lot_size_sqft?: number | null
+          occupancy_status?: string | null
+          parcel_id?: string | null
+          project_id?: string | null
+          property_address?: string
+          purchase_year?: number | null
+          sewer_type?: string | null
+          square_footage?: number | null
+          state?: string | null
+          updated_at?: string
+          water_type?: string | null
+          year_built?: number | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_profiles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_systems: {
+        Row: {
+          ai_confidence: string | null
+          ai_estimated_replacement_window: string | null
+          ai_reasoning_summary: string | null
+          ai_recommendation: string | null
+          ai_risk_level: string | null
+          ai_typical_lifespan: string | null
+          approximate_age: number | null
+          brand: string | null
+          condition_rating: string | null
+          created_at: string
+          home_profile_id: string
+          homeowner_notes: string | null
+          id: string
+          install_year: number | null
+          issue_summary: string | null
+          known_issues: boolean | null
+          last_service_date: string | null
+          manufacturer: string | null
+          model_number: string | null
+          repair_history: string | null
+          serial_number: string | null
+          source_condition: string | null
+          source_install_year: string | null
+          source_system_data: string | null
+          system_label: string | null
+          system_type: string
+          updated_at: string
+        }
+        Insert: {
+          ai_confidence?: string | null
+          ai_estimated_replacement_window?: string | null
+          ai_reasoning_summary?: string | null
+          ai_recommendation?: string | null
+          ai_risk_level?: string | null
+          ai_typical_lifespan?: string | null
+          approximate_age?: number | null
+          brand?: string | null
+          condition_rating?: string | null
+          created_at?: string
+          home_profile_id: string
+          homeowner_notes?: string | null
+          id?: string
+          install_year?: number | null
+          issue_summary?: string | null
+          known_issues?: boolean | null
+          last_service_date?: string | null
+          manufacturer?: string | null
+          model_number?: string | null
+          repair_history?: string | null
+          serial_number?: string | null
+          source_condition?: string | null
+          source_install_year?: string | null
+          source_system_data?: string | null
+          system_label?: string | null
+          system_type: string
+          updated_at?: string
+        }
+        Update: {
+          ai_confidence?: string | null
+          ai_estimated_replacement_window?: string | null
+          ai_reasoning_summary?: string | null
+          ai_recommendation?: string | null
+          ai_risk_level?: string | null
+          ai_typical_lifespan?: string | null
+          approximate_age?: number | null
+          brand?: string | null
+          condition_rating?: string | null
+          created_at?: string
+          home_profile_id?: string
+          homeowner_notes?: string | null
+          id?: string
+          install_year?: number | null
+          issue_summary?: string | null
+          known_issues?: boolean | null
+          last_service_date?: string | null
+          manufacturer?: string | null
+          model_number?: string | null
+          repair_history?: string | null
+          serial_number?: string | null
+          source_condition?: string | null
+          source_install_year?: string | null
+          source_system_data?: string | null
+          system_label?: string | null
+          system_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_systems_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       homeowner_applicants: {
         Row: {
           address: string | null
@@ -10223,6 +10733,53 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_enrichment_runs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          home_profile_id: string
+          id: string
+          mapped_fields: Json | null
+          provider_name: string
+          request_payload: Json | null
+          response_payload: Json | null
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          home_profile_id: string
+          id?: string
+          mapped_fields?: Json | null
+          provider_name: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          home_profile_id?: string
+          id?: string
+          mapped_fields?: Json | null
+          provider_name?: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_enrichment_runs_home_profile_id_fkey"
+            columns: ["home_profile_id"]
+            isOneToOne: false
+            referencedRelation: "home_profiles"
             referencedColumns: ["id"]
           },
         ]

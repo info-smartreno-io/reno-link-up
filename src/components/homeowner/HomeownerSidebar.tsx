@@ -7,6 +7,7 @@ import {
   FolderOpen,
   Bell,
   User,
+  Home,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,6 +27,7 @@ const navItems = [
   { title: "My Projects", url: "/homeowner/projects", icon: FolderKanban, badgeKey: null },
   { title: "Messages", url: "/homeowner/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "Files", url: "/homeowner/files", icon: FolderOpen, badgeKey: null },
+  { title: "My Home", url: "/homeowner/my-home", icon: Home, badgeKey: null },
   { title: "Notifications", url: "/homeowner/notifications", icon: Bell, badgeKey: "notifications" as const },
   { title: "Profile", url: "/homeowner/profile", icon: User, badgeKey: null },
 ];
