@@ -98,6 +98,7 @@ import EstimatorSettings from "./pages/estimator/EstimatorSettings";
 import AdminTestAccounts from "./pages/admin/AdminTestAccounts";
 import ContractorBidPackets from "./pages/contractor/ContractorBidPackets";
 import ContractorBidPacketView from "./pages/contractor/ContractorBidPacketView";
+import ContractorClarifications from "./pages/contractor/ContractorClarifications";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
 import AdminFileStorage from "./pages/admin/AdminFileStorage";
 import AdminMessagesOversight from "./pages/admin/AdminMessagesOversight";
@@ -1088,6 +1089,11 @@ function AppRoutes() {
             <Route path="/contractor/bid-packets/:packetId" element={
               <ProtectedRoute requiredRole="contractor">
                 <ContractorBidPacketView />
+              </ProtectedRoute>
+            } />
+            <Route path="/contractor/clarifications" element={
+              <ProtectedRoute requiredRole="contractor">
+                <ContractorClarifications />
               </ProtectedRoute>
             } />
             <Route path="/contractor/estimates" element={
