@@ -925,6 +925,21 @@ function AppRoutes() {
                 <EstimatorProjectDetail />
               </ProtectedRoute>
             } />
+            <Route path="/estimator/messages" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorMessages />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/files" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorFiles />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/settings" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorSettings />
+              </ProtectedRoute>
+            } />
             <Route path="/contractor/auth" element={<ContractorComingSoon />} />
             <Route path="/contractor/demo" element={<ContractorComingSoon />} />
             <Route path="/contractor/overview" element={
