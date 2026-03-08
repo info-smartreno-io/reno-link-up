@@ -7,6 +7,8 @@ import {
   User,
   Settings,
   ClipboardList,
+  Building2,
+  MessageCircle,
 } from "lucide-react";
 import { NavSection } from "@/types/nav";
 
@@ -24,14 +26,19 @@ export const consolidatedContractorNav: NavSection[] = [
         icon: LayoutDashboard,
       },
       {
-        label: "Opportunities",
-        path: "/contractor/opportunities",
+        label: "Bid Opportunities",
+        path: "/contractor/bid-packets",
         icon: Briefcase,
       },
       {
         label: "My Bids",
         path: "/contractor/bids",
         icon: FileText,
+      },
+      {
+        label: "Clarifications",
+        path: "/contractor/clarifications",
+        icon: MessageCircle,
       },
       {
         label: "Projects",
@@ -43,15 +50,20 @@ export const consolidatedContractorNav: NavSection[] = [
         path: "/contractor/messages",
         icon: MessageSquare,
       },
+      {
+        label: "Files",
+        path: "/contractor/files",
+        icon: FolderOpen,
+      },
     ],
   },
   {
     title: "Account",
     items: [
       {
-        label: "Profile",
+        label: "Company Profile",
         path: "/contractor/profile",
-        icon: User,
+        icon: Building2,
       },
       {
         label: "Settings",

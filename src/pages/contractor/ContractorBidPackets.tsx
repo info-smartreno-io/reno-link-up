@@ -151,11 +151,13 @@ export default function ContractorBidPackets() {
                 <SelectItem value="all">All Invitations</SelectItem>
                 <SelectItem value="action_needed">Action Needed</SelectItem>
                 <SelectItem value="new_invite">New Invites</SelectItem>
-                <SelectItem value="draft_in_progress">Drafts</SelectItem>
+                <SelectItem value="draft_in_progress">Draft In Progress</SelectItem>
                 <SelectItem value="submitted">Submitted</SelectItem>
                 <SelectItem value="revision_requested">Revision Requested</SelectItem>
                 <SelectItem value="resubmitted">Resubmitted</SelectItem>
                 <SelectItem value="awarded">Awarded</SelectItem>
+                <SelectItem value="declined">Declined</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
               </SelectContent>
             </Select>
           </div>

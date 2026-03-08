@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, FolderKanban, DollarSign, LayoutDashboard, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Briefcase, ClipboardList, MessageSquare, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useContractorCounts } from "@/hooks/useContractorCounts";
@@ -9,37 +9,37 @@ import { BottomNavDrawer } from "./BottomNavDrawer";
 interface NavItem {
   id: string;
   label: string;
-  icon: typeof Home;
+  icon: typeof LayoutDashboard;
   path: string;
   getBadgeCount?: (counts: ReturnType<typeof useContractorCounts>['counts']) => number;
 }
 
 const navItems: NavItem[] = [
   {
-    id: "portal",
-    label: "Home",
-    icon: Home,
-    path: "/contractor/portal",
-  },
-  {
     id: "dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
     path: "/contractor/dashboard",
-    getBadgeCount: (counts) => counts.totalPending,
   },
   {
-    id: "collections",
-    label: "Collections",
-    icon: DollarSign,
-    path: "/contractor/collections",
+    id: "bids",
+    label: "Bid Opps",
+    icon: Briefcase,
+    path: "/contractor/bid-packets",
+    getBadgeCount: (counts) => counts.totalPending,
   },
   {
     id: "projects",
     label: "Projects",
-    icon: FolderKanban,
+    icon: ClipboardList,
     path: "/contractor/projects",
     getBadgeCount: (counts) => counts.newProjects,
+  },
+  {
+    id: "messages",
+    label: "Messages",
+    icon: MessageSquare,
+    path: "/contractor/messages",
   },
 ];
 
@@ -49,7 +49,7 @@ export function BottomNav() {
   const { counts } = useContractorCounts();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "?");
+  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
     <>
