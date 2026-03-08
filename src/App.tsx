@@ -70,6 +70,10 @@ import ServicesIndex from "./pages/services/ServicesIndex";
 import ServiceDetailPage from "./pages/services/ServiceDetailPage";
 import Software from "./pages/Software";
 import StartYourRenovation from "./pages/StartYourRenovation";
+import RenovationCosts from "./pages/RenovationCosts";
+import PropertyRenovationReport from "./pages/PropertyRenovationReport";
+import SmartRenoProcess from "./pages/SmartRenoProcess";
+import CostGuidePage from "./pages/CostGuidePage";
 import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
@@ -418,6 +422,13 @@ function AppRoutes() {
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
             <Route path="/software" element={<Software />} />
             <Route path="/start-your-renovation" element={<StartYourRenovation />} />
+            <Route path="/renovation-costs" element={<RenovationCosts />} />
+            <Route path="/property-renovation-report" element={<PropertyRenovationReport />} />
+            <Route path="/smartreno-process" element={<SmartRenoProcess />} />
+            <Route path="/kitchen-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/bathroom-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/basement-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/home-addition-cost-nj" element={<CostGuidePage />} />
             <Route path="/start-your-renovation/confirmation" element={<IntakeConfirmation />} />
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
