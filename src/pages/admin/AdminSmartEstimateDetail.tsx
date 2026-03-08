@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
 import { LinkedDownstreamRecordsCard, DownstreamSyncSummaryBadge } from "@/components/admin/LinkedDownstreamRecordsCard";
+import { DownstreamSyncHistoryPanel } from "@/components/admin/DownstreamSyncHistoryPanel";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -200,16 +201,19 @@ export default function AdminSmartEstimateDetail() {
         </div>
 
         {estimate.status === "approved" && (
-          <LinkedDownstreamRecordsCard
-            estimateId={estimate.id}
-            projectId={estimate.project_id}
-            estimateUpdatedAt={estimate.updated_at}
-            onSyncRecord={(target, record) => {
-              setSyncTarget(target);
-              setSyncRecord(record);
-              setShowDownstreamDialog(true);
-            }}
-          />
+          <>
+            <LinkedDownstreamRecordsCard
+              estimateId={estimate.id}
+              projectId={estimate.project_id}
+              estimateUpdatedAt={estimate.updated_at}
+              onSyncRecord={(target, record) => {
+                setSyncTarget(target);
+                setSyncRecord(record);
+                setShowDownstreamDialog(true);
+              }}
+            />
+            <DownstreamSyncHistoryPanel estimateId={estimate.id} />
+          </>
         )}
 
         {/* Main content tabs */}

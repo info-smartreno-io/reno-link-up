@@ -333,7 +333,10 @@ export function SmartEstimateDownstreamDialog({
         await guardedStatusUpdate("design_package_in_progress");
         await logActions(user.id, isOverride ? "downstream_design_package_duplicate_override" : "downstream_design_package_created", {
           design_package_id: pkg.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
-          ...(isOverride ? { override_reason: overrideReason } : {}),
+          target_type: "design_package", target_id: pkg.id,
+          overwrite_field_count: Object.keys(preview).filter(k => (preview[k] || "").trim()).length,
+          old_values: {}, new_values: Object.fromEntries(Object.entries(preview).filter(([, v]) => (v || "").trim())),
+          ...(isOverride ? { duplicate_override_reason: overrideReason } : {}),
         }, pkg.id);
         return { id: pkg.id, type: "Design Package" };
       } else {
@@ -363,7 +366,10 @@ export function SmartEstimateDownstreamDialog({
         await guardedStatusUpdate("bid_packet_generated");
         await logActions(user.id, isOverride ? "downstream_bid_packet_duplicate_override" : "downstream_bid_packet_created", {
           bid_packet_id: packet.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
-          ...(isOverride ? { override_reason: overrideReason } : {}),
+          target_type: "bid_packet", target_id: packet.id,
+          overwrite_field_count: Object.keys(preview).filter(k => (preview[k] || "").trim()).length,
+          old_values: {}, new_values: Object.fromEntries(Object.entries(preview).filter(([, v]) => (v || "").trim())),
+          ...(isOverride ? { duplicate_override_reason: overrideReason } : {}),
         });
         return { id: packet.id, type: "Bid Packet" };
       }
