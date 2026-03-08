@@ -105,7 +105,8 @@ const GUIDES: Record<string, CostGuideData> = {
 };
 
 export default function CostGuidePage() {
-  const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
+  const slug = location.pathname.replace("/", "");
   const guide = slug ? GUIDES[slug] : undefined;
 
   if (!guide) {
