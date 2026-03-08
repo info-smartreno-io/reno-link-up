@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,8 +46,14 @@ export function AdminClarificationPanel({ packetId }: AdminClarificationPanelPro
     },
   });
 
-  // Auto-mark read when panel loads
+  // Auto-mark contractor messages as read when panel loads
   const unreadCount = messages.filter((m: any) => m.sender_role === "contractor" && !m.read_by_admin).length;
+  
+  useEffect(() => {
+    if (unreadCount > 0 && !markRead.isPending) {
+      markRead.mutate();
+    }
+  }, [unreadCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendReply = useMutation({
     mutationFn: async () => {
