@@ -850,6 +850,11 @@ function AppRoutes() {
                 <EstimateRequests />
               </ProtectedRoute>
             } />
+            <Route path="/estimator/estimate-requests" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimateRequests />
+              </ProtectedRoute>
+            } />
             <Route path="/estimator/estimates" element={
               <ProtectedRoute requiredRole="estimator">
                 <EstimatorEstimates />
