@@ -24,6 +24,7 @@ import {
   Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock, ArrowRight,
 } from "lucide-react";
 import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
+import { LinkedDownstreamRecordsCard } from "@/components/admin/LinkedDownstreamRecordsCard";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -192,6 +193,11 @@ export default function AdminSmartEstimateDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Linked Downstream Records */}
+        {estimate.status === "approved" && (
+          <LinkedDownstreamRecordsCard estimateId={estimate.id} projectId={estimate.project_id} />
+        )}
 
         {/* Main content tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
