@@ -7,42 +7,35 @@ import { ExternalLink, Palette, Package, RefreshCw, CheckCircle2, AlertTriangle,
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
+type SyncStatus = "synced" | "never_synced" | "out_of_sync";
+type OverallSyncStatus = "no_downstream_records" | "all_synced" | "out_of_sync" | "multiple_records";
+
 interface Props {
   estimateId: string;
   projectId?: string | null;
   estimateUpdatedAt?: string | null;
-  onSyncRequest?: () => void;
+  /** Called with target type and the specific record to sync */
+  onSyncRecord?: (target: "design_package" | "bid_packet", record: any) => void;
 }
 
-type SyncStatus = "synced" | "never_synced" | "out_of_sync";
-
-function computeSyncStatus(
-  record: any,
-  estimateId: string,
-  estimateUpdatedAt: string | null
-): SyncStatus {
+function computeSyncStatus(record: any, estimateId: string, estimateUpdatedAt: string | null): SyncStatus {
   if (record.source_smart_estimate_id !== estimateId) return "never_synced";
   if (!record.last_synced_from_smart_estimate_at) return "never_synced";
   if (!estimateUpdatedAt) return "synced";
-  return new Date(estimateUpdatedAt) > new Date(record.last_synced_from_smart_estimate_at)
-    ? "out_of_sync"
-    : "synced";
+  return new Date(estimateUpdatedAt) > new Date(record.last_synced_from_smart_estimate_at) ? "out_of_sync" : "synced";
 }
 
 function determinePrimary(records: any[], estimateId: string): string | null {
-  // Prefer: non-archived, matching source, latest synced
   const candidates = records
-    .filter((r) => {
-      const status = r.package_status || r.status;
-      return status !== "archived";
-    })
+    .filter((r) => (r.package_status || r.status) !== "archived")
     .sort((a, b) => {
       const aMatch = a.source_smart_estimate_id === estimateId ? 1 : 0;
       const bMatch = b.source_smart_estimate_id === estimateId ? 1 : 0;
       if (aMatch !== bMatch) return bMatch - aMatch;
       const aSync = a.last_synced_from_smart_estimate_at ? new Date(a.last_synced_from_smart_estimate_at).getTime() : 0;
       const bSync = b.last_synced_from_smart_estimate_at ? new Date(b.last_synced_from_smart_estimate_at).getTime() : 0;
-      return bSync - aSync;
+      if (aSync !== bSync) return bSync - aSync;
+      return new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime();
     });
   return candidates[0]?.id ?? null;
 }
@@ -79,7 +72,79 @@ function DuplicateBadge({ snapshot }: { snapshot: any }) {
   );
 }
 
-export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpdatedAt, onSyncRequest }: Props) {
+/** Header-level sync summary badge for the Smart Estimate detail page */
+export function DownstreamSyncSummaryBadge({ estimateId, projectId, estimateUpdatedAt }: {
+  estimateId: string; projectId?: string | null; estimateUpdatedAt?: string | null;
+}) {
+  const { data: status } = useQuery({
+    queryKey: ["downstream-sync-summary", estimateId, estimateUpdatedAt],
+    queryFn: async (): Promise<OverallSyncStatus> => {
+      const allRecords: { record: any; type: string }[] = [];
+
+      const { data: dpBySource } = await supabase.from("design_packages")
+        .select("id, package_status, source_smart_estimate_id, last_synced_from_smart_estimate_at, updated_at, created_at")
+        .eq("source_smart_estimate_id", estimateId);
+      dpBySource?.forEach(r => allRecords.push({ record: r, type: "dp" }));
+
+      if (projectId) {
+        const ids = new Set(allRecords.map(r => r.record.id));
+        const { data: dpByProject } = await supabase.from("design_packages")
+          .select("id, package_status, source_smart_estimate_id, last_synced_from_smart_estimate_at, updated_at, created_at")
+          .eq("project_id", projectId).neq("package_status", "archived");
+        dpByProject?.forEach(r => { if (!ids.has(r.id)) allRecords.push({ record: r, type: "dp" }); });
+      }
+
+      const { data: bpBySource } = await supabase.from("bid_packets")
+        .select("id, status, source_smart_estimate_id, last_synced_from_smart_estimate_at, updated_at, created_at")
+        .eq("source_smart_estimate_id", estimateId);
+      bpBySource?.forEach(r => allRecords.push({ record: r, type: "bp" }));
+
+      if (projectId) {
+        const ids = new Set(allRecords.map(r => r.record.id));
+        const { data: bpByProject } = await supabase.from("bid_packets")
+          .select("id, status, source_smart_estimate_id, last_synced_from_smart_estimate_at, updated_at, created_at")
+          .eq("project_id", projectId).neq("status", "archived");
+        bpByProject?.forEach(r => { if (!ids.has(r.id)) allRecords.push({ record: r, type: "bp" }); });
+      }
+
+      if (allRecords.length === 0) return "no_downstream_records";
+
+      const dpCount = allRecords.filter(r => r.type === "dp").length;
+      const bpCount = allRecords.filter(r => r.type === "bp").length;
+      if (dpCount > 1 || bpCount > 1) return "multiple_records";
+
+      const hasOutOfSync = allRecords.some(({ record }) =>
+        computeSyncStatus(record, estimateId, estimateUpdatedAt ?? null) === "out_of_sync"
+      );
+      return hasOutOfSync ? "out_of_sync" : "all_synced";
+    },
+  });
+
+  if (!status || status === "no_downstream_records") return null;
+
+  switch (status) {
+    case "all_synced":
+      return (
+        <Badge variant="outline" className="gap-1 border-green-300 text-green-700 dark:border-green-700 dark:text-green-400">
+          <CheckCircle2 className="h-3 w-3" /> All Downstream Synced
+        </Badge>
+      );
+    case "out_of_sync":
+      return (
+        <Badge variant="outline" className="gap-1 border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400">
+          <AlertTriangle className="h-3 w-3" /> Downstream Updates Available
+        </Badge>
+      );
+    case "multiple_records":
+      return (
+        <Badge variant="outline" className="gap-1">
+          <Package className="h-3 w-3" /> Multiple Downstream Records
+        </Badge>
+      );
+  }
+}
+
+export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpdatedAt, onSyncRecord }: Props) {
   const navigate = useNavigate();
 
   const { data: designPackages = [] } = useQuery({
@@ -87,18 +152,15 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
     queryFn: async () => {
       const ids = new Set<string>();
       const results: any[] = [];
-      const { data: bySource } = await supabase
-        .from("design_packages")
+      const { data: bySource } = await supabase.from("design_packages")
         .select("id, package_status, created_at, updated_at, source_smart_estimate_id, source_type, source_mapping_snapshot, last_synced_from_smart_estimate_at")
         .eq("source_smart_estimate_id", estimateId);
-      bySource?.forEach((r) => { ids.add(r.id); results.push(r); });
+      bySource?.forEach(r => { ids.add(r.id); results.push(r); });
       if (projectId) {
-        const { data: byProject } = await supabase
-          .from("design_packages")
+        const { data: byProject } = await supabase.from("design_packages")
           .select("id, package_status, created_at, updated_at, source_smart_estimate_id, source_type, source_mapping_snapshot, last_synced_from_smart_estimate_at")
-          .eq("project_id", projectId)
-          .neq("package_status", "archived");
-        byProject?.forEach((r) => { if (!ids.has(r.id)) { ids.add(r.id); results.push(r); } });
+          .eq("project_id", projectId).neq("package_status", "archived");
+        byProject?.forEach(r => { if (!ids.has(r.id)) { ids.add(r.id); results.push(r); } });
       }
       return results;
     },
@@ -109,18 +171,15 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
     queryFn: async () => {
       const ids = new Set<string>();
       const results: any[] = [];
-      const { data: bySource } = await supabase
-        .from("bid_packets")
+      const { data: bySource } = await supabase.from("bid_packets")
         .select("id, status, title, created_at, updated_at, source_smart_estimate_id, source_type, source_mapping_snapshot, last_synced_from_smart_estimate_at")
         .eq("source_smart_estimate_id", estimateId);
-      bySource?.forEach((r) => { ids.add(r.id); results.push(r); });
+      bySource?.forEach(r => { ids.add(r.id); results.push(r); });
       if (projectId) {
-        const { data: byProject } = await supabase
-          .from("bid_packets")
+        const { data: byProject } = await supabase.from("bid_packets")
           .select("id, status, title, created_at, updated_at, source_smart_estimate_id, source_type, source_mapping_snapshot, last_synced_from_smart_estimate_at")
-          .eq("project_id", projectId)
-          .neq("status", "archived");
-        byProject?.forEach((r) => { if (!ids.has(r.id)) { ids.add(r.id); results.push(r); } });
+          .eq("project_id", projectId).neq("status", "archived");
+        byProject?.forEach(r => { if (!ids.has(r.id)) { ids.add(r.id); results.push(r); } });
       }
       return results;
     },
@@ -132,7 +191,7 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
   const dpPrimaryId = determinePrimary(designPackages, estimateId);
   const bpPrimaryId = determinePrimary(bidPackets, estimateId);
   const hasOutOfSync = [...designPackages, ...bidPackets].some(
-    (r) => computeSyncStatus(r, estimateId, estimateUpdatedAt ?? null) === "out_of_sync"
+    r => computeSyncStatus(r, estimateId, estimateUpdatedAt ?? null) === "out_of_sync"
   );
 
   return (
@@ -141,9 +200,7 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
             <RefreshCw className="h-4 w-4" /> Linked Downstream Records
-            {totalRecords > 1 && (
-              <Badge variant="outline" className="text-xs">{totalRecords} records</Badge>
-            )}
+            {totalRecords > 1 && <Badge variant="outline" className="text-xs">{totalRecords} records</Badge>}
           </CardTitle>
           {hasOutOfSync && (
             <Badge variant="outline" className="gap-1 border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400">
@@ -176,8 +233,8 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                {syncStatus === "out_of_sync" && onSyncRequest && (
-                  <Button variant="outline" size="sm" className="text-xs" onClick={onSyncRequest}>
+                {syncStatus === "out_of_sync" && onSyncRecord && (
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => onSyncRecord("design_package", pkg)}>
                     <RefreshCw className="h-3 w-3 mr-1" /> Sync
                   </Button>
                 )}
@@ -212,8 +269,8 @@ export function LinkedDownstreamRecordsCard({ estimateId, projectId, estimateUpd
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                {syncStatus === "out_of_sync" && onSyncRequest && (
-                  <Button variant="outline" size="sm" className="text-xs" onClick={onSyncRequest}>
+                {syncStatus === "out_of_sync" && onSyncRecord && (
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => onSyncRecord("bid_packet", pkt)}>
                     <RefreshCw className="h-3 w-3 mr-1" /> Sync
                   </Button>
                 )}

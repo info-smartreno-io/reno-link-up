@@ -24,7 +24,7 @@ import {
   Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock, ArrowRight,
 } from "lucide-react";
 import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
-import { LinkedDownstreamRecordsCard } from "@/components/admin/LinkedDownstreamRecordsCard";
+import { LinkedDownstreamRecordsCard, DownstreamSyncSummaryBadge } from "@/components/admin/LinkedDownstreamRecordsCard";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
@@ -66,6 +66,8 @@ export default function AdminSmartEstimateDetail() {
   const [revisionNotes, setRevisionNotes] = useState("");
   const [showRevisionDialog, setShowRevisionDialog] = useState(false);
   const [showDownstreamDialog, setShowDownstreamDialog] = useState(false);
+  const [syncTarget, setSyncTarget] = useState<"design_package" | "bid_packet" | null>(null);
+  const [syncRecord, setSyncRecord] = useState<any>(null);
   const [aiGenerating, setAiGenerating] = useState<string | null>(null);
 
   // Recalculate completion/confidence when sections change
@@ -159,9 +161,12 @@ export default function AdminSmartEstimateDetail() {
               </>
             )}
             {estimate.status === "approved" && (
-              <Button onClick={() => setShowDownstreamDialog(true)}>
-                <ArrowRight className="h-4 w-4 mr-2" /> Next: Design / Bid Packet
-              </Button>
+              <div className="flex items-center gap-2">
+                <DownstreamSyncSummaryBadge estimateId={estimate.id} projectId={estimate.project_id} estimateUpdatedAt={estimate.updated_at} />
+                <Button onClick={() => { setSyncTarget(null); setSyncRecord(null); setShowDownstreamDialog(true); }}>
+                  <ArrowRight className="h-4 w-4 mr-2" /> Next: Design / Bid Packet
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -194,13 +199,16 @@ export default function AdminSmartEstimateDetail() {
           </Card>
         </div>
 
-        {/* Linked Downstream Records */}
         {estimate.status === "approved" && (
           <LinkedDownstreamRecordsCard
             estimateId={estimate.id}
             projectId={estimate.project_id}
             estimateUpdatedAt={estimate.updated_at}
-            onSyncRequest={() => setShowDownstreamDialog(true)}
+            onSyncRecord={(target, record) => {
+              setSyncTarget(target);
+              setSyncRecord(record);
+              setShowDownstreamDialog(true);
+            }}
           />
         )}
 
@@ -427,11 +435,13 @@ export default function AdminSmartEstimateDetail() {
       {/* Downstream Workflow Dialog */}
       <SmartEstimateDownstreamDialog
         open={showDownstreamDialog}
-        onOpenChange={setShowDownstreamDialog}
+        onOpenChange={(v) => { setShowDownstreamDialog(v); if (!v) { setSyncTarget(null); setSyncRecord(null); } }}
         estimate={estimate}
         sections={sections}
         rooms={rooms}
         tradeItems={tradeItems}
+        initialTarget={syncTarget}
+        initialExistingRecord={syncRecord}
       />
     </AdminLayout>
   );
