@@ -2,14 +2,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Helper to bypass generated types for new tables not yet in types.ts
+const db = () => supabase as any;
+
 export function useHomeProfile() {
   return useQuery<any>({
     queryKey: ["home-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      const { data, error } = await supabase
-        .from("home_profiles" as any)
+      const { data, error } = await db()
+        .from("home_profiles")
         .select("*")
         .eq("homeowner_user_id", user.id)
         .maybeSingle();
@@ -25,13 +28,13 @@ export function useCreateHomeProfile() {
     mutationFn: async (profile: Record<string, any>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
-        .from("home_profiles" as any)
+      const { data, error } = await db()
+        .from("home_profiles")
         .insert({ ...profile, homeowner_user_id: user.id })
         .select()
         .single();
       if (error) throw error;
-      return data as any;
+      return data;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["home-profile"] });
@@ -45,8 +48,8 @@ export function useUpdateHomeProfile() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Record<string, any>) => {
-      const { data, error } = await supabase
-        .from("home_profiles" as any)
+      const { data, error } = await db()
+        .from("home_profiles")
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id)
         .select()
@@ -67,8 +70,8 @@ export function useHomeSystems(profileId: string | undefined) {
     queryKey: ["home-systems", profileId],
     enabled: !!profileId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("home_systems" as any)
+      const { data, error } = await db()
+        .from("home_systems")
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("created_at", { ascending: true });
@@ -82,15 +85,15 @@ export function useCreateHomeSystem() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (system: Record<string, any>) => {
-      const { data, error } = await supabase
-        .from("home_systems" as any)
+      const { data, error } = await db()
+        .from("home_systems")
         .insert(system)
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ["home-systems", data.home_profile_id] });
       toast.success("System added!");
     },
@@ -102,16 +105,16 @@ export function useUpdateHomeSystem() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Record<string, any>) => {
-      const { data, error } = await supabase
-        .from("home_systems" as any)
+      const { data, error } = await db()
+        .from("home_systems")
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id)
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ["home-systems", data.home_profile_id] });
       toast.success("System updated!");
     },
@@ -120,66 +123,66 @@ export function useUpdateHomeSystem() {
 }
 
 export function useHomePhotos(profileId: string | undefined) {
-  return useQuery({
+  return useQuery<any[]>({
     queryKey: ["home-photos", profileId],
     enabled: !!profileId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("home_photos" as any)
+      const { data, error } = await db()
+        .from("home_photos")
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("uploaded_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
 
 export function useHomeDocuments(profileId: string | undefined) {
-  return useQuery({
+  return useQuery<any[]>({
     queryKey: ["home-documents", profileId],
     enabled: !!profileId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("home_documents" as any)
+      const { data, error } = await db()
+        .from("home_documents")
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("uploaded_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
 
 export function useHomeInsights(profileId: string | undefined) {
-  return useQuery({
+  return useQuery<any[]>({
     queryKey: ["home-insights", profileId],
     enabled: !!profileId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("home_ai_insights" as any)
+      const { data, error } = await db()
+        .from("home_ai_insights")
         .select("*")
         .eq("home_profile_id", profileId!)
         .eq("status", "active")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
 
 export function useMaintenanceEvents(profileId: string | undefined) {
-  return useQuery({
+  return useQuery<any[]>({
     queryKey: ["maintenance-events", profileId],
     enabled: !!profileId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("home_maintenance_events" as any)
+      const { data, error } = await db()
+        .from("home_maintenance_events")
         .select("*")
         .eq("home_profile_id", profileId!)
         .order("event_date", { ascending: false });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
@@ -190,15 +193,15 @@ export function useCreateMaintenanceEvent() {
     mutationFn: async (event: Record<string, any>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
-        .from("home_maintenance_events" as any)
+      const { data, error } = await db()
+        .from("home_maintenance_events")
         .insert({ ...event, created_by: user.id })
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ["maintenance-events", data.home_profile_id] });
       toast.success("Maintenance event added!");
     },
@@ -219,8 +222,8 @@ export function useUploadHomePhoto() {
         .upload(filePath, file);
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("home-photos").getPublicUrl(filePath);
-      const { data, error } = await supabase
-        .from("home_photos" as any)
+      const { data, error } = await db()
+        .from("home_photos")
         .insert({
           home_profile_id: profileId,
           category,
@@ -233,9 +236,9 @@ export function useUploadHomePhoto() {
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ["home-photos", data.home_profile_id] });
       toast.success("Photo uploaded!");
     },
@@ -256,8 +259,8 @@ export function useUploadHomeDocument() {
         .upload(filePath, file);
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("home-documents").getPublicUrl(filePath);
-      const { data, error } = await supabase
-        .from("home_documents" as any)
+      const { data, error } = await db()
+        .from("home_documents")
         .insert({
           home_profile_id: profileId,
           document_type: documentType,
@@ -271,9 +274,9 @@ export function useUploadHomeDocument() {
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       qc.invalidateQueries({ queryKey: ["home-documents", data.home_profile_id] });
       toast.success("Document uploaded!");
     },
