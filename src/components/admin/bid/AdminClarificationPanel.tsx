@@ -43,17 +43,20 @@ export function AdminClarificationPanel({ packetId }: AdminClarificationPanelPro
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-bid-clarifications", packetId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-unread-clarifications", packetId] });
     },
   });
 
-  // Auto-mark contractor messages as read when panel loads
+  // Auto-mark contractor messages as read when panel loads (once)
   const unreadCount = messages.filter((m: any) => m.sender_role === "contractor" && !m.read_by_admin).length;
+  const [hasAutoMarked, setHasAutoMarked] = useState(false);
   
   useEffect(() => {
-    if (unreadCount > 0 && !markRead.isPending) {
+    if (unreadCount > 0 && !hasAutoMarked && !markRead.isPending) {
+      setHasAutoMarked(true);
       markRead.mutate();
     }
-  }, [unreadCount]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [unreadCount, hasAutoMarked]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendReply = useMutation({
     mutationFn: async () => {
@@ -80,6 +83,7 @@ export function AdminClarificationPanel({ packetId }: AdminClarificationPanelPro
     onSuccess: () => {
       setReply("");
       queryClient.invalidateQueries({ queryKey: ["admin-bid-clarifications", packetId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-unread-clarifications", packetId] });
     },
   });
 

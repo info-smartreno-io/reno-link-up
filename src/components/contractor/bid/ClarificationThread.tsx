@@ -32,9 +32,12 @@ export function ClarificationThread({ packetId, currentUserId }: ClarificationTh
   });
 
   // Mark admin/estimator messages as read by contractor on load
+  const [hasMarkedRead, setHasMarkedRead] = useState(false);
   useEffect(() => {
+    if (hasMarkedRead) return;
     const unread = messages.filter((m: any) => m.sender_role !== "contractor" && !m.read_by_contractor);
     if (unread.length > 0) {
+      setHasMarkedRead(true);
       const ids = unread.map((m: any) => m.id);
       (supabase as any)
         .from("bid_packet_clarifications")
@@ -43,9 +46,10 @@ export function ClarificationThread({ packetId, currentUserId }: ClarificationTh
         .then(() => {
           queryClient.invalidateQueries({ queryKey: ["contractor-clarification-unreads"] });
           queryClient.invalidateQueries({ queryKey: ["bid-clarification-count", packetId] });
+          queryClient.invalidateQueries({ queryKey: ["bid-clarifications", packetId] });
         });
     }
-  }, [messages, packetId, queryClient]);
+  }, [messages, packetId, queryClient, hasMarkedRead]);
 
   const sendMessage = useMutation({
     mutationFn: async () => {
@@ -117,7 +121,7 @@ export function ClarificationThread({ packetId, currentUserId }: ClarificationTh
                       <span className="text-xs font-medium opacity-80">
                         {isOwn ? "You" : msg.sender_role === "admin" ? "Admin" : "Estimator"}
                       </span>
-                      {!isOwn && !msg.is_read && (
+                      {!isOwn && !msg.read_by_contractor && (
                         <Badge variant="secondary" className="text-[9px] px-1 py-0">New</Badge>
                       )}
                     </div>
