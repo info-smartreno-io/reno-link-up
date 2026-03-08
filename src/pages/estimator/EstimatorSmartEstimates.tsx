@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSmartEstimateList, useSmartEstimateMutations } from "@/hooks/useSmartEstimate";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ export default function EstimatorSmartEstimates() {
   );
 
   return (
+    <EstimatorLayout>
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -91,5 +93,6 @@ export default function EstimatorSmartEstimates() {
         </CardContent>
       </Card>
     </div>
+    </EstimatorLayout>
   );
 }
