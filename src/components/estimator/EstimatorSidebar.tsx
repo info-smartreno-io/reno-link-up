@@ -7,8 +7,6 @@ import {
   Calendar,
   BarChart3,
   TrendingUp,
-  Package,
-  FileEdit,
   Wand2,
   LogOut,
   Hammer,
@@ -16,6 +14,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Kanban,
+  Brain,
+  MessageSquare,
+  FolderOpen,
+  Settings,
+  MapPin,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Badge } from "@/components/ui/badge";
@@ -28,26 +31,27 @@ import { useSidebarCollapse } from "./EstimatorLayout";
 
 const navigationItems = [
   { title: "Dashboard", url: "/estimator/dashboard", icon: Home },
-  { title: "Lead Pipeline", url: "/estimator/pipeline", icon: Kanban },
-  { title: "Requests", url: "/estimator/estimate-requests", icon: ClipboardList, showBadge: true },
+  { title: "Appointments", url: "/estimator/calendar", icon: Calendar },
+  { title: "Site Visits", url: "/estimator/walkthroughs", icon: MapPin },
+  { title: "Smart Estimates", url: "/estimator/smart-estimates", icon: Brain },
   { title: "Projects", url: "/estimator/projects", icon: Hammer },
-  { title: "Leads", url: "/estimator/leads", icon: Users },
-  { title: "Estimates", url: "/estimator/estimates", icon: ClipboardList },
-  { title: "Walkthroughs", url: "/estimator/walkthroughs", icon: Calendar },
-  { title: "Calendar", url: "/estimator/calendar", icon: Calendar },
+  { title: "Messages", url: "/estimator/messages", icon: MessageSquare },
+  { title: "Files", url: "/estimator/files", icon: FolderOpen },
 ];
 
 const workflowItems = [
+  { title: "Lead Pipeline", url: "/estimator/pipeline", icon: Kanban },
+  { title: "Leads", url: "/estimator/leads", icon: Users },
+  { title: "Requests", url: "/estimator/estimate-requests", icon: ClipboardList, showBadge: true },
+  { title: "Estimates", url: "/estimator/estimates", icon: ClipboardList },
   { title: "Bid Review", url: "/estimator/bid-review", icon: Users },
   { title: "Analytics", url: "/estimator/bid-analytics", icon: BarChart3 },
-  { title: "Sales Performance", url: "/contractor/sales-performance", icon: TrendingUp },
 ];
 
 const toolsItems = [
   { title: "Generate Scope", url: "/estimator/generate-scope", icon: Wand2 },
-  { title: "Client Selections", url: "/admin/selections", icon: Package },
-  { title: "Change Orders", url: "/professional/change-orders", icon: FileEdit },
-  { title: "Schedule", url: "/admin/schedule", icon: Calendar },
+  { title: "Profile", url: "/estimator/profile", icon: Users },
+  { title: "Settings", url: "/estimator/settings", icon: Settings },
 ];
 
 export function EstimatorSidebar() {
