@@ -128,7 +128,7 @@ export default function Index() {
             <img
               src={constructionHero}
               alt="Professional home renovation consultation in Northern New Jersey"
-              className="w-full h-[400px] lg:h-[500px] object-cover"
+              className="w-full h-[450px] lg:h-[600px] object-cover"
               width="600"
               height="500"
               loading="eager"
