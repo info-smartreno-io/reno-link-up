@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function useHomeProfile() {
-  return useQuery({
+  return useQuery<any>({
     queryKey: ["home-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,7 +63,7 @@ export function useUpdateHomeProfile() {
 }
 
 export function useHomeSystems(profileId: string | undefined) {
-  return useQuery({
+  return useQuery<any[]>({
     queryKey: ["home-systems", profileId],
     enabled: !!profileId,
     queryFn: async () => {
@@ -73,7 +73,7 @@ export function useHomeSystems(profileId: string | undefined) {
         .eq("home_profile_id", profileId!)
         .order("created_at", { ascending: true });
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
