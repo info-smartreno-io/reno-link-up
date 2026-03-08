@@ -370,6 +370,11 @@ function AppRoutes() {
                 <HomeownerLayout><HomeownerProjectMessages /></HomeownerLayout>
               </ProtectedRoute>
             } />
+            <Route path="/homeowner/my-home" element={
+              <ProtectedRoute>
+                <HomeownerLayout><MyHomePage /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
             <Route path="/homeowner/notifications" element={
               <ProtectedRoute>
                 <HomeownerLayout><HomeownerNotifications /></HomeownerLayout>
