@@ -26,12 +26,12 @@ export function useCreateHomeProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
-        .from("home_profiles")
+        .from("home_profiles" as any)
         .insert({ ...profile, homeowner_user_id: user.id })
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["home-profile"] });
