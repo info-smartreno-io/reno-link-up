@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { logBidPacketActivity } from "@/utils/bidPacketAudit";
 
 interface ClarificationThreadProps {
   packetId: string;
@@ -30,18 +31,41 @@ export function ClarificationThread({ packetId, currentUserId }: ClarificationTh
     },
   });
 
+  // Mark admin/estimator messages as read by contractor on load
+  useEffect(() => {
+    const unread = messages.filter((m: any) => m.sender_role !== "contractor" && !m.read_by_contractor);
+    if (unread.length > 0) {
+      const ids = unread.map((m: any) => m.id);
+      (supabase as any)
+        .from("bid_packet_clarifications")
+        .update({ read_by_contractor: true })
+        .in("id", ids)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ["contractor-clarification-unreads"] });
+          queryClient.invalidateQueries({ queryKey: ["bid-clarification-count", packetId] });
+        });
+    }
+  }, [messages, packetId, queryClient]);
+
   const sendMessage = useMutation({
     mutationFn: async () => {
       if (!newMessage.trim()) return;
-      const { error } = await (supabase as any)
+      await (supabase as any)
         .from("bid_packet_clarifications")
         .insert({
           bid_packet_id: packetId,
           sender_id: currentUserId,
           sender_role: "contractor",
           message: newMessage.trim(),
+          read_by_contractor: true,
         });
-      if (error) throw error;
+      await logBidPacketActivity({
+        bidPacketId: packetId,
+        actorId: currentUserId,
+        actorRole: "contractor",
+        actionType: "contractor_sent_clarification",
+        actionDetails: { message_preview: newMessage.trim().substring(0, 100) },
+      });
     },
     onSuccess: () => {
       setNewMessage("");
@@ -50,7 +74,7 @@ export function ClarificationThread({ packetId, currentUserId }: ClarificationTh
   });
 
   const hasUnread = messages.some(
-    (m: any) => m.sender_id !== currentUserId && !m.is_read && m.sender_role !== "contractor"
+    (m: any) => m.sender_role !== "contractor" && !m.read_by_contractor
   );
 
   return (
