@@ -91,6 +91,10 @@ import AdminBidComparison from "./pages/admin/AdminBidComparison";
 import AdminSmartEstimates from "./pages/admin/AdminSmartEstimates";
 import AdminSmartEstimateDetail from "./pages/admin/AdminSmartEstimateDetail";
 import EstimatorSmartEstimates from "./pages/estimator/EstimatorSmartEstimates";
+import EstimatorMessages from "./pages/estimator/EstimatorMessages";
+import EstimatorFiles from "./pages/estimator/EstimatorFiles";
+import EstimatorSettings from "./pages/estimator/EstimatorSettings";
+import AdminTestAccounts from "./pages/admin/AdminTestAccounts";
 import ContractorBidPackets from "./pages/contractor/ContractorBidPackets";
 import ContractorBidPacketView from "./pages/contractor/ContractorBidPacketView";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
@@ -803,6 +807,11 @@ function AppRoutes() {
             <Route path="/contractor/sales-performance" element={
               <ProtectedRoute requireSalesAccess={true}>
                 <SalesPerformance />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/test-accounts" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminTestAccounts />
               </ProtectedRoute>
             } />
             <Route path="/estimator/auth" element={<EstimatorAuth />} />
