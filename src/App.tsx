@@ -425,7 +425,10 @@ function AppRoutes() {
             <Route path="/renovation-costs" element={<RenovationCosts />} />
             <Route path="/property-renovation-report" element={<PropertyRenovationReport />} />
             <Route path="/smartreno-process" element={<SmartRenoProcess />} />
-            <Route path="/:slug" element={<CostGuideSlugRouter />} />
+            <Route path="/kitchen-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/bathroom-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/basement-remodel-cost-nj" element={<CostGuidePage />} />
+            <Route path="/home-addition-cost-nj" element={<CostGuidePage />} />
             <Route path="/start-your-renovation/confirmation" element={<IntakeConfirmation />} />
             <Route path="/admin/auth" element={<AdminAuth />} />
             <Route path="/admin/dashboard" element={
