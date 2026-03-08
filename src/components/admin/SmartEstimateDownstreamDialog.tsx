@@ -314,7 +314,7 @@ export function SmartEstimateDownstreamDialog({
     mutationFn: async (isOverride: boolean) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview), "created_new");
+      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview), "created_new", isOverride ? overrideReason : undefined);
       snapshot.mapped_by = user.id;
 
       if (target === "design_package") {
