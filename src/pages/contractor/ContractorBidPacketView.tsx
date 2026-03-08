@@ -277,7 +277,7 @@ export default function ContractorBidPacketView() {
       let fileUrls: string[] = [];
       if (uploadedFiles.length > 0) {
         for (const file of uploadedFiles) {
-          const path = `bid-attachments/${packetId}/${user.id}/${Date.now()}-${file.name}`;
+          const path = `${packetId}/${user.id}/${Date.now()}-${file.name}`;
           const { error: uploadErr } = await supabase.storage.from("bid-attachments").upload(path, file);
           if (!uploadErr) {
             const { data: urlData } = supabase.storage.from("bid-attachments").getPublicUrl(path);
