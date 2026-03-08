@@ -87,8 +87,7 @@ export default function ContractorBidPackets() {
       const { data } = await (supabase as any)
         .from("bid_packet_clarifications")
         .select("bid_packet_id")
-        .eq("is_read", false)
-        .neq("sender_id", user.id)
+        .eq("read_by_contractor", false)
         .neq("sender_role", "contractor");
       const counts: Record<string, number> = {};
       (data || []).forEach((r: any) => {

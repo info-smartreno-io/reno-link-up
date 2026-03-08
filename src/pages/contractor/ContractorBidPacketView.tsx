@@ -119,31 +119,31 @@ export default function ContractorBidPacketView() {
     enabled: !!packetId,
   });
 
-  // Mark invite as viewed + log
-  useQuery({
-    queryKey: ["mark-invite-viewed", packetId],
-    queryFn: async () => {
+  // Mark invite as viewed + log (runs once per packet load)
+  const [hasLoggedView, setHasLoggedView] = useState(false);
+  useEffect(() => {
+    if (!packetId || hasLoggedView) return;
+    (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user) return;
       const { data: updated } = await (supabase as any)
         .from("bid_packet_contractor_invites")
         .update({ status: "viewed", viewed_at: new Date().toISOString() })
-        .eq("bid_packet_id", packetId!)
+        .eq("bid_packet_id", packetId)
         .eq("contractor_id", user.id)
         .eq("status", "invited")
         .select();
       if (updated?.length) {
         await logBidPacketActivity({
-          bidPacketId: packetId!,
+          bidPacketId: packetId,
           actorId: user.id,
           actorRole: "contractor",
           actionType: "contractor_viewed_packet",
         });
       }
-      return true;
-    },
-    enabled: !!packetId,
-  });
+      setHasLoggedView(true);
+    })();
+  }, [packetId, hasLoggedView]);
 
   // Load existing submission
   const { data: existingSubmission } = useQuery({
@@ -203,7 +203,7 @@ export default function ContractorBidPacketView() {
         .from("bid_packet_clarifications")
         .select("*", { count: "exact", head: true })
         .eq("bid_packet_id", packetId!)
-        .eq("is_read", false)
+        .eq("read_by_contractor", false)
         .neq("sender_role", "contractor");
       return count || 0;
     },
@@ -258,7 +258,7 @@ export default function ContractorBidPacketView() {
       if (status === "submitted" && deadlinePassed && !isRevisionRequested) throw new Error("Bid deadline has passed");
       if (status === "submitted" && !scopeConfirmed) throw new Error("You must confirm the scope before submitting");
 
-      // Snapshot EVERY submission (first submit or resubmit)
+      // Snapshot previous state before overwrite (if exists)
       if (status === "submitted" && existingSubmission?.id) {
         await snapshotBidSubmission({
           submissionId: existingSubmission.id,
@@ -269,7 +269,7 @@ export default function ContractorBidPacketView() {
           status: existingSubmission.status,
           revisionNotes: (existingSubmission as any).revision_request_notes,
           createdBy: user.id,
-          sourceEvent: isRevisionRequested ? "resubmission" : "initial_submit",
+          sourceEvent: isRevisionRequested ? "resubmission_prior" : "initial_submit_prior",
         });
       }
 
@@ -366,6 +366,21 @@ export default function ContractorBidPacketView() {
           revision_count: newRevisionCount,
         },
       });
+
+      // Snapshot the newly submitted state for immutable audit trail
+      if (status === "submitted" && submissionId) {
+        await snapshotBidSubmission({
+          submissionId,
+          bidAmount: Number(bidAmount) || 0,
+          estimatedTimeline: estimatedTimeline || null,
+          proposalText: proposalText || null,
+          attachments: payload.attachments,
+          status: "submitted",
+          revisionNotes: null,
+          createdBy: user.id,
+          sourceEvent: isRevisionRequested ? "resubmission" : "initial_submit",
+        });
+      }
 
       setUploadedFiles([]);
     },
