@@ -7,7 +7,7 @@ import {
   FolderClosed, Clock3, MapPinned, BusFront, Boxes, BarChart3, Sliders,
   Sparkles, FolderKanban, TrendingUp, Shield, UserPlus, Home, Briefcase,
   Palette, Package, Handshake, HardDrive, Calculator, Brain, Network,
-  Clock, FileCheck, ThumbsUp, Gavel, FolderOpen, Bell, Settings
+  Clock, FileCheck, ThumbsUp, Gavel, FolderOpen, Bell, Settings, FlaskConical
 } from "lucide-react";
 
 /** Which roles can see which items */
@@ -253,6 +253,18 @@ export const ADMIN_SIDENAV: NavItem[] = [
     children: [
       { id: "webdev.ai-seo", label: "AI SEO Maintenance", to: "/admin/ai", icon: Sparkles },
       { id: "webdev.ai-images", label: "AI Image Generator", to: "/admin/ai-images", icon: Sparkles },
+    ],
+  },
+
+  // ── Internal QA ──
+  {
+    id: "internal-qa",
+    label: "Internal QA",
+    icon: FlaskConical,
+    roles: ["admin"],
+    separatorAbove: true,
+    children: [
+      { id: "qa.test-accounts", label: "Test Accounts", to: "/admin/test-accounts", icon: Users },
     ],
   },
 ];

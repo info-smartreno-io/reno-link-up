@@ -22,6 +22,7 @@ import smartRenoLogo from "@/assets/smartreno-logo-blue.png";
 import { SettingsDropdown } from "@/components/SettingsDropdown";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { AdminSideNav } from "@/components/AdminSideNav";
+import { TestPortalSwitcher } from "@/components/admin/TestPortalSwitcher";
 import { PermitsDashboardWidget } from "@/components/admin/PermitsDashboardWidget";
 import SearchBar from "@/components/blog/SearchBar";
 
@@ -357,6 +358,7 @@ export default function AdminDashboard() {
             <div className="relative hidden md:block w-64">
               <SearchBar />
             </div>
+            <TestPortalSwitcher />
             <NotificationBell />
             <SettingsDropdown userRole="admin" />
             <Button onClick={logout} variant="ghost" size="sm" className="gap-2 hidden lg:flex">

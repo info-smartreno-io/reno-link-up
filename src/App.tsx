@@ -91,6 +91,10 @@ import AdminBidComparison from "./pages/admin/AdminBidComparison";
 import AdminSmartEstimates from "./pages/admin/AdminSmartEstimates";
 import AdminSmartEstimateDetail from "./pages/admin/AdminSmartEstimateDetail";
 import EstimatorSmartEstimates from "./pages/estimator/EstimatorSmartEstimates";
+import EstimatorMessages from "./pages/estimator/EstimatorMessages";
+import EstimatorFiles from "./pages/estimator/EstimatorFiles";
+import EstimatorSettings from "./pages/estimator/EstimatorSettings";
+import AdminTestAccounts from "./pages/admin/AdminTestAccounts";
 import ContractorBidPackets from "./pages/contractor/ContractorBidPackets";
 import ContractorBidPacketView from "./pages/contractor/ContractorBidPacketView";
 import AdminVendorMonitoring from "./pages/admin/AdminVendorMonitoring";
@@ -805,6 +809,11 @@ function AppRoutes() {
                 <SalesPerformance />
               </ProtectedRoute>
             } />
+            <Route path="/admin/test-accounts" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminTestAccounts />
+              </ProtectedRoute>
+            } />
             <Route path="/estimator/auth" element={<EstimatorAuth />} />
             <Route path="/estimator/dashboard" element={
               <ProtectedRoute requiredRole="estimator">
@@ -837,6 +846,11 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/estimator/requests" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimateRequests />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/estimate-requests" element={
               <ProtectedRoute requiredRole="estimator">
                 <EstimateRequests />
               </ProtectedRoute>
@@ -914,6 +928,21 @@ function AppRoutes() {
             <Route path="/estimator/project/:projectId" element={
               <ProtectedRoute requiredRole="estimator">
                 <EstimatorProjectDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/messages" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorMessages />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/files" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorFiles />
+              </ProtectedRoute>
+            } />
+            <Route path="/estimator/settings" element={
+              <ProtectedRoute requiredRole="estimator">
+                <EstimatorSettings />
               </ProtectedRoute>
             } />
             <Route path="/contractor/auth" element={<ContractorComingSoon />} />
