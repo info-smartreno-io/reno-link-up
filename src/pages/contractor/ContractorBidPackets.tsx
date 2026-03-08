@@ -3,21 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ContractorLayout } from "@/components/contractor/ContractorLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, Eye, Clock, CheckCircle2, AlertTriangle, Send, FileText, Filter } from "lucide-react";
+import { Package, Eye, Clock, AlertTriangle, Filter, RotateCcw } from "lucide-react";
 import { format, differenceInDays, differenceInHours } from "date-fns";
-
-const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive"; icon: typeof CheckCircle2 }> = {
-  invited: { label: "New Invite", variant: "secondary", icon: Package },
-  viewed: { label: "Viewed", variant: "outline", icon: Eye },
-  draft: { label: "Draft", variant: "outline", icon: FileText },
-  submitted: { label: "Submitted", variant: "default", icon: Send },
-  awarded: { label: "Awarded", variant: "default", icon: CheckCircle2 },
-  declined: { label: "Declined", variant: "destructive", icon: AlertTriangle },
-};
+import { computeContractorBidStatus, BID_STATUS_CONFIG, type ContractorBidDisplayStatus } from "@/utils/contractorBidStatus";
 
 function DeadlineBadge({ deadline }: { deadline: string | null }) {
   if (!deadline) return <span className="text-xs text-muted-foreground">No deadline</span>;
@@ -43,7 +35,7 @@ function DeadlineBadge({ deadline }: { deadline: string | null }) {
   }
   if (daysLeft <= 7) {
     return (
-      <Badge variant="outline" className="text-xs gap-1 border-amber-400 text-amber-700 dark:text-amber-400">
+      <Badge variant="outline" className="text-xs gap-1 border-border text-muted-foreground">
         <Clock className="h-3 w-3" /> {daysLeft}d left
       </Badge>
     );
@@ -74,7 +66,6 @@ export default function ContractorBidPackets() {
     },
   });
 
-  // Get submission statuses for each invite
   const { data: submissions = [] } = useQuery({
     queryKey: ["contractor-bid-submissions-status"],
     queryFn: async () => {
@@ -82,44 +73,69 @@ export default function ContractorBidPackets() {
       if (!user) return [];
       const { data } = await supabase
         .from("bid_submissions")
-        .select("id, bid_opportunity_id, status, bid_amount, submitted_at")
-        .eq("bidder_id", user.id);
+        .select("id, bid_opportunity_id, status, bid_amount, submitted_at, revision_requested_at, revision_request_notes, revision_count");
       return data || [];
+    },
+  });
+
+  // Unread clarification counts
+  const { data: unreadClarifications = {} } = useQuery({
+    queryKey: ["contractor-clarification-unreads"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return {};
+      const { data } = await (supabase as any)
+        .from("bid_packet_clarifications")
+        .select("bid_packet_id")
+        .eq("is_read", false)
+        .neq("sender_id", user.id)
+        .neq("sender_role", "contractor");
+      const counts: Record<string, number> = {};
+      (data || []).forEach((r: any) => {
+        counts[r.bid_packet_id] = (counts[r.bid_packet_id] || 0) + 1;
+      });
+      return counts;
     },
   });
 
   const submissionMap = new Map(submissions.map((s: any) => [s.bid_opportunity_id, s]));
 
-  const filtered = invites.filter((inv: any) => {
-    if (statusFilter === "all") return true;
-    if (statusFilter === "action_needed") {
-      const sub = submissionMap.get(inv.bid_packet_id);
-      const deadline = inv.bid_packets?.bid_deadline;
-      const isPast = deadline ? new Date(deadline) < new Date() : false;
-      return !isPast && (!sub || sub.status === "draft") && inv.status !== "submitted";
-    }
-    return inv.status === statusFilter;
+  // Compute display status per invite
+  const enriched = invites.map((inv: any) => {
+    const packet = inv.bid_packets;
+    const submission = submissionMap.get(inv.bid_packet_id);
+    const deadline = packet?.bid_deadline || packet?.bid_due_date;
+    const deadlinePassed = deadline ? new Date(deadline) < new Date() : false;
+    const displayStatus = computeContractorBidStatus({
+      inviteStatus: inv.status,
+      submissionStatus: submission?.status || null,
+      submissionRevisionCount: submission?.revision_count || 0,
+      deadlinePassed,
+    });
+    return { ...inv, packet, submission, deadline, deadlinePassed, displayStatus };
   });
 
-  const actionNeededCount = invites.filter((inv: any) => {
-    const sub = submissionMap.get(inv.bid_packet_id);
-    const deadline = inv.bid_packets?.bid_deadline;
-    const isPast = deadline ? new Date(deadline) < new Date() : false;
-    return !isPast && (!sub || sub.status === "draft") && inv.status !== "submitted";
-  }).length;
+  const filtered = enriched.filter((item: any) => {
+    if (statusFilter === "all") return true;
+    if (statusFilter === "action_needed") {
+      return item.displayStatus === "new_invite" || item.displayStatus === "draft_in_progress" || item.displayStatus === "revision_requested";
+    }
+    return item.displayStatus === statusFilter;
+  });
+
+  const actionNeededCount = enriched.filter((item: any) =>
+    item.displayStatus === "new_invite" || item.displayStatus === "draft_in_progress" || item.displayStatus === "revision_requested"
+  ).length;
 
   return (
     <ContractorLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <Package className="h-6 w-6 text-primary" /> RFP Bid Packets
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Review project scopes and submit your bids
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Review project scopes and submit your bids</p>
           </div>
           <div className="flex items-center gap-2">
             {actionNeededCount > 0 && (
@@ -135,15 +151,17 @@ export default function ContractorBidPackets() {
               <SelectContent>
                 <SelectItem value="all">All Invitations</SelectItem>
                 <SelectItem value="action_needed">Action Needed</SelectItem>
-                <SelectItem value="invited">New Invites</SelectItem>
-                <SelectItem value="viewed">Viewed</SelectItem>
+                <SelectItem value="new_invite">New Invites</SelectItem>
+                <SelectItem value="draft_in_progress">Drafts</SelectItem>
                 <SelectItem value="submitted">Submitted</SelectItem>
+                <SelectItem value="revision_requested">Revision Requested</SelectItem>
+                <SelectItem value="resubmitted">Resubmitted</SelectItem>
+                <SelectItem value="awarded">Awarded</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Packet Cards */}
         {isLoading ? (
           <div className="text-center py-12 text-muted-foreground">Loading bid packets...</div>
         ) : filtered.length === 0 ? (
@@ -156,38 +174,37 @@ export default function ContractorBidPackets() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {filtered.map((inv: any) => {
-              const packet = inv.bid_packets;
+            {filtered.map((item: any) => {
+              const { packet, submission, deadline, deadlinePassed, displayStatus } = item;
               if (!packet) return null;
-              const submission = submissionMap.get(inv.bid_packet_id);
-              const deadline = packet.bid_deadline || packet.bid_due_date;
-              const isPast = deadline ? new Date(deadline) < new Date() : false;
-              const effectiveStatus = inv.status === "submitted" || submission?.status === "submitted" ? "submitted" : inv.status;
-              const config = STATUS_CONFIG[effectiveStatus] || STATUS_CONFIG.invited;
-              const StatusIcon = config.icon;
+              const config = BID_STATUS_CONFIG[displayStatus as ContractorBidDisplayStatus];
+              const unreadCount = (unreadClarifications as Record<string, number>)[item.bid_packet_id] || 0;
 
               return (
                 <Card
-                  key={inv.id}
+                  key={item.id}
                   className={`cursor-pointer hover:shadow-md transition-all ${
-                    effectiveStatus === "invited" ? "border-primary/30" : ""
-                  } ${isPast && effectiveStatus !== "submitted" ? "opacity-70" : ""}`}
-                  onClick={() => navigate(`/contractor/bid-packets/${inv.bid_packet_id}`)}
+                    displayStatus === "new_invite" ? "border-primary/30" : ""
+                  } ${displayStatus === "revision_requested" ? "border-destructive/30" : ""} ${
+                    deadlinePassed && displayStatus !== "submitted" && displayStatus !== "resubmitted" ? "opacity-70" : ""
+                  }`}
+                  onClick={() => navigate(`/contractor/bid-packets/${item.bid_packet_id}`)}
                 >
                   <CardContent className="py-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold text-foreground truncate">{packet.title || "Untitled Packet"}</h3>
-                          <Badge variant={config.variant} className="text-xs gap-1">
-                            <StatusIcon className="h-3 w-3" /> {config.label}
-                          </Badge>
+                          <Badge variant={config.variant} className="text-xs gap-1">{config.label}</Badge>
                           <DeadlineBadge deadline={deadline} />
+                          {unreadCount > 0 && (
+                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                              {unreadCount} new response{unreadCount > 1 ? "s" : ""}
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex items-center gap-4 mt-1.5 text-xs text-muted-foreground">
-                          {inv.invited_at && (
-                            <span>Invited {format(new Date(inv.invited_at), "MMM d, yyyy")}</span>
-                          )}
+                          {item.invited_at && <span>Invited {format(new Date(item.invited_at), "MMM d, yyyy")}</span>}
                           {packet.estimated_budget_min && packet.estimated_budget_max && (
                             <span>Budget: ${(packet.estimated_budget_min / 1000).toFixed(0)}k–${(packet.estimated_budget_max / 1000).toFixed(0)}k</span>
                           )}
@@ -202,12 +219,14 @@ export default function ContractorBidPackets() {
                       <div className="flex items-center gap-2 shrink-0">
                         <Button
                           size="sm"
-                          variant={effectiveStatus === "invited" ? "default" : "outline"}
-                          onClick={(e) => { e.stopPropagation(); navigate(`/contractor/bid-packets/${inv.bid_packet_id}`); }}
+                          variant={displayStatus === "new_invite" || displayStatus === "revision_requested" ? "default" : "outline"}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/contractor/bid-packets/${item.bid_packet_id}`); }}
                         >
-                          {effectiveStatus === "invited" ? (
+                          {displayStatus === "new_invite" ? (
                             <><Eye className="mr-1 h-3.5 w-3.5" /> Review & Bid</>
-                          ) : effectiveStatus === "submitted" ? (
+                          ) : displayStatus === "revision_requested" ? (
+                            <><RotateCcw className="mr-1 h-3.5 w-3.5" /> Revise Bid</>
+                          ) : displayStatus === "submitted" || displayStatus === "resubmitted" ? (
                             <><Eye className="mr-1 h-3.5 w-3.5" /> View Submission</>
                           ) : (
                             <><Eye className="mr-1 h-3.5 w-3.5" /> Continue</>
