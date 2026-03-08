@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ export default function EstimateRequests() {
   );
 
   return (
+    <EstimatorLayout>
     <div className="container mx-auto py-8 px-4">
       <Card>
         <CardHeader>
@@ -244,5 +246,6 @@ export default function EstimateRequests() {
         </CardContent>
       </Card>
     </div>
+    </EstimatorLayout>
   );
 }

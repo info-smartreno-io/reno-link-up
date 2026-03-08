@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronLeft, ChevronRight, Plus, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -127,6 +128,7 @@ export default function EstimatorCalendar() {
   };
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       <div className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -265,5 +267,6 @@ export default function EstimatorCalendar() {
         </Card>
       </main>
     </div>
+    </EstimatorLayout>
   );
 }

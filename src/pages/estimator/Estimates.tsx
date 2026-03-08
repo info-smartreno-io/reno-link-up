@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import CreateEstimateForm from "@/components/forms/CreateEstimateForm";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Filter, Plus, FileText, Clock, CheckCircle2, XCircle, DollarSign, Loader2, Send } from "lucide-react";
@@ -107,6 +108,7 @@ export default function EstimatorEstimates() {
   );
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       <div className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -277,5 +279,6 @@ export default function EstimatorEstimates() {
         />
       )}
     </div>
+    </EstimatorLayout>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -311,6 +312,7 @@ export default function BidReviewDashboard() {
   }
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-background">
       <div className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -743,5 +745,6 @@ export default function BidReviewDashboard() {
         </DialogContent>
       </Dialog>
     </div>
+    </EstimatorLayout>
   );
 }

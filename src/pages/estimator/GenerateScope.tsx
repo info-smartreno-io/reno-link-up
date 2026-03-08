@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { ArrowLeft, Wand2, Loader2, Copy, Download, Edit2, Save, X, Camera, Pencil, Trash2, Image as ImageIcon, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -497,6 +498,7 @@ export default function GenerateScope() {
   };
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       <div className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -1062,5 +1064,6 @@ export default function GenerateScope() {
         )}
       </main>
     </div>
+    </EstimatorLayout>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import CreateLeadForm from "@/components/forms/CreateLeadForm";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Filter, Plus, Mail, Phone, MapPin, Calendar, User, Loader2, Send, Settings, Award, BarChart3, MailWarning, Clock } from "lucide-react";
@@ -251,6 +252,7 @@ export default function EstimatorLeads() {
   }, []);
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       <div className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -587,5 +589,6 @@ export default function EstimatorLeads() {
         onSuccess={handleStatusChangeSuccess}
       />
     </div>
+    </EstimatorLayout>
   );
 }
