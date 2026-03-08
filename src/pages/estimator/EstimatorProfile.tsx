@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -175,6 +176,7 @@ export default function EstimatorProfile() {
   }
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       <div className="border-b bg-background">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -305,5 +307,6 @@ export default function EstimatorProfile() {
         )}
       </main>
     </div>
+    </EstimatorLayout>
   );
 }
