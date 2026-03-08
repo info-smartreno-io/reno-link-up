@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ContractorLayout } from "@/components/contractor/ContractorLayout";
@@ -13,10 +13,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Send, Save, FileText, Clock, AlertTriangle, Loader2,
   CheckCircle2, Upload, Paperclip, DollarSign, Calendar, MapPin,
-  Building2, Eye, MessageSquare, X, RotateCcw,
+  Building2, Eye, MessageSquare, X, RotateCcw, History,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, differenceInDays, differenceInHours } from "date-fns";
@@ -82,10 +83,12 @@ function ScopeSection({ label, value, icon: Icon }: { label: string; value: stri
 
 export default function ContractorBidPacketView() {
   const { packetId } = useParams<{ packetId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState("scope");
+  const initialTab = searchParams.get("tab") || "overview";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [bidAmount, setBidAmount] = useState("");
   const [estimatedTimeline, setEstimatedTimeline] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -119,7 +122,7 @@ export default function ContractorBidPacketView() {
     enabled: !!packetId,
   });
 
-  // Mark invite as viewed + log (runs once per packet load)
+  // Mark invite as viewed + log (runs once)
   const [hasLoggedView, setHasLoggedView] = useState(false);
   useEffect(() => {
     if (!packetId || hasLoggedView) return;
@@ -195,7 +198,7 @@ export default function ContractorBidPacketView() {
     enabled: !!packetId,
   });
 
-  // Fetch clarification count for tab badge
+  // Clarification count for tab badge
   const { data: clarificationCount = 0 } = useQuery({
     queryKey: ["bid-clarification-count", packetId],
     queryFn: async () => {
@@ -211,7 +214,7 @@ export default function ContractorBidPacketView() {
   });
 
   // Fetch trade sections
-  const { data: tradeSections = [] } = useQuery({
+  const { data: tradeSections = [], isLoading: tradesLoading } = useQuery({
     queryKey: ["contractor-packet-trade-sections", packetId],
     queryFn: async () => {
       const { data } = await supabase
@@ -229,7 +232,6 @@ export default function ContractorBidPacketView() {
   const isSubmitted = existingSubmission?.status === "submitted" && !isRevisionRequested;
   const canSubmit = (!deadlinePassed && !isSubmitted) || isRevisionRequested;
 
-  // Compute display status
   const displayStatus = computeContractorBidStatus({
     inviteStatus: invite?.status || "invited",
     submissionStatus: existingSubmission?.status || null,
@@ -258,7 +260,7 @@ export default function ContractorBidPacketView() {
       if (status === "submitted" && deadlinePassed && !isRevisionRequested) throw new Error("Bid deadline has passed");
       if (status === "submitted" && !scopeConfirmed) throw new Error("You must confirm the scope before submitting");
 
-      // Snapshot previous state before overwrite (if exists)
+      // Snapshot previous state before overwrite
       if (status === "submitted" && existingSubmission?.id) {
         await snapshotBidSubmission({
           submissionId: existingSubmission.id,
@@ -284,7 +286,6 @@ export default function ContractorBidPacketView() {
             if (urlData?.publicUrl) fileUrls.push(urlData.publicUrl);
           }
         }
-        // Log attachment upload
         await logBidPacketActivity({
           bidPacketId: packetId!,
           bidSubmissionId: existingSubmission?.id,
@@ -324,7 +325,6 @@ export default function ContractorBidPacketView() {
         },
       };
 
-      // Clear revision fields on resubmit
       if (status === "submitted" && isRevisionRequested) {
         payload.revision_requested_at = null;
         payload.revision_request_notes = null;
@@ -340,7 +340,6 @@ export default function ContractorBidPacketView() {
         submissionId = inserted?.id;
       }
 
-      // Update invite status
       if (status === "submitted") {
         await (supabase as any)
           .from("bid_packet_contractor_invites")
@@ -349,7 +348,6 @@ export default function ContractorBidPacketView() {
           .eq("contractor_id", user.id);
       }
 
-      // Log activity
       const actionType = status === "draft"
         ? "contractor_saved_draft"
         : isRevisionRequested
@@ -367,7 +365,6 @@ export default function ContractorBidPacketView() {
         },
       });
 
-      // Snapshot the newly submitted state for immutable audit trail
       if (status === "submitted" && submissionId) {
         await snapshotBidSubmission({
           submissionId,
@@ -413,7 +410,20 @@ export default function ContractorBidPacketView() {
   if (packetLoading) {
     return (
       <ContractorLayout>
-        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-8 rounded" />
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-64" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+          <Skeleton className="h-10 w-full" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+          </div>
+        </div>
       </ContractorLayout>
     );
   }
@@ -472,7 +482,6 @@ export default function ContractorBidPacketView() {
 
         <DeadlineHeader deadline={deadline} />
 
-        {/* Revision Banner */}
         {isRevisionRequested && (
           <RevisionBanner
             revisionNotes={(existingSubmission as any)?.revision_request_notes}
@@ -481,11 +490,12 @@ export default function ContractorBidPacketView() {
           />
         )}
 
-        {/* Tabs */}
+        {/* Tabs - 7 tabs as specified */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="scope">Project Scope</TabsTrigger>
-            <TabsTrigger value="trades">Trades & Line Items</TabsTrigger>
+          <TabsList className="flex-wrap h-auto">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="scope">Scope</TabsTrigger>
+            <TabsTrigger value="trades">Trades</TabsTrigger>
             <TabsTrigger value="bid">
               Your Bid
               {canSubmit && !isSubmitted && bidCompleteness < 100 && (
@@ -502,7 +512,59 @@ export default function ContractorBidPacketView() {
               )}
             </TabsTrigger>
             <TabsTrigger value="attachments">Attachments</TabsTrigger>
+            <TabsTrigger value="history">
+              <History className="h-3.5 w-3.5 mr-1" /> History
+            </TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" /> Packet Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium">Packet Title</p>
+                      <p className="text-sm font-medium">{packet.title}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium">Status</p>
+                      <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                    </div>
+                    {deadline && (
+                      <div>
+                        <p className="text-xs text-muted-foreground font-medium">Deadline</p>
+                        <p className="text-sm">{format(new Date(deadline), "MMM d, yyyy 'at' h:mm a")}</p>
+                      </div>
+                    )}
+                    {packet.estimated_budget_min && packet.estimated_budget_max && (
+                      <div>
+                        <p className="text-xs text-muted-foreground font-medium">Budget Range</p>
+                        <p className="text-sm">${(packet.estimated_budget_min / 1000).toFixed(0)}k – ${(packet.estimated_budget_max / 1000).toFixed(0)}k</p>
+                      </div>
+                    )}
+                  </div>
+                  {packet.project_overview && (
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-1">Project Overview</p>
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">{packet.project_overview}</p>
+                    </div>
+                  )}
+                  {packet.bid_instructions && (
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-1">Bid Instructions</p>
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">{packet.bid_instructions}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Scope Tab */}
           <TabsContent value="scope">
@@ -517,23 +579,16 @@ export default function ContractorBidPacketView() {
                 scopeSections.map(s => <ScopeSection key={s.label} {...s} />)
               )}
             </div>
-            {packet.bid_instructions && (
-              <Card className="mt-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-primary" /> Bid Instructions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground whitespace-pre-line">{packet.bid_instructions}</p>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
 
           {/* Trades Tab */}
           <TabsContent value="trades">
-            {tradeSections.length === 0 ? (
+            {tradesLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+            ) : tradeSections.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
                   No trade sections defined for this bid packet.
@@ -611,7 +666,6 @@ export default function ContractorBidPacketView() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Core bid fields */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-1.5">
                       <Label className="flex items-center gap-1"><DollarSign className="h-3.5 w-3.5" /> Bid Amount</Label>
@@ -627,7 +681,6 @@ export default function ContractorBidPacketView() {
                     </div>
                   </div>
 
-                  {/* Confirmations */}
                   <div>
                     <Label className="text-sm font-medium mb-2 block">Scope Confirmations</Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -662,13 +715,11 @@ export default function ContractorBidPacketView() {
                     </div>
                   </div>
 
-                  {/* Proposal */}
                   <div className="space-y-1.5">
                     <Label>Proposal / Cover Letter</Label>
                     <Textarea value={proposalText} onChange={(e) => setProposalText(e.target.value)} disabled={!canSubmit} rows={5} placeholder="Describe your approach, qualifications, relevant experience, and value proposition..." />
                   </div>
 
-                  {/* Clarifications & Notes */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label>Clarifications & Assumptions</Label>
@@ -680,7 +731,6 @@ export default function ContractorBidPacketView() {
                     </div>
                   </div>
 
-                  {/* Actions */}
                   {canSubmit && (
                     <div className="flex items-center justify-between pt-2 border-t">
                       <p className="text-xs text-muted-foreground">
@@ -729,11 +779,6 @@ export default function ContractorBidPacketView() {
                   )}
                 </CardContent>
               </Card>
-
-              {/* Submission History */}
-              {existingSubmission?.id && (
-                <SubmissionHistory submissionId={existingSubmission.id} />
-              )}
             </div>
           </TabsContent>
 
@@ -811,10 +856,28 @@ export default function ContractorBidPacketView() {
                 )}
 
                 {!canSubmit && !((existingSubmission?.attachments as any)?.file_urls?.length) && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No files attached.</p>
+                  <div className="py-6 text-center text-muted-foreground">
+                    <Paperclip className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No files attached.</p>
+                  </div>
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Submission History Tab */}
+          <TabsContent value="history">
+            {existingSubmission?.id ? (
+              <SubmissionHistory submissionId={existingSubmission.id} />
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center text-muted-foreground">
+                  <History className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm font-medium">No submissions yet</p>
+                  <p className="text-xs mt-1">Your bid versions will appear here after you submit.</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>

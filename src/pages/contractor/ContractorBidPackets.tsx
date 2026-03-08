@@ -6,8 +6,9 @@ import { ContractorLayout } from "@/components/contractor/ContractorLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, Eye, Clock, AlertTriangle, Filter, RotateCcw } from "lucide-react";
+import { Package, Eye, Clock, AlertTriangle, Filter, RotateCcw, Trophy, FileText } from "lucide-react";
 import { format, differenceInDays, differenceInHours } from "date-fns";
 import { computeContractorBidStatus, BID_STATUS_CONFIG, type ContractorBidDisplayStatus } from "@/utils/contractorBidStatus";
 
@@ -26,10 +27,17 @@ function DeadlineBadge({ deadline }: { deadline: string | null }) {
       </Badge>
     );
   }
-  if (hoursLeft < 48) {
+  if (hoursLeft < 24) {
+    return (
+      <Badge variant="destructive" className="text-xs gap-1 animate-pulse">
+        <AlertTriangle className="h-3 w-3" /> {hoursLeft}h left
+      </Badge>
+    );
+  }
+  if (daysLeft < 3) {
     return (
       <Badge variant="outline" className="text-xs gap-1 border-destructive text-destructive">
-        <AlertTriangle className="h-3 w-3" /> {hoursLeft}h left
+        <AlertTriangle className="h-3 w-3" /> {daysLeft}d left
       </Badge>
     );
   }
@@ -45,6 +53,27 @@ function DeadlineBadge({ deadline }: { deadline: string | null }) {
       <Clock className="h-3 w-3" /> {format(d, "MMM d, yyyy")}
     </span>
   );
+}
+
+function getCTAProps(displayStatus: ContractorBidDisplayStatus) {
+  switch (displayStatus) {
+    case "new_invite":
+      return { label: "Review & Bid", icon: Eye, variant: "default" as const };
+    case "draft_in_progress":
+      return { label: "Continue", icon: FileText, variant: "default" as const };
+    case "revision_requested":
+      return { label: "Revise Bid", icon: RotateCcw, variant: "default" as const };
+    case "submitted":
+    case "resubmitted":
+      return { label: "View Submission", icon: Eye, variant: "outline" as const };
+    case "awarded":
+      return { label: "View Awarded Bid", icon: Trophy, variant: "outline" as const };
+    case "declined":
+    case "closed":
+      return { label: "View Packet", icon: Eye, variant: "outline" as const };
+    default:
+      return { label: "View", icon: Eye, variant: "outline" as const };
+  }
 }
 
 export default function ContractorBidPackets() {
@@ -78,7 +107,6 @@ export default function ContractorBidPackets() {
     },
   });
 
-  // Unread clarification counts
   const { data: unreadClarifications = {} } = useQuery({
     queryKey: ["contractor-clarification-unreads"],
     queryFn: async () => {
@@ -99,7 +127,6 @@ export default function ContractorBidPackets() {
 
   const submissionMap = new Map(submissions.map((s: any) => [s.bid_opportunity_id, s]));
 
-  // Compute display status per invite
   const enriched = invites.map((inv: any) => {
     const packet = inv.bid_packets;
     const submission = submissionMap.get(inv.bid_packet_id);
@@ -132,7 +159,7 @@ export default function ContractorBidPackets() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <Package className="h-6 w-6 text-primary" /> RFP Bid Packets
+              <Package className="h-6 w-6 text-primary" /> Bid Opportunities
             </h1>
             <p className="text-sm text-muted-foreground mt-1">Review project scopes and submit your bids</p>
           </div>
@@ -164,13 +191,40 @@ export default function ContractorBidPackets() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12 text-muted-foreground">Loading bid packets...</div>
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="py-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-5 w-48" />
+                        <Skeleton className="h-5 w-20" />
+                        <Skeleton className="h-5 w-16" />
+                      </div>
+                      <Skeleton className="h-3 w-64" />
+                      <Skeleton className="h-3 w-full max-w-md" />
+                    </div>
+                    <Skeleton className="h-8 w-28" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground">
-              {statusFilter === "all"
-                ? "No RFP invitations yet. You'll be notified when you're invited to bid on a project."
-                : "No bid packets match this filter."}
+              <Package className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p className="text-sm font-medium">
+                {statusFilter === "all"
+                  ? "No bid invitations yet"
+                  : "No bid packets match this filter"}
+              </p>
+              <p className="text-xs mt-1">
+                {statusFilter === "all"
+                  ? "You'll be notified when you're invited to bid on a project."
+                  : "Try changing your filter to see more results."}
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -180,6 +234,8 @@ export default function ContractorBidPackets() {
               if (!packet) return null;
               const config = BID_STATUS_CONFIG[displayStatus as ContractorBidDisplayStatus];
               const unreadCount = (unreadClarifications as Record<string, number>)[item.bid_packet_id] || 0;
+              const cta = getCTAProps(displayStatus);
+              const CTAIcon = cta.icon;
 
               return (
                 <Card
@@ -187,7 +243,7 @@ export default function ContractorBidPackets() {
                   className={`cursor-pointer hover:shadow-md transition-all ${
                     displayStatus === "new_invite" ? "border-primary/30" : ""
                   } ${displayStatus === "revision_requested" ? "border-destructive/30" : ""} ${
-                    deadlinePassed && displayStatus !== "submitted" && displayStatus !== "resubmitted" ? "opacity-70" : ""
+                    displayStatus === "closed" ? "opacity-70" : ""
                   }`}
                   onClick={() => navigate(`/contractor/bid-packets/${item.bid_packet_id}`)}
                 >
@@ -220,18 +276,10 @@ export default function ContractorBidPackets() {
                       <div className="flex items-center gap-2 shrink-0">
                         <Button
                           size="sm"
-                          variant={displayStatus === "new_invite" || displayStatus === "revision_requested" ? "default" : "outline"}
+                          variant={cta.variant}
                           onClick={(e) => { e.stopPropagation(); navigate(`/contractor/bid-packets/${item.bid_packet_id}`); }}
                         >
-                          {displayStatus === "new_invite" ? (
-                            <><Eye className="mr-1 h-3.5 w-3.5" /> Review & Bid</>
-                          ) : displayStatus === "revision_requested" ? (
-                            <><RotateCcw className="mr-1 h-3.5 w-3.5" /> Revise Bid</>
-                          ) : displayStatus === "submitted" || displayStatus === "resubmitted" ? (
-                            <><Eye className="mr-1 h-3.5 w-3.5" /> View Submission</>
-                          ) : (
-                            <><Eye className="mr-1 h-3.5 w-3.5" /> Continue</>
-                          )}
+                          <CTAIcon className="mr-1 h-3.5 w-3.5" /> {cta.label}
                         </Button>
                       </div>
                     </div>
