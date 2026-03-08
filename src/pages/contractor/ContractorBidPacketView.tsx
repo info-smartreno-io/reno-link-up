@@ -25,6 +25,7 @@ import { ClarificationThread } from "@/components/contractor/bid/ClarificationTh
 import { RevisionBanner } from "@/components/contractor/bid/RevisionBanner";
 import { SubmissionHistory } from "@/components/contractor/bid/SubmissionHistory";
 import { computeContractorBidStatus, BID_STATUS_CONFIG } from "@/utils/contractorBidStatus";
+import { logBidPacketActivity, snapshotBidSubmission } from "@/utils/bidPacketAudit";
 
 function DeadlineHeader({ deadline }: { deadline: string | null }) {
   if (!deadline) return null;
@@ -118,18 +119,27 @@ export default function ContractorBidPacketView() {
     enabled: !!packetId,
   });
 
-  // Mark invite as viewed
+  // Mark invite as viewed + log
   useQuery({
     queryKey: ["mark-invite-viewed", packetId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      await (supabase as any)
+      const { data: updated } = await (supabase as any)
         .from("bid_packet_contractor_invites")
         .update({ status: "viewed", viewed_at: new Date().toISOString() })
         .eq("bid_packet_id", packetId!)
         .eq("contractor_id", user.id)
-        .eq("status", "invited");
+        .eq("status", "invited")
+        .select();
+      if (updated?.length) {
+        await logBidPacketActivity({
+          bidPacketId: packetId!,
+          actorId: user.id,
+          actorRole: "contractor",
+          actionType: "contractor_viewed_packet",
+        });
+      }
       return true;
     },
     enabled: !!packetId,
@@ -248,17 +258,18 @@ export default function ContractorBidPacketView() {
       if (status === "submitted" && deadlinePassed && !isRevisionRequested) throw new Error("Bid deadline has passed");
       if (status === "submitted" && !scopeConfirmed) throw new Error("You must confirm the scope before submitting");
 
-      // Snapshot previous submission if resubmitting
-      if (status === "submitted" && existingSubmission?.id && isRevisionRequested) {
-        await (supabase as any).from("bid_submission_history").insert({
-          bid_submission_id: existingSubmission.id,
-          bid_amount: existingSubmission.bid_amount,
-          estimated_timeline: existingSubmission.estimated_timeline,
-          proposal_text: existingSubmission.proposal_text,
+      // Snapshot EVERY submission (first submit or resubmit)
+      if (status === "submitted" && existingSubmission?.id) {
+        await snapshotBidSubmission({
+          submissionId: existingSubmission.id,
+          bidAmount: existingSubmission.bid_amount,
+          estimatedTimeline: existingSubmission.estimated_timeline,
+          proposalText: existingSubmission.proposal_text,
           attachments: existingSubmission.attachments,
           status: existingSubmission.status,
-          revision_notes: (existingSubmission as any).revision_request_notes,
-          created_by: user.id,
+          revisionNotes: (existingSubmission as any).revision_request_notes,
+          createdBy: user.id,
+          sourceEvent: isRevisionRequested ? "resubmission" : "initial_submit",
         });
       }
 
@@ -273,6 +284,15 @@ export default function ContractorBidPacketView() {
             if (urlData?.publicUrl) fileUrls.push(urlData.publicUrl);
           }
         }
+        // Log attachment upload
+        await logBidPacketActivity({
+          bidPacketId: packetId!,
+          bidSubmissionId: existingSubmission?.id,
+          actorId: user.id,
+          actorRole: "contractor",
+          actionType: "contractor_uploaded_attachment",
+          actionDetails: { file_count: uploadedFiles.length },
+        });
       }
 
       const existingAttachments = (existingSubmission?.attachments as any) || {};
@@ -310,12 +330,14 @@ export default function ContractorBidPacketView() {
         payload.revision_request_notes = null;
       }
 
+      let submissionId = existingSubmission?.id;
       if (existingSubmission?.id) {
         const { error } = await supabase.from("bid_submissions").update(payload).eq("id", existingSubmission.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("bid_submissions").insert(payload);
+        const { data: inserted, error } = await supabase.from("bid_submissions").insert(payload).select("id").single();
         if (error) throw error;
+        submissionId = inserted?.id;
       }
 
       // Update invite status
@@ -326,6 +348,24 @@ export default function ContractorBidPacketView() {
           .eq("bid_packet_id", packetId!)
           .eq("contractor_id", user.id);
       }
+
+      // Log activity
+      const actionType = status === "draft"
+        ? "contractor_saved_draft"
+        : isRevisionRequested
+          ? "contractor_resubmitted_bid"
+          : "contractor_submitted_bid";
+      await logBidPacketActivity({
+        bidPacketId: packetId!,
+        bidSubmissionId: submissionId,
+        actorId: user.id,
+        actorRole: "contractor",
+        actionType,
+        actionDetails: {
+          bid_amount: Number(bidAmount) || 0,
+          revision_count: newRevisionCount,
+        },
+      });
 
       setUploadedFiles([]);
     },
