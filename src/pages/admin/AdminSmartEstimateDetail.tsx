@@ -194,6 +194,11 @@ export default function AdminSmartEstimateDetail() {
           </Card>
         </div>
 
+        {/* Linked Downstream Records */}
+        {estimate.status === "approved" && (
+          <LinkedDownstreamRecordsCard estimateId={estimate.id} projectId={estimate.project_id} />
+        )}
+
         {/* Main content tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="flex-wrap">
