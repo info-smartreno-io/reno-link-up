@@ -387,6 +387,14 @@ export function SmartEstimateDownstreamDialog({
       const snapshot = buildMappingSnapshot("updated_existing", fieldsMapped, syncMode);
       snapshot.mapped_by = user.id;
 
+      // Capture old/new diffs for audit — only for checked fields
+      const oldValues: Record<string, string> = {};
+      const newValues: Record<string, string> = {};
+      for (const key of fieldsMapped) {
+        oldValues[key] = existingCurrentValues[key] || "";
+        newValues[key] = preview[key] || "";
+      }
+
       if (target === "design_package") {
         for (const [key, shouldOverwrite] of Object.entries(overwriteFields)) {
           if (!shouldOverwrite) continue;
@@ -409,6 +417,7 @@ export function SmartEstimateDownstreamDialog({
           design_package_id: existingRecord.id, fields_updated: fieldsMapped,
           overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
           target_type: "design_package", target_id: existingRecord.id,
+          old_values: oldValues, new_values: newValues,
         }, existingRecord.id);
         return { id: existingRecord.id, type: "Design Package", fieldCount: fieldsMapped.length };
       } else {
@@ -425,6 +434,7 @@ export function SmartEstimateDownstreamDialog({
           bid_packet_id: existingRecord.id, fields_updated: fieldsMapped,
           overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
           target_type: "bid_packet", target_id: existingRecord.id,
+          old_values: oldValues, new_values: newValues,
         });
         return { id: existingRecord.id, type: "Bid Packet", fieldCount: fieldsMapped.length };
       }
@@ -442,6 +452,8 @@ export function SmartEstimateDownstreamDialog({
     queryClient.invalidateQueries({ queryKey: ["smart-estimate"] });
     queryClient.invalidateQueries({ queryKey: ["linked-downstream"] });
     queryClient.invalidateQueries({ queryKey: ["smart-estimate-activity"] });
+    queryClient.invalidateQueries({ queryKey: ["downstream-sync-history"] });
+    queryClient.invalidateQueries({ queryKey: ["downstream-sync-summary"] });
   };
 
   const isPending = createNewMutation.isPending || updateExistingMutation.isPending;
