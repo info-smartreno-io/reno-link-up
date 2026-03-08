@@ -218,7 +218,7 @@ export function SmartEstimateDownstreamDialog({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialTarget, initialExistingRecord]);
 
-  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[], syncMode = "update_existing") => ({
+  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[], syncMode = "update_existing", overrideReason?: string) => ({
     smart_estimate_id: estimate.id,
     mapped_at: new Date().toISOString(),
     mapped_by: null as string | null,
@@ -229,6 +229,7 @@ export function SmartEstimateDownstreamDialog({
     source_section_keys: sections.map((s: any) => s.section_key),
     room_count: rooms.length,
     trade_item_count: tradeItems.length,
+    ...(overrideReason ? { duplicate_override_reason: overrideReason } : {}),
   });
 
   // ---- Duplicate Detection (for non-direct flows) ----
