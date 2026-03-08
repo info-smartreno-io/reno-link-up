@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,9 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
+type TargetWorkflow = "design_package" | "bid_packet";
+type DialogStep = "choose" | "duplicate_detected" | "preview_create" | "preview_update" | "duplicate_override" | "success";
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -20,12 +23,12 @@ interface Props {
   sections: any[];
   rooms: any[];
   tradeItems: any[];
+  /** Direct-entry: skip choose step, jump to sync for this target */
+  initialTarget?: TargetWorkflow | null;
+  /** Direct-entry: the specific record to update */
+  initialExistingRecord?: any | null;
 }
 
-type TargetWorkflow = "design_package" | "bid_packet";
-type DialogStep = "choose" | "duplicate_detected" | "preview_create" | "preview_update" | "duplicate_override" | "success";
-
-// Workflow order for guarded status updates
 const WORKFLOW_ORDER = [
   "intake_submitted", "payment_confirmed", "estimator_scheduled", "site_visit_complete",
   "smart_estimate_in_progress", "smart_estimate_review",
@@ -59,7 +62,10 @@ function canAdvanceStatus(currentStatus: string | null, newStatus: string): bool
   return newIdx > currentIdx;
 }
 
-export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, sections, rooms, tradeItems }: Props) {
+export function SmartEstimateDownstreamDialog({
+  open, onOpenChange, estimate, sections, rooms, tradeItems,
+  initialTarget = null, initialExistingRecord = null,
+}: Props) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [step, setStep] = useState<DialogStep>("choose");
@@ -70,36 +76,24 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
   const [existingCurrentValues, setExistingCurrentValues] = useState<Record<string, string>>({});
   const [overrideReason, setOverrideReason] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
-  // Reset state on close
-  useEffect(() => {
-    if (!open) {
-      setStep("choose");
-      setTarget(null);
-      setPreview({});
-      setOverwriteFields({});
-      setExistingRecord(null);
-      setExistingCurrentValues({});
-      setOverrideReason("");
-    }
-  }, [open]);
+  const [directSyncMode, setDirectSyncMode] = useState(false);
 
   // ---- Helpers ----
-  const getSectionContent = (key: string): string => {
+  const getSectionContent = useCallback((key: string): string => {
     const sec = sections.find((s: any) => s.section_key === key);
     if (!sec?.section_data) return "";
     const data = sec.section_data as any;
     return typeof data === "string" ? data : (data?.content || "");
-  };
+  }, [sections]);
 
-  const buildRoomSummary = (): string => {
+  const buildRoomSummary = useCallback((): string => {
     if (rooms.length === 0) return "";
     return rooms.map((r: any) =>
       `**${r.room_name}**${r.square_footage ? ` (${r.square_footage} sq ft)` : ""}${r.notes ? `\n${r.notes}` : ""}`
     ).join("\n\n");
-  };
+  }, [rooms]);
 
-  const buildTradeSummary = (): string => {
+  const buildTradeSummary = useCallback((): string => {
     if (tradeItems.length === 0) return "";
     const grouped: Record<string, any[]> = {};
     for (const item of tradeItems) {
@@ -110,9 +104,9 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
     return Object.entries(grouped).map(([cat, items]) =>
       `### ${cat}\n${items.map((i: any) => `- ${i.line_item_name}: ${i.scope_description || ""} (${i.quantity} ${i.unit})`).join("\n")}`
     ).join("\n\n");
-  };
+  }, [tradeItems]);
 
-  const buildMappedPreview = (t: TargetWorkflow): Record<string, string> => {
+  const buildMappedPreview = useCallback((t: TargetWorkflow): Record<string, string> => {
     if (t === "design_package") {
       return {
         existing_conditions: getSectionContent("existing_conditions"),
@@ -130,114 +124,153 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
       site_logistics: getSectionContent("site_logistics"),
       assumptions: [getSectionContent("materials_allowances"), getSectionContent("budget_guidance")].filter(Boolean).join("\n\n"),
     };
+  }, [getSectionContent, buildRoomSummary, buildTradeSummary]);
+
+  /** Compute intelligent overwrite defaults: only check fields that actually differ */
+  const computeIntelligentToggles = (mapped: Record<string, string>, currentVals: Record<string, string>): Record<string, boolean> => {
+    const toggles: Record<string, boolean> = {};
+    for (const key of Object.keys(mapped)) {
+      const newVal = (mapped[key] || "").trim();
+      const curVal = (currentVals[key] || "").trim();
+      if (!newVal) {
+        toggles[key] = false; // new value empty → don't overwrite
+      } else if (!curVal && newVal) {
+        toggles[key] = true; // downstream empty, estimate has content → overwrite
+      } else if (curVal !== newVal) {
+        toggles[key] = true; // values differ → overwrite
+      } else {
+        toggles[key] = false; // same → skip
+      }
+    }
+    return toggles;
   };
 
-  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[]) => ({
+  /** Load current values for an existing downstream record */
+  const loadCurrentValues = async (t: TargetWorkflow, record: any): Promise<Record<string, string>> => {
+    if (t === "design_package") {
+      const { data: existingSections } = await supabase
+        .from("design_package_sections")
+        .select("section_key, section_data")
+        .eq("design_package_id", record.id);
+      const vals: Record<string, string> = {};
+      for (const sec of existingSections || []) {
+        const d = sec.section_data as any;
+        vals[sec.section_key] = typeof d === "string" ? d : (d?.content || "");
+      }
+      return vals;
+    }
+    return {
+      project_overview: record.project_overview || "",
+      scope_summary: record.scope_summary || "",
+      permit_technical_notes: record.permit_technical_notes || "",
+      site_logistics: record.site_logistics || "",
+      assumptions: record.assumptions || "",
+    };
+  };
+
+  // ---- Direct-entry initialization ----
+  useEffect(() => {
+    if (!open) {
+      setStep("choose");
+      setTarget(null);
+      setPreview({});
+      setOverwriteFields({});
+      setExistingRecord(null);
+      setExistingCurrentValues({});
+      setOverrideReason("");
+      setDirectSyncMode(false);
+      return;
+    }
+
+    // If direct-entry props are provided, jump straight to preview_update
+    if (initialTarget && initialExistingRecord) {
+      const initDirectSync = async () => {
+        setDirectSyncMode(true);
+        setTarget(initialTarget);
+        setExistingRecord(initialExistingRecord);
+
+        const mapped = buildMappedPreview(initialTarget);
+        setPreview(mapped);
+
+        const currentVals = await loadCurrentValues(initialTarget, initialExistingRecord);
+        setExistingCurrentValues(currentVals);
+        setOverwriteFields(computeIntelligentToggles(mapped, currentVals));
+        setStep("preview_update");
+
+        // Log sync opened
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("smart_estimate_activity_log").insert({
+            smart_estimate_id: estimate.id,
+            actor_id: user.id,
+            actor_role: "admin",
+            action_type: "downstream_sync_opened",
+            action_details: {
+              target_type: initialTarget,
+              target_id: initialExistingRecord.id,
+              sync_mode: "direct_sync",
+            },
+          });
+        }
+      };
+      initDirectSync();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialTarget, initialExistingRecord]);
+
+  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[], syncMode = "update_existing") => ({
     smart_estimate_id: estimate.id,
     mapped_at: new Date().toISOString(),
-    mapped_by: null as string | null, // set during mutation
+    mapped_by: null as string | null,
     target_type: target,
     fields_mapped: fieldsMapped,
     strategy,
+    sync_mode: syncMode,
     source_section_keys: sections.map((s: any) => s.section_key),
     room_count: rooms.length,
     trade_item_count: tradeItems.length,
   });
 
-  // ---- Duplicate Detection ----
+  // ---- Duplicate Detection (for non-direct flows) ----
   const findExistingDesignPackages = async () => {
     const conditions: any[] = [];
-    // By source_smart_estimate_id
-    const { data: bySource } = await supabase
-      .from("design_packages")
-      .select("*")
-      .eq("source_smart_estimate_id", estimate.id)
-      .neq("package_status", "archived");
+    const { data: bySource } = await supabase.from("design_packages").select("*").eq("source_smart_estimate_id", estimate.id).neq("package_status", "archived");
     if (bySource?.length) conditions.push(...bySource);
-
-    // By project_id (avoid duplicates)
     if (estimate.project_id) {
-      const { data: byProject } = await supabase
-        .from("design_packages")
-        .select("*")
-        .eq("project_id", estimate.project_id)
-        .neq("package_status", "archived");
-      if (byProject?.length) {
-        const ids = new Set(conditions.map((c: any) => c.id));
-        conditions.push(...byProject.filter((p: any) => !ids.has(p.id)));
-      }
+      const { data: byProject } = await supabase.from("design_packages").select("*").eq("project_id", estimate.project_id).neq("package_status", "archived");
+      if (byProject?.length) { const ids = new Set(conditions.map((c: any) => c.id)); conditions.push(...byProject.filter((p: any) => !ids.has(p.id))); }
     }
     return conditions;
   };
 
   const findExistingBidPackets = async () => {
     const conditions: any[] = [];
-    const { data: bySource } = await supabase
-      .from("bid_packets")
-      .select("*")
-      .eq("source_smart_estimate_id", estimate.id)
-      .neq("status", "archived");
+    const { data: bySource } = await supabase.from("bid_packets").select("*").eq("source_smart_estimate_id", estimate.id).neq("status", "archived");
     if (bySource?.length) conditions.push(...bySource);
-
     if (estimate.project_id) {
-      const { data: byProject } = await supabase
-        .from("bid_packets")
-        .select("*")
-        .eq("project_id", estimate.project_id)
-        .neq("status", "archived");
-      if (byProject?.length) {
-        const ids = new Set(conditions.map((c: any) => c.id));
-        conditions.push(...byProject.filter((p: any) => !ids.has(p.id)));
-      }
+      const { data: byProject } = await supabase.from("bid_packets").select("*").eq("project_id", estimate.project_id).neq("status", "archived");
+      if (byProject?.length) { const ids = new Set(conditions.map((c: any) => c.id)); conditions.push(...byProject.filter((p: any) => !ids.has(p.id))); }
     }
     return conditions;
   };
 
-  // ---- Choose Target ----
   const handleChoose = async (t: TargetWorkflow) => {
     setTarget(t);
     const mapped = buildMappedPreview(t);
     setPreview(mapped);
 
-    // Check for duplicates
-    const existing = t === "design_package"
-      ? await findExistingDesignPackages()
-      : await findExistingBidPackets();
-
+    const existing = t === "design_package" ? await findExistingDesignPackages() : await findExistingBidPackets();
     if (existing.length > 0) {
       setExistingRecord(existing[0]);
-      // Load current values for update comparison
-      if (t === "design_package") {
-        const { data: existingSections } = await supabase
-          .from("design_package_sections")
-          .select("section_key, section_data")
-          .eq("design_package_id", existing[0].id);
-        const vals: Record<string, string> = {};
-        for (const sec of existingSections || []) {
-          const d = sec.section_data as any;
-          vals[sec.section_key] = typeof d === "string" ? d : (d?.content || "");
-        }
-        setExistingCurrentValues(vals);
-      } else {
-        setExistingCurrentValues({
-          project_overview: existing[0].project_overview || "",
-          scope_summary: existing[0].scope_summary || "",
-          permit_technical_notes: existing[0].permit_technical_notes || "",
-          site_logistics: existing[0].site_logistics || "",
-          assumptions: existing[0].assumptions || "",
-        });
-      }
-      // Default all overwrite toggles to true
-      const toggles: Record<string, boolean> = {};
-      Object.keys(mapped).forEach(k => { toggles[k] = true; });
-      setOverwriteFields(toggles);
+      const currentVals = await loadCurrentValues(t, existing[0]);
+      setExistingCurrentValues(currentVals);
+      setOverwriteFields(computeIntelligentToggles(mapped, currentVals));
       setStep("duplicate_detected");
     } else {
       setStep("preview_create");
     }
   };
 
-  // ---- Guarded project status update ----
   const guardedStatusUpdate = async (newStatus: string) => {
     if (!estimate.project_id) return;
     const { data: project } = await supabase.from("projects").select("status").eq("id", estimate.project_id).single();
@@ -246,7 +279,6 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
     }
   };
 
-  // ---- Logging Helper ----
   const logActions = async (userId: string, actionType: string, details: any, targetId?: string) => {
     await supabase.from("smart_estimate_activity_log").insert({
       smart_estimate_id: estimate.id,
@@ -271,49 +303,34 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
     mutationFn: async (isOverride: boolean) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview));
+      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview), "created_new");
       snapshot.mapped_by = user.id;
 
       if (target === "design_package") {
         const { data: pkg, error } = await supabase.from("design_packages").insert({
-          project_id: estimate.project_id,
-          lead_id: estimate.lead_id,
-          package_status: "draft",
+          project_id: estimate.project_id, lead_id: estimate.lead_id, package_status: "draft",
           assigned_estimator_id: estimate.assigned_estimator_id,
-          source_smart_estimate_id: estimate.id,
-          source_type: "smart_estimate",
-          source_mapping_snapshot: snapshot,
-          last_synced_from_smart_estimate_at: new Date().toISOString(),
+          source_smart_estimate_id: estimate.id, source_type: "smart_estimate",
+          source_mapping_snapshot: snapshot, last_synced_from_smart_estimate_at: new Date().toISOString(),
         }).select().single();
         if (error) throw error;
 
         const sectionInserts = Object.entries(preview).map(([key, content]) => ({
-          design_package_id: pkg.id,
-          section_key: key,
-          section_data: { content },
-          contractor_visible: key !== "room_scope",
-          homeowner_visible: false,
-          internal_only: false,
+          design_package_id: pkg.id, section_key: key, section_data: { content },
+          contractor_visible: key !== "room_scope", homeowner_visible: false, internal_only: false,
         }));
         await supabase.from("design_package_sections").insert(sectionInserts);
         await guardedStatusUpdate("design_package_in_progress");
-
-        const actionType = isOverride ? "downstream_design_package_duplicate_override" : "downstream_design_package_created";
-        await logActions(user.id, actionType, {
-          design_package_id: pkg.id,
-          fields_mapped: Object.keys(preview),
+        await logActions(user.id, isOverride ? "downstream_design_package_duplicate_override" : "downstream_design_package_created", {
+          design_package_id: pkg.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
           ...(isOverride ? { override_reason: overrideReason } : {}),
         }, pkg.id);
-
         return { id: pkg.id, type: "Design Package" };
       } else {
-        // Bid packet
         let workspaceId: string | null = null;
         if (estimate.lead_id) {
           const { data: ws } = await supabase.from("estimate_workspaces").select("id").eq("lead_id", estimate.lead_id).limit(1).single();
-          if (ws) { workspaceId = ws.id; }
-          else {
+          if (ws) { workspaceId = ws.id; } else {
             const { data: newWs, error: wsErr } = await supabase.from("estimate_workspaces").insert({ lead_id: estimate.lead_id, status: "active" }).select().single();
             if (wsErr) throw wsErr;
             workspaceId = newWs.id;
@@ -322,40 +339,27 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
         if (!estimate.lead_id || !workspaceId) throw new Error("Cannot resolve lead or workspace.");
 
         const { data: packet, error } = await supabase.from("bid_packets").insert({
-          lead_id: estimate.lead_id,
-          workspace_id: workspaceId,
-          project_id: estimate.project_id,
+          lead_id: estimate.lead_id, workspace_id: workspaceId, project_id: estimate.project_id,
           title: `Bid Packet — Smart Estimate ${estimate.id.slice(0, 8)}`,
-          project_overview: preview.project_overview || "",
-          scope_summary: preview.scope_summary || "",
-          permit_technical_notes: preview.permit_technical_notes || "",
-          site_logistics: preview.site_logistics || "",
-          assumptions: preview.assumptions || "",
-          generated_from_design_package: false,
-          generated_at: new Date().toISOString(),
-          generated_by: user.id,
-          status: "draft",
-          source_smart_estimate_id: estimate.id,
-          source_type: "smart_estimate",
-          source_mapping_snapshot: snapshot,
-          last_synced_from_smart_estimate_at: new Date().toISOString(),
+          project_overview: preview.project_overview || "", scope_summary: preview.scope_summary || "",
+          permit_technical_notes: preview.permit_technical_notes || "", site_logistics: preview.site_logistics || "",
+          assumptions: preview.assumptions || "", generated_from_design_package: false,
+          generated_at: new Date().toISOString(), generated_by: user.id, status: "draft",
+          source_smart_estimate_id: estimate.id, source_type: "smart_estimate",
+          source_mapping_snapshot: snapshot, last_synced_from_smart_estimate_at: new Date().toISOString(),
         }).select().single();
         if (error) throw error;
 
         await guardedStatusUpdate("bid_packet_generated");
-        const actionType = isOverride ? "downstream_bid_packet_duplicate_override" : "downstream_bid_packet_created";
-        await logActions(user.id, actionType, {
-          bid_packet_id: packet.id,
-          fields_mapped: Object.keys(preview),
+        await logActions(user.id, isOverride ? "downstream_bid_packet_duplicate_override" : "downstream_bid_packet_created", {
+          bid_packet_id: packet.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
           ...(isOverride ? { override_reason: overrideReason } : {}),
         });
-
         return { id: packet.id, type: "Bid Packet" };
       }
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["smart-estimate"] });
-      queryClient.invalidateQueries({ queryKey: ["linked-downstream"] });
+      invalidateAll();
       setSuccessMsg(`${result.type} created (${result.id.slice(0, 8)}).`);
       setStep("success");
       toast.success(`${result.type} created from Smart Estimate`);
@@ -368,83 +372,84 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
       const fieldsMapped = Object.entries(overwriteFields).filter(([, v]) => v).map(([k]) => k);
-      const snapshot = buildMappingSnapshot("updated_existing", fieldsMapped);
+      const syncMode = directSyncMode ? "direct_sync" : "update_existing";
+      const snapshot = buildMappingSnapshot("updated_existing", fieldsMapped, syncMode);
       snapshot.mapped_by = user.id;
 
       if (target === "design_package") {
-        // Update each selected section
         for (const [key, shouldOverwrite] of Object.entries(overwriteFields)) {
           if (!shouldOverwrite) continue;
-          // Upsert section
-          const { data: existing } = await supabase
-            .from("design_package_sections")
-            .select("id")
-            .eq("design_package_id", existingRecord.id)
-            .eq("section_key", key)
-            .maybeSingle();
+          const { data: existing } = await supabase.from("design_package_sections").select("id").eq("design_package_id", existingRecord.id).eq("section_key", key).maybeSingle();
           if (existing) {
             await supabase.from("design_package_sections").update({ section_data: { content: preview[key] } }).eq("id", existing.id);
           } else {
             await supabase.from("design_package_sections").insert({
-              design_package_id: existingRecord.id,
-              section_key: key,
-              section_data: { content: preview[key] },
-              contractor_visible: key !== "room_scope",
-              homeowner_visible: false,
-              internal_only: false,
+              design_package_id: existingRecord.id, section_key: key, section_data: { content: preview[key] },
+              contractor_visible: key !== "room_scope", homeowner_visible: false, internal_only: false,
             });
           }
         }
         await supabase.from("design_packages").update({
-          source_smart_estimate_id: estimate.id,
-          source_type: "smart_estimate",
-          source_mapping_snapshot: snapshot,
-          last_synced_from_smart_estimate_at: new Date().toISOString(),
+          source_smart_estimate_id: estimate.id, source_type: "smart_estimate",
+          source_mapping_snapshot: snapshot, last_synced_from_smart_estimate_at: new Date().toISOString(),
         }).eq("id", existingRecord.id);
         await guardedStatusUpdate("design_package_in_progress");
-        await logActions(user.id, "downstream_design_package_updated", { design_package_id: existingRecord.id, fields_updated: fieldsMapped }, existingRecord.id);
-        return { id: existingRecord.id, type: "Design Package" };
+        await logActions(user.id, "downstream_design_package_updated", {
+          design_package_id: existingRecord.id, fields_updated: fieldsMapped,
+          overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
+          target_type: "design_package", target_id: existingRecord.id,
+        }, existingRecord.id);
+        return { id: existingRecord.id, type: "Design Package", fieldCount: fieldsMapped.length };
       } else {
-        // Bid packet field-level update
         const updates: Record<string, any> = {
-          source_smart_estimate_id: estimate.id,
-          source_type: "smart_estimate",
-          source_mapping_snapshot: snapshot,
-          last_synced_from_smart_estimate_at: new Date().toISOString(),
+          source_smart_estimate_id: estimate.id, source_type: "smart_estimate",
+          source_mapping_snapshot: snapshot, last_synced_from_smart_estimate_at: new Date().toISOString(),
         };
         for (const [key, shouldOverwrite] of Object.entries(overwriteFields)) {
           if (shouldOverwrite) updates[key] = preview[key] || "";
         }
         await supabase.from("bid_packets").update(updates).eq("id", existingRecord.id);
         await guardedStatusUpdate("bid_packet_generated");
-        await logActions(user.id, "downstream_bid_packet_updated", { bid_packet_id: existingRecord.id, fields_updated: fieldsMapped });
-        return { id: existingRecord.id, type: "Bid Packet" };
+        await logActions(user.id, "downstream_bid_packet_updated", {
+          bid_packet_id: existingRecord.id, fields_updated: fieldsMapped,
+          overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
+          target_type: "bid_packet", target_id: existingRecord.id,
+        });
+        return { id: existingRecord.id, type: "Bid Packet", fieldCount: fieldsMapped.length };
       }
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["smart-estimate"] });
-      queryClient.invalidateQueries({ queryKey: ["linked-downstream"] });
-      setSuccessMsg(`${result.type} updated with latest Smart Estimate data.`);
+      invalidateAll();
+      setSuccessMsg(`${result.type} updated — ${result.fieldCount} field(s) synced.`);
       setStep("success");
-      toast.success(`${result.type} updated`);
+      toast.success(`${result.type} synced from Smart Estimate`);
     },
     onError: (err: any) => toast.error(err.message),
   });
 
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ["smart-estimate"] });
+    queryClient.invalidateQueries({ queryKey: ["linked-downstream"] });
+    queryClient.invalidateQueries({ queryKey: ["smart-estimate-activity"] });
+  };
+
   const isPending = createNewMutation.isPending || updateExistingMutation.isPending;
   const fields = target === "design_package" ? DESIGN_PREVIEW_FIELDS : BID_PREVIEW_FIELDS;
+  const changedFieldCount = Object.values(overwriteFields).filter(Boolean).length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <ArrowRight className="h-5 w-5" /> Downstream Workflow
+            {directSyncMode ? <RefreshCw className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+            {directSyncMode ? "Sync Downstream Record" : "Downstream Workflow"}
           </DialogTitle>
           <DialogDescription>
-            Push approved Smart Estimate data into a Design Package or Bid Packet.
+            {directSyncMode
+              ? "Review field changes and apply updates from the latest Smart Estimate data."
+              : "Push approved Smart Estimate data into a Design Package or Bid Packet."}
           </DialogDescription>
         </DialogHeader>
 
@@ -478,13 +483,12 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
         {/* Step: Duplicate Detected */}
         {step === "duplicate_detected" && existingRecord && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <div className="flex items-center gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20">
               <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
-              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+              <p className="text-sm font-medium">
                 Existing {target === "design_package" ? "Design Package" : "Bid Packet"} Found
               </p>
             </div>
-
             <Card>
               <CardContent className="pt-4 space-y-2">
                 <div className="flex items-center justify-between">
@@ -499,12 +503,6 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
                   <span className="text-sm font-medium">Created</span>
                   <span className="text-xs text-muted-foreground">{format(new Date(existingRecord.created_at), "MMM d, yyyy")}</span>
                 </div>
-                {existingRecord.source_smart_estimate_id && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Source</span>
-                    <Badge variant="secondary" className="text-xs">From Smart Estimate</Badge>
-                  </div>
-                )}
                 {existingRecord.last_synced_from_smart_estimate_at && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Last Synced</span>
@@ -513,18 +511,9 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
                 )}
               </CardContent>
             </Card>
-
-            <p className="text-sm text-muted-foreground">This may create conflicting downstream records. Choose an action:</p>
-
             <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" className="justify-start" onClick={() => {
-                const path = target === "design_package"
-                  ? `/admin/design-packages/${existingRecord.id}`
-                  : `/admin/bid-packets/${existingRecord.id}`;
-                navigate(path);
-                onOpenChange(false);
-              }}>
-                <ExternalLink className="h-4 w-4 mr-2" /> Open Existing {target === "design_package" ? "Design Package" : "Bid Packet"}
+              <Button variant="outline" className="justify-start" onClick={() => { navigate(target === "design_package" ? `/admin/design-packages/${existingRecord.id}` : `/admin/bid-packets/${existingRecord.id}`); onOpenChange(false); }}>
+                <ExternalLink className="h-4 w-4 mr-2" /> Open Existing
               </Button>
               <Button variant="outline" className="justify-start" onClick={() => setStep("preview_update")}>
                 <RefreshCw className="h-4 w-4 mr-2" /> Update Existing with Smart Estimate Data
@@ -533,12 +522,11 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
                 <AlertTriangle className="h-4 w-4 mr-2" /> Create New Anyway (Duplicate)
               </Button>
             </div>
-
             <Button variant="ghost" onClick={() => { setStep("choose"); setTarget(null); }}>Cancel</Button>
           </div>
         )}
 
-        {/* Step: Preview Create (no existing) */}
+        {/* Step: Preview Create */}
         {step === "preview_create" && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -561,24 +549,33 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
           </div>
         )}
 
-        {/* Step: Preview Update Existing */}
+        {/* Step: Preview Update Existing (also used for direct sync) */}
         {step === "preview_update" && (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary"><RefreshCw className="h-3 w-3 mr-1" /> Update Existing</Badge>
-              <span className="text-sm text-muted-foreground">Select fields to overwrite. Unselected fields are preserved.</span>
+              <Badge variant="secondary"><RefreshCw className="h-3 w-3 mr-1" />
+                {directSyncMode ? "Direct Sync" : "Update Existing"}
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                {changedFieldCount > 0
+                  ? `${changedFieldCount} field(s) selected for update. Unselected fields are preserved.`
+                  : "No changes detected. Toggle fields to overwrite."}
+              </span>
             </div>
             {fields.map(({ key, label }) => {
               const currentVal = existingCurrentValues[key] || "";
               const newVal = preview[key] || "";
               const isChecked = overwriteFields[key] ?? false;
+              const isDifferent = currentVal.trim() !== newVal.trim();
               return (
                 <Card key={key} className={isChecked ? "border-primary" : ""}>
                   <CardContent className="pt-4 space-y-2">
                     <div className="flex items-center gap-2">
                       <Checkbox checked={isChecked} onCheckedChange={(v) => setOverwriteFields(prev => ({ ...prev, [key]: !!v }))} />
                       <Label className="text-sm font-medium">{label}</Label>
-                      {currentVal !== newVal && <Badge variant="outline" className="text-xs">Changed</Badge>}
+                      {isDifferent && <Badge variant="outline" className="text-xs">Changed</Badge>}
+                      {!isDifferent && currentVal && <Badge variant="outline" className="text-xs text-muted-foreground">Identical</Badge>}
+                      {!currentVal && newVal && <Badge variant="outline" className="text-xs">New</Badge>}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <div>
@@ -597,23 +594,28 @@ export function SmartEstimateDownstreamDialog({ open, onOpenChange, estimate, se
               );
             })}
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setStep("duplicate_detected")}>Back</Button>
-              <Button onClick={() => updateExistingMutation.mutate()} disabled={isPending || !Object.values(overwriteFields).some(Boolean)}>
+              {!directSyncMode && (
+                <Button variant="outline" onClick={() => setStep("duplicate_detected")}>Back</Button>
+              )}
+              {directSyncMode && (
+                <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              )}
+              <Button onClick={() => updateExistingMutation.mutate()} disabled={isPending || changedFieldCount === 0}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Update {Object.values(overwriteFields).filter(Boolean).length} Fields
+                {directSyncMode ? `Sync ${changedFieldCount} Field(s)` : `Update ${changedFieldCount} Field(s)`}
               </Button>
             </div>
           </div>
         )}
 
-        {/* Step: Duplicate Override Confirmation */}
+        {/* Step: Duplicate Override */}
         {step === "duplicate_override" && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <div className="flex items-center gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20">
               <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Duplicate Override Required</p>
-                <p className="text-xs text-amber-700 dark:text-amber-400">An existing record was found. Provide a reason to create a duplicate.</p>
+                <p className="text-sm font-medium">Duplicate Override Required</p>
+                <p className="text-xs text-muted-foreground">Provide a reason to create a duplicate.</p>
               </div>
             </div>
             <div className="space-y-2">
