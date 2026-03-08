@@ -24,6 +24,7 @@ import {
   Sparkles, Save, Send, ThumbsUp, RotateCcw, FileText, Clock, ArrowRight,
 } from "lucide-react";
 import { SmartEstimateDownstreamDialog } from "@/components/admin/SmartEstimateDownstreamDialog";
+import { LinkedDownstreamRecordsCard } from "@/components/admin/LinkedDownstreamRecordsCard";
 import { format } from "date-fns";
 
 const SECTION_LABELS: Record<string, string> = {
