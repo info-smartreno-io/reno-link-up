@@ -112,7 +112,7 @@ export function EstimatorSidebar() {
   const renderGroup = (
     groupId: string,
     label: string,
-    items: typeof navigationItems,
+    items: Array<{ title: string; url: string; icon: any; showBadge?: boolean }>,
     separatorAbove?: boolean
   ) => {
     const isExpanded = expandedGroups.has(groupId);
