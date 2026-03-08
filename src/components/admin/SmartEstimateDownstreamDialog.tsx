@@ -218,7 +218,7 @@ export function SmartEstimateDownstreamDialog({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialTarget, initialExistingRecord]);
 
-  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[], syncMode = "update_existing") => ({
+  const buildMappingSnapshot = (strategy: string, fieldsMapped: string[], syncMode = "update_existing", overrideReason?: string) => ({
     smart_estimate_id: estimate.id,
     mapped_at: new Date().toISOString(),
     mapped_by: null as string | null,
@@ -229,6 +229,7 @@ export function SmartEstimateDownstreamDialog({
     source_section_keys: sections.map((s: any) => s.section_key),
     room_count: rooms.length,
     trade_item_count: tradeItems.length,
+    ...(overrideReason ? { duplicate_override_reason: overrideReason } : {}),
   });
 
   // ---- Duplicate Detection (for non-direct flows) ----
@@ -296,6 +297,16 @@ export function SmartEstimateDownstreamDialog({
         action_details: JSON.stringify(details),
       });
     }
+    // Bid packet activity logging
+    if (target === "bid_packet" && targetId) {
+      await supabase.from("smart_estimate_activity_log").insert({
+        smart_estimate_id: estimate.id,
+        actor_id: userId,
+        actor_role: "admin",
+        action_type: `bid_packet_${actionType.replace("downstream_bid_packet_", "")}`,
+        action_details: { ...details, logged_for: "bid_packet_audit" },
+      });
+    }
   };
 
   // ---- CREATE NEW ----
@@ -303,7 +314,7 @@ export function SmartEstimateDownstreamDialog({
     mutationFn: async (isOverride: boolean) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview), "created_new");
+      const snapshot = buildMappingSnapshot(isOverride ? "duplicate_override" : "created_new", Object.keys(preview), "created_new", isOverride ? overrideReason : undefined);
       snapshot.mapped_by = user.id;
 
       if (target === "design_package") {
@@ -323,7 +334,10 @@ export function SmartEstimateDownstreamDialog({
         await guardedStatusUpdate("design_package_in_progress");
         await logActions(user.id, isOverride ? "downstream_design_package_duplicate_override" : "downstream_design_package_created", {
           design_package_id: pkg.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
-          ...(isOverride ? { override_reason: overrideReason } : {}),
+          target_type: "design_package", target_id: pkg.id,
+          overwrite_field_count: Object.keys(preview).filter(k => (preview[k] || "").trim()).length,
+          old_values: {}, new_values: Object.fromEntries(Object.entries(preview).filter(([, v]) => (v || "").trim())),
+          ...(isOverride ? { duplicate_override_reason: overrideReason } : {}),
         }, pkg.id);
         return { id: pkg.id, type: "Design Package" };
       } else {
@@ -353,7 +367,10 @@ export function SmartEstimateDownstreamDialog({
         await guardedStatusUpdate("bid_packet_generated");
         await logActions(user.id, isOverride ? "downstream_bid_packet_duplicate_override" : "downstream_bid_packet_created", {
           bid_packet_id: packet.id, fields_mapped: Object.keys(preview), sync_mode: "created_new",
-          ...(isOverride ? { override_reason: overrideReason } : {}),
+          target_type: "bid_packet", target_id: packet.id,
+          overwrite_field_count: Object.keys(preview).filter(k => (preview[k] || "").trim()).length,
+          old_values: {}, new_values: Object.fromEntries(Object.entries(preview).filter(([, v]) => (v || "").trim())),
+          ...(isOverride ? { duplicate_override_reason: overrideReason } : {}),
         });
         return { id: packet.id, type: "Bid Packet" };
       }
@@ -377,6 +394,14 @@ export function SmartEstimateDownstreamDialog({
       const snapshot = buildMappingSnapshot("updated_existing", fieldsMapped, syncMode);
       snapshot.mapped_by = user.id;
 
+      // Capture old/new diffs for audit — only for checked fields
+      const oldValues: Record<string, string> = {};
+      const newValues: Record<string, string> = {};
+      for (const key of fieldsMapped) {
+        oldValues[key] = existingCurrentValues[key] || "";
+        newValues[key] = preview[key] || "";
+      }
+
       if (target === "design_package") {
         for (const [key, shouldOverwrite] of Object.entries(overwriteFields)) {
           if (!shouldOverwrite) continue;
@@ -399,6 +424,7 @@ export function SmartEstimateDownstreamDialog({
           design_package_id: existingRecord.id, fields_updated: fieldsMapped,
           overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
           target_type: "design_package", target_id: existingRecord.id,
+          old_values: oldValues, new_values: newValues,
         }, existingRecord.id);
         return { id: existingRecord.id, type: "Design Package", fieldCount: fieldsMapped.length };
       } else {
@@ -415,6 +441,7 @@ export function SmartEstimateDownstreamDialog({
           bid_packet_id: existingRecord.id, fields_updated: fieldsMapped,
           overwrite_field_count: fieldsMapped.length, sync_mode: syncMode,
           target_type: "bid_packet", target_id: existingRecord.id,
+          old_values: oldValues, new_values: newValues,
         });
         return { id: existingRecord.id, type: "Bid Packet", fieldCount: fieldsMapped.length };
       }
@@ -432,6 +459,8 @@ export function SmartEstimateDownstreamDialog({
     queryClient.invalidateQueries({ queryKey: ["smart-estimate"] });
     queryClient.invalidateQueries({ queryKey: ["linked-downstream"] });
     queryClient.invalidateQueries({ queryKey: ["smart-estimate-activity"] });
+    queryClient.invalidateQueries({ queryKey: ["downstream-sync-history"] });
+    queryClient.invalidateQueries({ queryKey: ["downstream-sync-summary"] });
   };
 
   const isPending = createNewMutation.isPending || updateExistingMutation.isPending;
