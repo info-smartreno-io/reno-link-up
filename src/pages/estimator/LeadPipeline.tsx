@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useNavigate } from "react-router-dom";
 import { Loader2, LayoutGrid, List, Filter, RefreshCw, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -110,6 +111,7 @@ export default function LeadPipeline() {
   };
 
   return (
+    <EstimatorLayout>
     <div className="min-h-screen bg-muted/20">
       {/* Header */}
       <div className="border-b bg-background">
@@ -277,5 +279,6 @@ export default function LeadPipeline() {
         onScheduled={refreshLeads}
       />
     </div>
+    </EstimatorLayout>
   );
 }
