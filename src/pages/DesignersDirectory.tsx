@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import watermarkDesigner from "@/assets/watermark-designer.png";
+import heroDesigner from "@/assets/hero-designer.jpeg";
 
 const TOWNS = ["All Towns", "Ridgewood", "Wyckoff", "Montclair", "Paramus", "Glen Rock", "Ho-Ho-Kus", "Waldwick", "Somerville", "Fair Lawn", "Midland Park", "Oradell", "Ramsey", "Hackensack", "Mahwah", "Tenafly", "Westwood", "Allendale", "Saddle River"];
 const SPECIALTIES = ["All Specialties", "Full-Service", "Luxury", "Kitchen & Bath", "Modern", "Staging", "Renovation", "Contemporary", "Transitional"];
