@@ -316,7 +316,7 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-4">Specialties</h2>
                   <div className="flex flex-wrap gap-2">
