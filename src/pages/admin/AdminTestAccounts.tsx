@@ -117,10 +117,16 @@ export default function AdminTestAccounts() {
           <h1 className="text-3xl font-semibold">Test Accounts</h1>
           <p className="text-muted-foreground">Internal QA accounts for portal testing</p>
         </div>
-        <Badge variant="outline" className="gap-1.5 border-destructive text-destructive">
-          <ShieldAlert className="h-3.5 w-3.5" />
-          INTERNAL QA TOOL
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button onClick={seedAllAccounts} disabled={seeding} className="gap-2">
+            {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+            {seeding ? "Seeding..." : "Seed All Accounts"}
+          </Button>
+          <Badge variant="outline" className="gap-1.5 border-destructive text-destructive">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            INTERNAL QA TOOL
+          </Badge>
+        </div>
       </div>
 
       <Card>
