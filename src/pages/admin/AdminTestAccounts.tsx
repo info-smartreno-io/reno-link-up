@@ -77,6 +77,20 @@ const ROLE_COLORS: Record<string, string> = {
 export default function AdminTestAccounts() {
   const { toast } = useToast();
   const [revealedPasswords, setRevealedPasswords] = useState<Set<string>>(new Set());
+  const [seeding, setSeeding] = useState(false);
+
+  const seedAllAccounts = async () => {
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("seed-all-test-accounts");
+      if (error) throw error;
+      toast({ title: "All Test Accounts Seeded", description: `${data.accounts?.length || 4} accounts created/verified.` });
+    } catch (err: any) {
+      toast({ title: "Seed Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const togglePassword = (id: string) => {
     setRevealedPasswords(prev => {
