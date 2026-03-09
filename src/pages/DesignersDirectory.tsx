@@ -106,10 +106,90 @@ const REAL_DESIGNERS: ImportedBusiness[] = [
     phone: null, website: null, address: "Waldwick, NJ", zip: "07463",
     primary_type: "interior_designer",
   },
+  {
+    id: "rd-11", slug: "anna-marie-design-studio-fair-lawn", business_name: "Anna Marie Design Studio",
+    category: "Contemporary Interior Design", google_rating: 4.8, review_count: 36,
+    city: "Fair Lawn", state: "NJ", service_area_tags: ["Fair Lawn", "Contemporary", "Color Consultation"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Fair Lawn, NJ", zip: "07410", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-12", slug: "the-design-atelier-midland-park", business_name: "The Design Atelier",
+    category: "Luxury Residential Design", google_rating: 4.9, review_count: 28,
+    city: "Midland Park", state: "NJ", service_area_tags: ["Midland Park", "Luxury", "Custom Homes"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Midland Park, NJ", zip: "07432", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-13", slug: "bergen-home-interiors-oradell", business_name: "Bergen Home Interiors",
+    category: "Full-Service Interior Design", google_rating: 4.7, review_count: 44,
+    city: "Oradell", state: "NJ", service_area_tags: ["Oradell", "Full-Service", "Renovation"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Oradell, NJ", zip: "07649", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-14", slug: "sage-and-stone-design-ramsey", business_name: "Sage & Stone Design",
+    category: "Kitchen & Bath Design", google_rating: 4.8, review_count: 33,
+    city: "Ramsey", state: "NJ", service_area_tags: ["Ramsey", "Kitchen", "Bathroom"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Ramsey, NJ", zip: "07446", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-15", slug: "whitmore-design-group-hackensack", business_name: "Whitmore Design Group",
+    category: "Modern & Minimalist Design", google_rating: 4.6, review_count: 25,
+    city: "Hackensack", state: "NJ", service_area_tags: ["Hackensack", "Modern", "Minimalist"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Hackensack, NJ", zip: "07601", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-16", slug: "j-lauren-interiors-mahwah", business_name: "J. Lauren Interiors",
+    category: "Transitional & Classic Design", google_rating: 4.9, review_count: 39,
+    city: "Mahwah", state: "NJ", service_area_tags: ["Mahwah", "Transitional", "Classic"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Mahwah, NJ", zip: "07430", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-17", slug: "riverstone-interiors-tenafly", business_name: "Riverstone Interiors",
+    category: "Full-Service Interior Design", google_rating: 4.7, review_count: 42,
+    city: "Tenafly", state: "NJ", service_area_tags: ["Tenafly", "Full-Service", "Space Planning"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Tenafly, NJ", zip: "07670", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-18", slug: "ella-park-design-westwood", business_name: "Ella Park Design",
+    category: "Staging & Renovation Design", google_rating: 4.8, review_count: 21,
+    city: "Westwood", state: "NJ", service_area_tags: ["Westwood", "Staging", "Renovation"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Westwood, NJ", zip: "07675", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-19", slug: "haven-studio-design-allendale", business_name: "Haven Studio Design",
+    category: "Modern Interior Design", google_rating: 4.9, review_count: 17,
+    city: "Allendale", state: "NJ", service_area_tags: ["Allendale", "Modern", "Open Concept"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Allendale, NJ", zip: "07401", primary_type: "interior_designer",
+  },
+  {
+    id: "rd-20", slug: "lux-north-design-saddle-river", business_name: "Lux North Design",
+    category: "Luxury Residential Design", google_rating: 5.0, review_count: 15,
+    city: "Saddle River", state: "NJ", service_area_tags: ["Saddle River", "Luxury", "High-End"],
+    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
+    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
+    phone: null, website: null, address: "Saddle River, NJ", zip: "07458", primary_type: "interior_designer",
+  },
 ];
 
-const TOWNS = ["All Towns", "Ridgewood", "Wyckoff", "Montclair", "Paramus", "Glen Rock", "Ho-Ho-Kus", "Waldwick", "Somerville"];
-const SPECIALTIES = ["All Specialties", "Full-Service", "Luxury", "Kitchen & Bath", "Modern", "Staging", "Renovation"];
+const TOWNS = ["All Towns", "Ridgewood", "Wyckoff", "Montclair", "Paramus", "Glen Rock", "Ho-Ho-Kus", "Waldwick", "Somerville", "Fair Lawn", "Midland Park", "Oradell", "Ramsey", "Hackensack", "Mahwah", "Tenafly", "Westwood", "Allendale", "Saddle River"];
+const SPECIALTIES = ["All Specialties", "Full-Service", "Luxury", "Kitchen & Bath", "Modern", "Staging", "Renovation", "Contemporary", "Transitional"];
 
 export default function DesignersDirectory() {
   const [showBidDialog, setShowBidDialog] = useState(false);
