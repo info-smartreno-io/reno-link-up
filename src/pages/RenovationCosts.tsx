@@ -57,7 +57,7 @@ export default function RenovationCosts() {
         <meta name="description" content="Explore real renovation cost ranges for kitchens, bathrooms, basements, additions, and whole-home remodels in Northern New Jersey." />
         <link rel="canonical" href="https://smartreno.io/renovation-costs" />
       </Helmet>
-      <SiteNavbar />
+      <MarketingNavbar />
       <main>
         {/* Hero */}
         <section className="py-20 md:py-32 lg:py-40 bg-gradient-to-b from-primary/5 to-background">
