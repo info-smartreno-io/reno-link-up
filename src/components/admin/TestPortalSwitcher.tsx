@@ -14,9 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 
 const TEST_PORTALS = [
   { label: "Test Estimator", path: "/estimator/dashboard", email: "test-estimator@smartreno.io", active: true },
-  { label: "Test Contractor", path: "/contractor/dashboard", email: "test-contractor@smartreno.io", active: false },
-  { label: "Test Homeowner", path: "/homeowner/dashboard", email: "test-homeowner@smartreno.io", active: false },
-  { label: "Test Design Pro", path: "/design-professional/dashboard", email: "test-designpro@smartreno.io", active: false },
+  { label: "Test Contractor", path: "/contractor/dashboard", email: "test-contractor@smartreno.io", active: true },
+  { label: "Test Homeowner", path: "/homeowner/dashboard", email: "test-homeowner@smartreno.io", active: true },
+  { label: "Test Design Pro", path: "/design-professional/dashboard", email: "test-designpro@smartreno.io", active: true },
 ];
 
 export function TestPortalSwitcher() {

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, ExternalLink, Eye, EyeOff, ShieldAlert } from "lucide-react";
+import { Copy, ExternalLink, Eye, EyeOff, ShieldAlert, Loader2, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TestAccount {
   id: string;
@@ -38,8 +39,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/contractor/dashboard",
     portalLabel: "Contractor Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA contractor account",
   },
   {
     id: "3",
@@ -49,8 +50,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/homeowner/dashboard",
     portalLabel: "Homeowner Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA homeowner account",
   },
   {
     id: "4",
@@ -60,8 +61,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/design-professional/dashboard",
     portalLabel: "Design Professional Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA design professional account",
   },
 ];
 
@@ -76,6 +77,20 @@ const ROLE_COLORS: Record<string, string> = {
 export default function AdminTestAccounts() {
   const { toast } = useToast();
   const [revealedPasswords, setRevealedPasswords] = useState<Set<string>>(new Set());
+  const [seeding, setSeeding] = useState(false);
+
+  const seedAllAccounts = async () => {
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("seed-all-test-accounts");
+      if (error) throw error;
+      toast({ title: "All Test Accounts Seeded", description: `${data.accounts?.length || 4} accounts created/verified.` });
+    } catch (err: any) {
+      toast({ title: "Seed Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const togglePassword = (id: string) => {
     setRevealedPasswords(prev => {
@@ -102,10 +117,16 @@ export default function AdminTestAccounts() {
           <h1 className="text-3xl font-semibold">Test Accounts</h1>
           <p className="text-muted-foreground">Internal QA accounts for portal testing</p>
         </div>
-        <Badge variant="outline" className="gap-1.5 border-destructive text-destructive">
-          <ShieldAlert className="h-3.5 w-3.5" />
-          INTERNAL QA TOOL
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button onClick={seedAllAccounts} disabled={seeding} className="gap-2">
+            {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+            {seeding ? "Seeding..." : "Seed All Accounts"}
+          </Button>
+          <Badge variant="outline" className="gap-1.5 border-destructive text-destructive">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            INTERNAL QA TOOL
+          </Badge>
+        </div>
       </div>
 
       <Card>
