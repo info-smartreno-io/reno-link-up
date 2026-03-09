@@ -290,7 +290,7 @@ export default function Index() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Why SmartReno</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-              Renovations work better when organized
+              Renovations work better when the process is structured
             </h2>
           </div>
 
