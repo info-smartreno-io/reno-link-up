@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2, Shield, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import smartRenoLogo from "@/assets/smartreno-logo-blue.png";
+
+/**
+ * Resolve the internal dashboard destination based on user roles.
+ * Priority: admin > estimator. Returns null if no internal role found.
+ */
+async function resolveInternalDestination(userId: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Role lookup error:", error.message);
+      return null;
+    }
+
+    if (!data || data.length === 0) return null;
+
+    const roles = data.map((r) => r.role);
+
+    // Admin takes priority over estimator
+    if (roles.includes("admin")) return "/admin/dashboard";
+    if (roles.includes("estimator")) return "/estimator/dashboard";
+
+    return null;
+  } catch (err) {
+    console.error("Role lookup failed:", err);
+    return null;
+  }
+}
+
+export { resolveInternalDestination };
 
 export default function InternalLogin() {
   const navigate = useNavigate();
@@ -18,38 +51,60 @@ export default function InternalLogin() {
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Check if already logged in with valid internal role
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+  const checkExistingSession = useCallback(async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("Session check error:", error.message);
+        setCheckingSession(false);
+        return;
+      }
+
       if (session?.user) {
-        const destination = await getInternalDestination(session.user.id);
+        const destination = await resolveInternalDestination(session.user.id);
         if (destination) {
           navigate(destination, { replace: true });
           return;
         }
+        // User is logged in but has no internal role — sign them out
+        await supabase.auth.signOut();
       }
+    } catch (err) {
+      console.error("Session check failed:", err);
+    } finally {
       setCheckingSession(false);
-    });
+    }
   }, [navigate]);
 
-  const getInternalDestination = async (userId: string): Promise<string | null> => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+  useEffect(() => {
+    checkExistingSession();
 
-    const roles = data?.map((r) => r.role) || [];
+    // Listen for auth state changes (e.g. token refresh, sign out)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_OUT") {
+          setCheckingSession(false);
+        }
+        if (event === "TOKEN_REFRESHED" && session?.user) {
+          const destination = await resolveInternalDestination(session.user.id);
+          if (!destination) {
+            await supabase.auth.signOut();
+          }
+        }
+      }
+    );
 
-    if (roles.includes("admin")) return "/admin/dashboard";
-    if (roles.includes("estimator")) return "/estimator/dashboard";
-    return null;
-  };
+    return () => subscription.unsubscribe();
+  }, [checkExistingSession]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setAccessDenied(false);
+    setErrorMessage(null);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -57,15 +112,27 @@ export default function InternalLogin() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          setErrorMessage("Invalid email or password. Please try again.");
+        } else {
+          setErrorMessage(error.message);
+        }
+        setLoading(false);
+        return;
+      }
 
-      if (!data.user) throw new Error("Login failed");
+      if (!data.user) {
+        setErrorMessage("Authentication failed. Please try again.");
+        setLoading(false);
+        return;
+      }
 
-      // Check role
-      const destination = await getInternalDestination(data.user.id);
+      // Check role with priority: admin > estimator
+      const destination = await resolveInternalDestination(data.user.id);
 
       if (!destination) {
-        // Not an internal user — sign them out and deny
+        // Not an internal user — sign them out and deny access
         await supabase.auth.signOut();
         setAccessDenied(true);
         setLoading(false);
@@ -74,16 +141,15 @@ export default function InternalLogin() {
 
       toast({
         title: "Welcome back",
-        description: "Redirecting to your dashboard...",
+        description: "Redirecting to your dashboard…",
       });
 
       navigate(destination, { replace: true });
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: err?.message ?? "Please check your credentials and try again.",
-      });
+      console.error("Login error:", err);
+      setErrorMessage(
+        "Unable to connect to authentication service. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +158,10 @@ export default function InternalLogin() {
   if (checkingSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Verifying session…</p>
+        </div>
       </div>
     );
   }
@@ -121,9 +190,16 @@ export default function InternalLogin() {
           <CardContent>
             {accessDenied && (
               <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  You do not have permission to access this portal. This login is for authorized SmartReno team members only.
+                  You do not have permission to access this portal. This login is restricted to authorized SmartReno administrators and estimators only.
                 </AlertDescription>
+              </Alert>
+            )}
+
+            {errorMessage && !accessDenied && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
             )}
 
@@ -136,7 +212,11 @@ export default function InternalLogin() {
                   autoComplete="email"
                   placeholder="you@smartreno.io"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrorMessage(null);
+                    setAccessDenied(false);
+                  }}
                   required
                   disabled={loading}
                 />
@@ -150,7 +230,10 @@ export default function InternalLogin() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setErrorMessage(null);
+                  }}
                   required
                   disabled={loading}
                 />

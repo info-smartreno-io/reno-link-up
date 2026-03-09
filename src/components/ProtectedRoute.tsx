@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { isAdminSubdomain } from "@/utils/subdomain";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -138,8 +139,13 @@ export default function ProtectedRoute({
     );
   }
 
-  // Not authenticated - redirect to appropriate auth page based on required role
+  // Not authenticated - redirect to appropriate auth page
   if (!user || !session) {
+    // On admin subdomain, always redirect to internal login (root /)
+    if (isAdminSubdomain()) {
+      return <Navigate to="/" state={{ from: location }} replace />;
+    }
+    
     const authPath = requiredRole === "admin" 
       ? "/admin/auth" 
       : requiredRole === "estimator" 
