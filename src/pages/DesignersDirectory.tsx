@@ -4,117 +4,70 @@ import { Link, useNavigate } from "react-router-dom";
 import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Button } from "@/components/ui/button";
+import { BusinessCard } from "@/components/directory/BusinessCard";
+import { useImportedBusinesses, type ImportedBusiness } from "@/hooks/useImportedBusinesses";
 import { motion } from "framer-motion";
 import {
   Search, MapPin, Star, CheckCircle2, Shield, Award,
-  ArrowRight, Palette, PaintBucket, Ruler, Home, Users,
-  Hammer, Eye,
+  ArrowRight, Palette,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 
+// Fallback mock data when no imported businesses exist
 const MOCK_DESIGNERS = [
   {
-    id: "1", name: "Studio Ren Design", specialty: "Kitchen & Bath Design", rating: 4.9, reviews: 84,
-    location: "Ridgewood, NJ", yearsExp: 14, verified: true,
-    specialties: ["Kitchen", "Bathroom", "Open Concept"],
+    id: "mock-1", slug: "studio-ren-design", business_name: "Studio Ren Design", category: "Kitchen & Bath Design",
+    google_rating: 4.9, review_count: 84, city: "Ridgewood", state: "NJ",
+    service_area_tags: ["Kitchen", "Bathroom", "Open Concept"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
   {
-    id: "2", name: "NorthStar Interiors", specialty: "Full Home Design", rating: 4.8, reviews: 62,
-    location: "Montclair, NJ", yearsExp: 11, verified: true,
-    specialties: ["Whole Home", "Color Consultation", "Space Planning"],
+    id: "mock-2", slug: "northstar-interiors", business_name: "NorthStar Interiors", category: "Full Home Design",
+    google_rating: 4.8, review_count: 62, city: "Montclair", state: "NJ",
+    service_area_tags: ["Whole Home", "Color Consultation", "Space Planning"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
   {
-    id: "3", name: "Blueprint Living", specialty: "Renovation Planning", rating: 4.7, reviews: 47,
-    location: "Glen Rock, NJ", yearsExp: 8, verified: true,
-    specialties: ["Renovations", "Layout Design", "Material Selection"],
+    id: "mock-3", slug: "blueprint-living", business_name: "Blueprint Living", category: "Renovation Planning",
+    google_rating: 4.7, review_count: 47, city: "Glen Rock", state: "NJ",
+    service_area_tags: ["Renovations", "Layout Design", "Material Selection"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
   {
-    id: "4", name: "Elevated Spaces", specialty: "Luxury Residential", rating: 4.9, reviews: 93,
-    location: "Short Hills, NJ", yearsExp: 19, verified: true,
-    specialties: ["Luxury", "Custom Homes", "Additions"],
+    id: "mock-4", slug: "elevated-spaces", business_name: "Elevated Spaces", category: "Luxury Residential",
+    google_rating: 4.9, review_count: 93, city: "Short Hills", state: "NJ",
+    service_area_tags: ["Luxury", "Custom Homes", "Additions"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
   {
-    id: "5", name: "Form & Function Design", specialty: "Modern Minimalist", rating: 4.6, reviews: 38,
-    location: "Hoboken, NJ", yearsExp: 6, verified: true,
-    specialties: ["Modern", "Minimalist", "Small Spaces"],
+    id: "mock-5", slug: "form-function-design", business_name: "Form & Function Design", category: "Modern Minimalist",
+    google_rating: 4.6, review_count: 38, city: "Hoboken", state: "NJ",
+    service_area_tags: ["Modern", "Minimalist", "Small Spaces"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
   {
-    id: "6", name: "Heritage Home Design", specialty: "Traditional & Classic", rating: 4.8, reviews: 71,
-    location: "Morristown, NJ", yearsExp: 16, verified: true,
-    specialties: ["Traditional", "Colonial", "Historic Homes"],
+    id: "mock-6", slug: "heritage-home-design", business_name: "Heritage Home Design", category: "Traditional & Classic",
+    google_rating: 4.8, review_count: 71, city: "Morristown", state: "NJ",
+    service_area_tags: ["Traditional", "Colonial", "Historic Homes"], claim_status: "unclaimed", is_active: true,
+    business_type: "designer", photo_url: null, business_status: "operational", created_at: "",
+    google_place_id: null, map_link: null, phone: null, website: null, address: null, zip: null, primary_type: null,
   },
-];
-
-function DesignerCard({ designer, index, onRequestBid }: { designer: typeof MOCK_DESIGNERS[0]; index: number; onRequestBid: () => void }) {
-  const initials = designer.name.split(" ").map(w => w[0]).join("").slice(0, 2);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.07 }}
-      className="group relative rounded-2xl border border-border/50 bg-card p-6 hover:shadow-lg hover:border-accent/30 transition-all duration-300"
-    >
-      <div className="flex flex-col gap-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg shadow-md">
-            {initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-card-foreground truncate">{designer.name}</h3>
-              {designer.verified && <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />}
-            </div>
-            <p className="text-sm text-muted-foreground">{designer.specialty}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-pending text-pending" />
-            <span className="font-semibold text-card-foreground">{designer.rating}</span>
-          </div>
-          <span className="text-sm text-muted-foreground">({designer.reviews} reviews)</span>
-        </div>
-
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
-          <span>{designer.location}</span>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-success-muted px-2.5 py-1 text-xs font-medium text-success">
-            <Shield className="h-3 w-3" /> Verified
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">
-            <Award className="h-3 w-3" /> {designer.yearsExp} yrs exp.
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {designer.specialties.map((s) => (
-            <span key={s} className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{s}</span>
-          ))}
-        </div>
-
-        <div className="flex gap-2 pt-2">
-          <Button size="sm" className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm" onClick={onRequestBid}>
-            <Palette className="h-4 w-4 mr-1" /> Request to Bid
-          </Button>
-          <Button size="sm" variant="outline" className="flex-1" asChild>
-            <Link to={`/designers/${designer.id}`}>View Profile</Link>
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+] as ImportedBusiness[];
 
 export default function DesignersDirectory() {
   const [showBidDialog, setShowBidDialog] = useState(false);
   const navigate = useNavigate();
+  const { data: importedDesigners, isLoading } = useImportedBusinesses("designer");
+
+  // Use imported if available, otherwise fall back to mock
+  const designers = (importedDesigners && importedDesigners.length > 0) ? importedDesigners : MOCK_DESIGNERS;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -150,17 +103,29 @@ export default function DesignersDirectory() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-foreground">
-              {MOCK_DESIGNERS.length} Designer{MOCK_DESIGNERS.length !== 1 ? "s" : ""} Available
+              {designers.length} Designer{designers.length !== 1 ? "s" : ""} Available
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Northern New Jersey • Verified Professionals</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_DESIGNERS.map((designer, i) => (
-            <DesignerCard key={designer.id} designer={designer} index={i} onRequestBid={() => setShowBidDialog(true)} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-pulse text-muted-foreground">Loading designers...</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {designers.map((designer, i) => (
+              <BusinessCard
+                key={designer.id}
+                business={designer}
+                index={i}
+                onRequestBid={() => setShowBidDialog(true)}
+                type="designer"
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* CTA */}
