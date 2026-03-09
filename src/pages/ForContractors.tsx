@@ -3,6 +3,7 @@ import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import {
   ClipboardList,
   TrendingUp,
@@ -16,6 +17,7 @@ import {
   Calendar,
 } from "lucide-react";
 import watermarkContractor from "@/assets/watermark-contractor.png";
+import heroContractor from "@/assets/hero-contractor.jpeg";
 
 const BENEFITS = [
   {
