@@ -6,13 +6,13 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Home, DollarSign, TrendingUp, ArrowRight, MapPin,
   Bath, BedDouble, Ruler, Calendar, Trees, Building2, Pencil,
   ChefHat, Droplets, Warehouse, PlusCircle, PaintBucket,
-  Shield, CheckCircle2, X, Sparkles, Info
+  Shield, CheckCircle2, X, Sparkles, Info, Phone, Clock,
+  Hammer, Zap, Layers, ChevronDown, ChevronUp
 } from "lucide-react";
 import { ALL_TOWNS } from "@/data/locations";
 import Fuse from "fuse.js";
@@ -71,13 +71,9 @@ const REGION_MULTIPLIERS: Record<string, { label: string; multiplier: number }> 
 
 const DEFAULT_MULTIPLIER = 1.0;
 
-/* ─── Smart property data generator based on town characteristics ─── */
+/* ─── Smart property data generator ─── */
 function generatePropertyData(town: typeof TOWN_INDEX[0], streetAddress: string) {
-  // Use town's avgHomeValue to infer property characteristics
   const value = town.avgHomeValue;
-  const income = town.medianIncome;
-
-  // Higher value areas tend to have larger, newer homes
   const valueTier = value > 700000 ? "luxury" : value > 500000 ? "upper" : value > 400000 ? "mid" : "starter";
 
   const profiles: Record<string, { yearRange: [number, number]; sqftRange: [number, number]; beds: number[]; baths: number[]; lotRange: [number, number] }> = {
@@ -88,15 +84,12 @@ function generatePropertyData(town: typeof TOWN_INDEX[0], streetAddress: string)
   };
 
   const profile = profiles[valueTier];
-
-  // Use a hash of the street address for consistent "random" values
   let hash = 0;
   for (let i = 0; i < streetAddress.length; i++) {
     hash = ((hash << 5) - hash) + streetAddress.charCodeAt(i);
     hash |= 0;
   }
   const seed = Math.abs(hash) / 2147483647;
-
   const lerp = (min: number, max: number, t: number) => Math.round(min + (max - min) * t);
 
   const yearBuilt = lerp(profile.yearRange[0], profile.yearRange[1], seed);
@@ -121,24 +114,122 @@ function generatePropertyData(town: typeof TOWN_INDEX[0], streetAddress: string)
   };
 }
 
-/* ─── Renovation opportunity definitions (base NJ costs) ─── */
-const RENOVATION_OPPORTUNITIES = [
-  { id: "kitchen", label: "Kitchen Remodel", icon: ChefHat, baseLow: 45000, baseHigh: 110000, valueLow: 40000, valueHigh: 120000, roi: "70–80%", timeline: "6–12 weeks", description: "Full kitchen renovation including cabinets, countertops, appliances, and layout optimization." },
-  { id: "bathroom", label: "Bathroom Remodel", icon: Droplets, baseLow: 15000, baseHigh: 55000, valueLow: 12000, valueHigh: 45000, roi: "60–70%", timeline: "4–8 weeks", description: "Complete bathroom upgrade with fixtures, tile, vanity, and potential layout changes." },
-  { id: "basement", label: "Basement Finish", icon: Warehouse, baseLow: 25000, baseHigh: 75000, valueLow: 20000, valueHigh: 60000, roi: "70–75%", timeline: "6–10 weeks", description: "Transform unfinished basement into living space with flooring, walls, lighting, and egress." },
-  { id: "addition", label: "Home Addition", icon: PlusCircle, baseLow: 80000, baseHigh: 250000, valueLow: 60000, valueHigh: 200000, roi: "50–65%", timeline: "4–8 months", description: "Expand your home's footprint with a new room, second story, or bump-out addition." },
-  { id: "exterior", label: "Exterior Upgrades", icon: PaintBucket, baseLow: 15000, baseHigh: 60000, valueLow: 10000, valueHigh: 50000, roi: "65–75%", timeline: "2–4 weeks", description: "Siding, roofing, windows, doors, and curb appeal improvements." },
-];
-
-/* ─── Suggested opportunities based on property age ─── */
-function getSuggestedIds(yearBuilt: number | null, sqft: number | null): string[] {
-  const suggestions: string[] = [];
-  if (yearBuilt && yearBuilt < 1990) suggestions.push("kitchen", "bathroom");
-  if (yearBuilt && yearBuilt < 1980) suggestions.push("exterior");
-  if (sqft && sqft < 1800) suggestions.push("addition");
-  suggestions.push("basement");
-  return [...new Set(suggestions)];
+/* ─── Cost Code Definitions ─── */
+interface CostLineItem {
+  costCode: string;
+  description: string;
+  unit: string;
+  qtyFormula: (sqft: number, baths: number, beds: number) => number;
+  unitCostLow: number;
+  unitCostHigh: number;
 }
+
+interface RenovationCategory {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  roi: string;
+  timeline: string;
+  description: string;
+  lineItems: CostLineItem[];
+}
+
+/* ─── Detailed takeoff-based renovation categories ─── */
+const RENOVATION_CATEGORIES: RenovationCategory[] = [
+  {
+    id: "kitchen",
+    label: "Kitchen Remodel",
+    icon: ChefHat,
+    roi: "70–80%",
+    timeline: "8–14 weeks",
+    description: "Complete kitchen renovation with modern finishes, optimized layout, and updated systems.",
+    lineItems: [
+      { costCode: "02-410", description: "Selective Demolition – Kitchen", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12), unitCostLow: 4, unitCostHigh: 8 },
+      { costCode: "06-200", description: "Custom Cabinetry (supply & install)", unit: "LF", qtyFormula: (sqft) => Math.round(sqft * 0.12 / 10 * 3), unitCostLow: 350, unitCostHigh: 850 },
+      { costCode: "12-361", description: "Countertops – Quartz/Granite", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12 / 10 * 2.5), unitCostLow: 65, unitCostHigh: 150 },
+      { costCode: "09-300", description: "Tile Backsplash", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12 / 10 * 2), unitCostLow: 18, unitCostHigh: 45 },
+      { costCode: "09-650", description: "Flooring – Kitchen (LVP/Tile)", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12), unitCostLow: 8, unitCostHigh: 18 },
+      { costCode: "15-400", description: "Plumbing – Sink & Dishwasher Rough-In", unit: "EA", qtyFormula: () => 2, unitCostLow: 800, unitCostHigh: 2200 },
+      { costCode: "16-100", description: "Electrical – Circuits, Lighting, Outlets", unit: "EA", qtyFormula: () => 1, unitCostLow: 3500, unitCostHigh: 7500 },
+      { costCode: "11-450", description: "Appliance Package (range, fridge, DW, micro)", unit: "LS", qtyFormula: () => 1, unitCostLow: 4500, unitCostHigh: 15000 },
+      { costCode: "09-900", description: "Painting – Kitchen Walls & Ceiling", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12 * 3.2), unitCostLow: 2.5, unitCostHigh: 5 },
+      { costCode: "01-500", description: "Permits & Inspections", unit: "LS", qtyFormula: () => 1, unitCostLow: 800, unitCostHigh: 2500 },
+    ],
+  },
+  {
+    id: "bathroom",
+    label: "Bathroom Remodel (per bath)",
+    icon: Droplets,
+    roi: "60–70%",
+    timeline: "4–6 weeks per bath",
+    description: "Full bathroom gut renovation with modern fixtures, waterproofing, and tile work.",
+    lineItems: [
+      { costCode: "02-410", description: "Selective Demolition – Bathroom", unit: "SF", qtyFormula: (_s, baths) => Math.round(65 * Math.max(baths, 1)), unitCostLow: 6, unitCostHigh: 12 },
+      { costCode: "07-100", description: "Waterproofing Membrane (Kerdi/RedGard)", unit: "SF", qtyFormula: (_s, baths) => Math.round(120 * Math.max(baths, 1)), unitCostLow: 5, unitCostHigh: 10 },
+      { costCode: "09-310", description: "Wall Tile – Shower/Tub Surround", unit: "SF", qtyFormula: (_s, baths) => Math.round(85 * Math.max(baths, 1)), unitCostLow: 15, unitCostHigh: 40 },
+      { costCode: "09-650", description: "Floor Tile – Bathroom", unit: "SF", qtyFormula: (_s, baths) => Math.round(65 * Math.max(baths, 1)), unitCostLow: 12, unitCostHigh: 30 },
+      { costCode: "22-400", description: "Vanity w/ Top (supply & install)", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 1200, unitCostHigh: 4500 },
+      { costCode: "22-420", description: "Toilet (supply & install)", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 450, unitCostHigh: 1200 },
+      { costCode: "22-430", description: "Shower Valve & Trim Kit", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 600, unitCostHigh: 2000 },
+      { costCode: "22-440", description: "Shower Glass Enclosure", unit: "EA", qtyFormula: (_s, baths) => Math.round(Math.max(baths, 1) * 0.7), unitCostLow: 1200, unitCostHigh: 3500 },
+      { costCode: "16-100", description: "Electrical – Exhaust Fan, GFCI, Lighting", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 1200, unitCostHigh: 3000 },
+      { costCode: "09-900", description: "Painting – Bathroom Walls & Ceiling", unit: "SF", qtyFormula: (_s, baths) => Math.round(180 * Math.max(baths, 1)), unitCostLow: 2.5, unitCostHigh: 5 },
+    ],
+  },
+  {
+    id: "flooring",
+    label: "Whole-Home Flooring",
+    icon: Layers,
+    roi: "70–80%",
+    timeline: "2–4 weeks",
+    description: "Replace flooring throughout the home. Costs calculated from actual square footage minus bathrooms and kitchen.",
+    lineItems: [
+      { costCode: "02-410", description: "Remove Existing Flooring", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.75), unitCostLow: 1.5, unitCostHigh: 3.5 },
+      { costCode: "09-640", description: "Subfloor Prep & Leveling", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.75 * 0.3), unitCostLow: 2, unitCostHigh: 5 },
+      { costCode: "09-651", description: "Hardwood / Engineered Hardwood (supply & install)", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.55), unitCostLow: 8, unitCostHigh: 18 },
+      { costCode: "09-652", description: "LVP / Tile – Wet Areas & Entry", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.20), unitCostLow: 7, unitCostHigh: 15 },
+      { costCode: "09-660", description: "Carpet – Bedrooms (if applicable)", unit: "SF", qtyFormula: (sqft, _b, beds) => Math.round(beds * 180), unitCostLow: 4, unitCostHigh: 10 },
+      { costCode: "06-220", description: "Baseboard & Trim (supply & install)", unit: "LF", qtyFormula: (sqft) => Math.round(Math.sqrt(sqft) * 8), unitCostLow: 5, unitCostHigh: 14 },
+      { costCode: "09-670", description: "Transitions & Thresholds", unit: "EA", qtyFormula: (_s, _b, beds) => beds + 4, unitCostLow: 45, unitCostHigh: 120 },
+    ],
+  },
+  {
+    id: "basement",
+    label: "Basement Finish",
+    icon: Warehouse,
+    roi: "70–75%",
+    timeline: "8–12 weeks",
+    description: "Transform unfinished basement into living space with proper egress, moisture control, and finishes.",
+    lineItems: [
+      { costCode: "07-110", description: "Moisture Barrier & Waterproofing", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.45), unitCostLow: 3, unitCostHigh: 8 },
+      { costCode: "06-160", description: "Framing – Walls & Soffits", unit: "LF", qtyFormula: (sqft) => Math.round(Math.sqrt(sqft * 0.45) * 6), unitCostLow: 12, unitCostHigh: 25 },
+      { costCode: "07-210", description: "Insulation – Rigid Foam / Batt", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.45 * 1.4), unitCostLow: 2, unitCostHigh: 5 },
+      { costCode: "09-290", description: "Drywall – Walls & Ceiling", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.45 * 3), unitCostLow: 3, unitCostHigh: 6 },
+      { costCode: "09-650", description: "Flooring – Basement (LVP/Epoxy)", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.45), unitCostLow: 6, unitCostHigh: 14 },
+      { costCode: "16-100", description: "Electrical – Lighting, Outlets, Panel Upgrade", unit: "LS", qtyFormula: () => 1, unitCostLow: 4500, unitCostHigh: 12000 },
+      { costCode: "23-300", description: "HVAC Extension – Ductwork or Mini-Split", unit: "LS", qtyFormula: () => 1, unitCostLow: 3000, unitCostHigh: 8000 },
+      { costCode: "08-310", description: "Egress Window (if required)", unit: "EA", qtyFormula: () => 1, unitCostLow: 3500, unitCostHigh: 7000 },
+      { costCode: "09-900", description: "Painting – Basement", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.45 * 3), unitCostLow: 2, unitCostHigh: 4.5 },
+      { costCode: "01-500", description: "Permits & Inspections", unit: "LS", qtyFormula: () => 1, unitCostLow: 1200, unitCostHigh: 3500 },
+    ],
+  },
+  {
+    id: "exterior",
+    label: "Exterior Upgrades",
+    icon: PaintBucket,
+    roi: "65–80%",
+    timeline: "2–6 weeks",
+    description: "Roofing, siding, windows, and curb appeal improvements based on home exterior area.",
+    lineItems: [
+      { costCode: "07-310", description: "Roofing – Architectural Shingle (tear-off & install)", unit: "SQ", qtyFormula: (sqft) => Math.round(sqft / 100 * 1.15), unitCostLow: 450, unitCostHigh: 900 },
+      { costCode: "07-460", description: "Siding – Vinyl/Fiber Cement", unit: "SF", qtyFormula: (sqft) => Math.round(Math.sqrt(sqft) * 28), unitCostLow: 8, unitCostHigh: 18 },
+      { costCode: "08-520", description: "Window Replacement (double-hung, vinyl/fiberglass)", unit: "EA", qtyFormula: (_s, _b, beds) => beds * 3 + 4, unitCostLow: 650, unitCostHigh: 1500 },
+      { costCode: "08-110", description: "Entry Door – Fiberglass/Steel", unit: "EA", qtyFormula: () => 1, unitCostLow: 1800, unitCostHigh: 5000 },
+      { costCode: "03-300", description: "Walkway / Stoop Repair", unit: "SF", qtyFormula: () => 80, unitCostLow: 12, unitCostHigh: 28 },
+      { costCode: "09-900", description: "Exterior Painting / Staining", unit: "SF", qtyFormula: (sqft) => Math.round(Math.sqrt(sqft) * 28), unitCostLow: 2.5, unitCostHigh: 6 },
+    ],
+  },
+];
 
 /* ─── Property Data Type ─── */
 interface PropertyData {
@@ -155,7 +246,7 @@ interface PropertyData {
   county: string;
 }
 
-/* ─── NJ Address suggestions for autocomplete ─── */
+/* ─── NJ Address suggestions ─── */
 const SAMPLE_ADDRESSES = [
   "19 Ellsworth Ave, Morristown, NJ 07960",
   "46 Junard Dr, Morristown, NJ 07960",
@@ -169,15 +260,24 @@ const SAMPLE_ADDRESSES = [
   "42 Summit Ave, Chatham, NJ 07928",
 ];
 
+/* ─── Helpers ─── */
+function getSuggestedIds(yearBuilt: number | null, sqft: number | null): string[] {
+  const suggestions: string[] = [];
+  if (yearBuilt && yearBuilt < 1990) suggestions.push("kitchen", "bathroom", "flooring");
+  if (yearBuilt && yearBuilt < 1980) suggestions.push("exterior");
+  if (sqft && sqft < 1800) suggestions.push("basement");
+  return [...new Set(suggestions)];
+}
+
 /* ─── Component ─── */
 export default function PropertyRenovationReport() {
   const [address, setAddress] = useState("");
   const [property, setProperty] = useState<PropertyData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+  const [expandedCards, setExpandedCards] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Autocomplete
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -199,12 +299,10 @@ export default function PropertyRenovationReport() {
   const handleAddressChange = (value: string) => {
     setAddress(value);
     if (value.trim().length >= 2) {
-      // Combine town-based suggestions with sample addresses
       const townResults = fuse.search(value.trim()).slice(0, 3);
       const addressMatches = SAMPLE_ADDRESSES.filter(a =>
         a.toLowerCase().includes(value.toLowerCase())
       ).slice(0, 3);
-
       const townSuggestions = townResults.map(r => `${r.item.name}, NJ ${r.item.zip}`);
       const combined = [...new Set([...addressMatches, ...townSuggestions])].slice(0, 6);
       setSuggestions(combined);
@@ -220,7 +318,6 @@ export default function PropertyRenovationReport() {
     setIsAnalyzing(true);
     setShowSuggestions(false);
 
-    // Extract ZIP or town from the address
     const zipMatch = addr.match(/\b(0\d{4})\b/);
     let matchedTown = null as typeof TOWN_INDEX[0] | null;
 
@@ -232,30 +329,22 @@ export default function PropertyRenovationReport() {
       if (results.length > 0) matchedTown = results[0].item;
     }
 
-    // Simulate brief loading
     setTimeout(() => {
       if (matchedTown) {
         const streetPart = addr.split(",")[0]?.trim() || addr;
         const data = generatePropertyData(matchedTown, streetPart);
         setProperty(data);
       } else {
-        // Default fallback for unrecognized addresses
         setProperty({
-          yearBuilt: "1975",
-          sqft: "2,000",
-          bedrooms: "3",
-          bathrooms: "2",
-          lotSize: "0.25 acres",
-          propertyType: "Single Family",
-          town: "Northern NJ",
-          zip: zipMatch?.[1] || "",
-          estimatedValue: 450000,
-          pricePerSqft: 225,
-          county: "New Jersey",
+          yearBuilt: "1975", sqft: "2,000", bedrooms: "3", bathrooms: "2",
+          lotSize: "0.25 acres", propertyType: "Single Family",
+          town: "Northern NJ", zip: zipMatch?.[1] || "",
+          estimatedValue: 450000, pricePerSqft: 225, county: "New Jersey",
         });
       }
       setIsAnalyzing(false);
       setSelectedScopes([]);
+      setExpandedCards([]);
     }, 1200);
   }, []);
 
@@ -267,23 +356,38 @@ export default function PropertyRenovationReport() {
 
   const multiplier = useMemo(() => {
     if (!property) return DEFAULT_MULTIPLIER;
-    const entry = REGION_MULTIPLIERS[property.zip];
-    return entry ? entry.multiplier : DEFAULT_MULTIPLIER;
+    return REGION_MULTIPLIERS[property.zip]?.multiplier ?? DEFAULT_MULTIPLIER;
   }, [property?.zip]);
 
   const yearBuiltNum = property?.yearBuilt ? parseInt(property.yearBuilt) : null;
   const sqftNum = property?.sqft ? parseInt(property.sqft.replace(/,/g, "")) : null;
+  const bathsNum = property?.bathrooms ? parseFloat(property.bathrooms) : 2;
+  const bedsNum = property?.bedrooms ? parseInt(property.bedrooms) : 3;
   const suggestedIds = useMemo(() => getSuggestedIds(yearBuiltNum, sqftNum), [yearBuiltNum, sqftNum]);
 
-  const getAdjustedCost = (base: number) => Math.round(base * multiplier / 1000) * 1000;
+  const adj = (val: number) => Math.round(val * multiplier);
+
+  const getCategoryTotal = (cat: RenovationCategory): { low: number; high: number } => {
+    let low = 0, high = 0;
+    for (const item of cat.lineItems) {
+      const qty = item.qtyFormula(sqftNum || 2000, bathsNum, bedsNum);
+      low += adj(qty * item.unitCostLow);
+      high += adj(qty * item.unitCostHigh);
+    }
+    return { low: Math.round(low / 500) * 500, high: Math.round(high / 500) * 500 };
+  };
 
   const toggleScope = (id: string) => {
     setSelectedScopes(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
   };
 
-  const selectedOpps = RENOVATION_OPPORTUNITIES.filter(o => selectedScopes.includes(o.id));
-  const totalLow = selectedOpps.reduce((s, o) => s + getAdjustedCost(o.baseLow), 0);
-  const totalHigh = selectedOpps.reduce((s, o) => s + getAdjustedCost(o.baseHigh), 0);
+  const toggleExpand = (id: string) => {
+    setExpandedCards(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+  };
+
+  const selectedCats = RENOVATION_CATEGORIES.filter(c => selectedScopes.includes(c.id));
+  const totalLow = selectedCats.reduce((s, c) => s + getCategoryTotal(c).low, 0);
+  const totalHigh = selectedCats.reduce((s, c) => s + getCategoryTotal(c).high, 0);
 
   const handlePropertyEdit = (key: string, value: string) => {
     if (!property) return;
@@ -293,8 +397,8 @@ export default function PropertyRenovationReport() {
   return (
     <>
       <Helmet>
-        <title>Property Renovation Report – Analyze Your Home | SmartReno</title>
-        <meta name="description" content="Enter your address to explore renovation opportunities, local cost ranges, and value impact. SmartReno's property evaluation is built for Northern NJ homeowners." />
+        <title>Property Renovation Cost Report | SmartReno</title>
+        <meta name="description" content="Enter your address for a detailed renovation cost takeoff with cost codes, square footage calculations, and local pricing for Northern NJ." />
         <link rel="canonical" href="https://smartreno.io/property-renovation-report" />
       </Helmet>
 
@@ -308,13 +412,13 @@ export default function PropertyRenovationReport() {
             <div className="relative mx-auto max-w-3xl px-6 py-24 md:py-36 text-center">
               <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
-                  <Sparkles className="h-3.5 w-3.5" /> Property Renovation Intelligence
+                  <Sparkles className="h-3.5 w-3.5" /> Renovation Cost Intelligence
                 </span>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                  Discover What Your Home<br className="hidden sm:block" /> Could Become
+                  Your Home's Renovation<br className="hidden sm:block" /> Cost Breakdown
                 </h1>
                 <p className="mt-5 text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                  Enter your address — we'll auto-populate your property details and show you renovation opportunities with local cost estimates.
+                  Enter your address — we'll auto-populate your property details and generate a detailed cost takeoff with real cost codes and square footage calculations.
                 </p>
               </motion.div>
 
@@ -332,10 +436,7 @@ export default function PropertyRenovationReport() {
                     onChange={(e) => handleAddressChange(e.target.value)}
                     onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        setShowSuggestions(false);
-                        analyzeAddress(address);
-                      }
+                      if (e.key === "Enter") { setShowSuggestions(false); analyzeAddress(address); }
                     }}
                   />
                   <button
@@ -343,28 +444,15 @@ export default function PropertyRenovationReport() {
                     disabled={!address.trim()}
                     className="m-1.5 rounded-xl bg-foreground px-6 py-2.5 text-sm font-semibold text-background hover:bg-foreground/90 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
-                    <span>Analyze</span>
-                    <ArrowRight className="h-4 w-4" />
+                    Analyze <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
 
-                {/* Autocomplete dropdown */}
                 <AnimatePresence>
                   {showSuggestions && suggestions.length > 0 && (
-                    <motion.div
-                      ref={suggestionsRef}
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute left-0 right-0 top-full mt-2 z-50 rounded-xl border-2 border-border bg-background shadow-2xl shadow-foreground/10 overflow-hidden"
-                    >
+                    <motion.div ref={suggestionsRef} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="absolute left-0 right-0 top-full mt-2 z-50 rounded-xl border-2 border-border bg-background shadow-2xl overflow-hidden">
                       {suggestions.map((s, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleSelectSuggestion(s)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 transition-colors border-b border-border/30 last:border-b-0"
-                        >
+                        <button key={i} onClick={() => handleSelectSuggestion(s)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 transition-colors border-b border-border/30 last:border-b-0">
                           <div className="h-8 w-8 rounded-lg bg-muted grid place-items-center shrink-0">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
                           </div>
@@ -383,117 +471,80 @@ export default function PropertyRenovationReport() {
           </section>
         )}
 
-        {/* ───── Loading State ───── */}
+        {/* ───── Loading ───── */}
         <AnimatePresence>
           {isAnalyzing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-40 gap-4"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center py-40 gap-4">
               <div className="h-12 w-12 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
-              <p className="text-muted-foreground font-medium">Analyzing property data...</p>
+              <p className="text-muted-foreground font-medium">Generating cost takeoff...</p>
               <p className="text-xs text-muted-foreground/60">{address}</p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ───── Property Results (Zillow-style) ───── */}
+        {/* ───── Property Results ───── */}
         <AnimatePresence>
           {property && !isAnalyzing && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
 
-              {/* ── Zillow-style property header ── */}
+              {/* ── Property header ── */}
               <section className="border-b border-border">
                 <div className="mx-auto max-w-6xl px-6 pt-6 pb-8">
-                  {/* Back / new search */}
                   <div className="flex items-center justify-between mb-6">
-                    <button
-                      onClick={() => { setProperty(null); setAddress(""); setSelectedScopes([]); }}
-                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-                    >
+                    <button onClick={() => { setProperty(null); setAddress(""); setSelectedScopes([]); setExpandedCards([]); }} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
                       <ArrowRight className="h-3.5 w-3.5 rotate-180" /> New Search
                     </button>
-                    <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                      SmartReno Property Report
-                    </span>
+                    <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">SmartReno Property Report</span>
                   </div>
 
-                  {/* Address + key stats row */}
                   <div className="flex flex-col lg:flex-row lg:items-end gap-6 lg:gap-10">
-                    {/* Left: Address + value */}
                     <div className="flex-1">
                       <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{address}</h1>
                       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <span className="text-3xl sm:text-4xl font-bold text-foreground">
-                          ${property.estimatedValue.toLocaleString()}
-                        </span>
+                        <span className="text-3xl sm:text-4xl font-bold text-foreground">${property.estimatedValue.toLocaleString()}</span>
                         <span className="text-sm text-muted-foreground">Estimated Value</span>
                       </div>
                     </div>
-
-                    {/* Right: Key stats (Zillow-style large numbers) */}
                     <div className="flex items-center gap-6 sm:gap-10">
-                      <div className="text-center">
-                        <span className="text-3xl sm:text-4xl font-bold text-foreground">{property.bedrooms}</span>
-                        <p className="text-sm text-muted-foreground mt-0.5">beds</p>
-                      </div>
-                      <div className="h-10 w-px bg-border" />
-                      <div className="text-center">
-                        <span className="text-3xl sm:text-4xl font-bold text-foreground">{property.bathrooms}</span>
-                        <p className="text-sm text-muted-foreground mt-0.5">baths</p>
-                      </div>
-                      <div className="h-10 w-px bg-border" />
-                      <div className="text-center">
-                        <span className="text-3xl sm:text-4xl font-bold text-foreground">{property.sqft}</span>
-                        <p className="text-sm text-muted-foreground mt-0.5">sqft</p>
-                      </div>
+                      {[
+                        { val: property.bedrooms, label: "beds" },
+                        { val: property.bathrooms, label: "baths" },
+                        { val: property.sqft, label: "sqft" },
+                      ].map((stat, i) => (
+                        <React.Fragment key={stat.label}>
+                          {i > 0 && <div className="h-10 w-px bg-border" />}
+                          <div className="text-center">
+                            <span className="text-3xl sm:text-4xl font-bold text-foreground">{stat.val}</span>
+                            <p className="text-sm text-muted-foreground mt-0.5">{stat.label}</p>
+                          </div>
+                        </React.Fragment>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Property detail chips (Zillow-style) */}
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">{property.propertyType}</span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">Built in {property.yearBuilt}</span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <Trees className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">{property.lotSize} Lot</span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">${property.pricePerSqft}/sqft</span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">{property.town}, {property.county}</span>
-                    </div>
+                    {[
+                      { icon: Building2, text: property.propertyType },
+                      { icon: Calendar, text: `Built in ${property.yearBuilt}` },
+                      { icon: Trees, text: `${property.lotSize} Lot` },
+                      { icon: DollarSign, text: `$${property.pricePerSqft}/sqft` },
+                      { icon: MapPin, text: `${property.town}, ${property.county}` },
+                    ].map((chip) => (
+                      <div key={chip.text} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                        <chip.icon className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-foreground">{chip.text}</span>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Edit toggle */}
-                  <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className="mt-4 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
-                  >
+                  <button onClick={() => setIsEditing(!isEditing)} className="mt-4 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
                     <Pencil className="h-3 w-3" />
                     {isEditing ? "Done editing" : "Edit property details"}
                   </button>
 
-                  {/* Editable fields */}
                   <AnimatePresence>
                     {isEditing && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                      >
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                         <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pb-2">
                           {[
                             { key: "yearBuilt", label: "Year Built", icon: Calendar },
@@ -504,27 +555,18 @@ export default function PropertyRenovationReport() {
                             { key: "propertyType", label: "Type", icon: Building2 },
                             { key: "town", label: "Town", icon: MapPin },
                             { key: "zip", label: "ZIP", icon: MapPin },
-                          ].map(field => {
-                            const Icon = field.icon;
-                            return (
-                              <div key={field.key} className="space-y-1">
-                                <label className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Icon className="h-3 w-3" /> {field.label}
-                                </label>
-                                <Input
-                                  className="h-8 text-sm"
-                                  value={(property as any)[field.key] || ""}
-                                  onChange={(e) => handlePropertyEdit(field.key, e.target.value)}
-                                />
-                              </div>
-                            );
-                          })}
+                          ].map(field => (
+                            <div key={field.key} className="space-y-1">
+                              <label className="text-xs text-muted-foreground flex items-center gap-1">
+                                <field.icon className="h-3 w-3" /> {field.label}
+                              </label>
+                              <Input className="h-8 text-sm" value={(property as any)[field.key] || ""} onChange={(e) => handlePropertyEdit(field.key, e.target.value)} />
+                            </div>
+                          ))}
                         </div>
                         <div className="flex items-start gap-2 mt-2 p-3 rounded-lg bg-muted/50 border border-border/50">
                           <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                          <p className="text-xs text-muted-foreground">
-                            Property details are auto-populated based on your address and local market data. Edit any field to refine your renovation cost estimates.
-                          </p>
+                          <p className="text-xs text-muted-foreground">Edit any field to recalculate quantities and costs in real time.</p>
                         </div>
                       </motion.div>
                     )}
@@ -532,13 +574,33 @@ export default function PropertyRenovationReport() {
                 </div>
               </section>
 
-              {/* ── Renovation Opportunities Grid ── */}
+              {/* ── Inline CTA Banner ── */}
+              <section className="bg-primary/5 border-b border-border">
+                <div className="mx-auto max-w-6xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 grid place-items-center shrink-0">
+                      <Phone className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Want precise numbers? Talk to a SmartReno estimator.</p>
+                      <p className="text-xs text-muted-foreground">Free 30-minute consultation • No obligation • Licensed professionals</p>
+                    </div>
+                  </div>
+                  <Button asChild className="shrink-0 gap-2">
+                    <Link to="/homeowner/intake">
+                      Schedule Free Consultation <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </section>
+
+              {/* ── Renovation Cost Takeoff Grid ── */}
               <section className="bg-muted/20">
                 <div className="mx-auto max-w-6xl px-6 py-12">
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-foreground">Renovation Opportunities</h2>
+                    <h2 className="text-2xl font-bold text-foreground">Detailed Renovation Cost Takeoff</h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Cost ranges adjusted for <strong>{property.town}</strong> market
+                      Line items calculated from your <strong>{property.sqft} sqft</strong>, <strong>{property.bathrooms} baths</strong>, and <strong>{property.bedrooms} beds</strong> — adjusted for <strong>{property.town}</strong>
                       {multiplier !== DEFAULT_MULTIPLIER && (
                         <span className="text-xs ml-1 text-muted-foreground/60">
                           ({multiplier > 1 ? "+" : ""}{Math.round((multiplier - 1) * 100)}% local adjustment)
@@ -547,60 +609,101 @@ export default function PropertyRenovationReport() {
                     </p>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {RENOVATION_OPPORTUNITIES.map((opp, i) => {
-                      const Icon = opp.icon;
-                      const isSuggested = suggestedIds.includes(opp.id);
-                      const isSelected = selectedScopes.includes(opp.id);
-                      const low = getAdjustedCost(opp.baseLow);
-                      const high = getAdjustedCost(opp.baseHigh);
+                  <div className="grid gap-5">
+                    {RENOVATION_CATEGORIES.map((cat, i) => {
+                      const Icon = cat.icon;
+                      const isSuggested = suggestedIds.includes(cat.id);
+                      const isSelected = selectedScopes.includes(cat.id);
+                      const isExpanded = expandedCards.includes(cat.id);
+                      const totals = getCategoryTotal(cat);
+
                       return (
-                        <motion.div key={opp.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}>
-                          <Card
-                            className={`relative border-2 transition-all h-full cursor-pointer group ${
-                              isSelected
-                                ? "border-foreground shadow-lg"
-                                : isSuggested
-                                  ? "border-foreground/20 shadow-md hover:border-foreground/40"
-                                  : "border-border/60 hover:border-border"
-                            }`}
-                            onClick={() => toggleScope(opp.id)}
-                          >
+                        <motion.div key={cat.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}>
+                          <Card className={`relative border-2 transition-all ${isSelected ? "border-foreground shadow-lg" : isSuggested ? "border-foreground/20 shadow-md" : "border-border/60"}`}>
                             {isSuggested && (
                               <span className="absolute -top-2.5 left-4 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-0.5 text-[10px] font-semibold text-background uppercase tracking-wider">
-                                <Sparkles className="h-3 w-3" /> Recommended
+                                <Sparkles className="h-3 w-3" /> Recommended for this home
                               </span>
                             )}
-                            {isSelected && (
-                              <div className="absolute top-3 right-3">
-                                <CheckCircle2 className="h-5 w-5 text-foreground" />
-                              </div>
-                            )}
-                            <CardContent className="p-6">
-                              <div className="h-10 w-10 rounded-xl bg-muted grid place-items-center mb-4">
-                                <Icon className="h-5 w-5 text-foreground" />
-                              </div>
-                              <h3 className="text-lg font-semibold text-foreground mb-1">{opp.label}</h3>
-                              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">{opp.description}</p>
 
-                              <div className="space-y-2.5 pt-3 border-t border-border/40">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-muted-foreground">Estimated Cost</span>
-                                  <span className="text-sm font-bold text-foreground">${low.toLocaleString()} – ${high.toLocaleString()}</span>
+                            <CardContent className="p-0">
+                              {/* Card Header */}
+                              <div className="flex items-center gap-4 p-6 pb-4 cursor-pointer" onClick={() => toggleScope(cat.id)}>
+                                <div className="h-12 w-12 rounded-xl bg-muted grid place-items-center shrink-0">
+                                  <Icon className="h-6 w-6 text-foreground" />
                                 </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-muted-foreground">Value Added</span>
-                                  <span className="text-sm font-semibold text-accent">${getAdjustedCost(opp.valueLow).toLocaleString()} – ${getAdjustedCost(opp.valueHigh).toLocaleString()}</span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-foreground">{cat.label}</h3>
+                                    {isSelected && <CheckCircle2 className="h-5 w-5 text-foreground shrink-0" />}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-0.5">{cat.description}</p>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-muted-foreground">ROI</span>
-                                  <span className="text-sm text-muted-foreground">{opp.roi}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs text-muted-foreground">Timeline</span>
-                                  <span className="text-sm text-muted-foreground">{opp.timeline}</span>
+                                <div className="text-right shrink-0">
+                                  <p className="text-lg font-bold text-foreground">${totals.low.toLocaleString()} – ${totals.high.toLocaleString()}</p>
+                                  <div className="flex items-center gap-3 mt-0.5 justify-end">
+                                    <span className="text-xs text-muted-foreground">ROI {cat.roi}</span>
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> {cat.timeline}</span>
+                                  </div>
                                 </div>
                               </div>
+
+                              {/* Expand toggle */}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleExpand(cat.id); }}
+                                className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-muted-foreground hover:text-foreground border-t border-border/40 transition-colors"
+                              >
+                                <Hammer className="h-3.5 w-3.5" />
+                                {isExpanded ? "Hide" : "View"} {cat.lineItems.length} line items
+                                {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                              </button>
+
+                              {/* Line items table */}
+                              <AnimatePresence>
+                                {isExpanded && (
+                                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                                    <div className="border-t border-border/40">
+                                      <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                          <thead>
+                                            <tr className="bg-muted/50 text-xs text-muted-foreground">
+                                              <th className="text-left px-4 py-2.5 font-medium">Cost Code</th>
+                                              <th className="text-left px-4 py-2.5 font-medium">Description</th>
+                                              <th className="text-right px-4 py-2.5 font-medium">Qty</th>
+                                              <th className="text-center px-4 py-2.5 font-medium">Unit</th>
+                                              <th className="text-right px-4 py-2.5 font-medium">Unit Cost</th>
+                                              <th className="text-right px-4 py-2.5 font-medium">Line Total</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {cat.lineItems.map((item, j) => {
+                                              const qty = item.qtyFormula(sqftNum || 2000, bathsNum, bedsNum);
+                                              const lineLow = adj(qty * item.unitCostLow);
+                                              const lineHigh = adj(qty * item.unitCostHigh);
+                                              return (
+                                                <tr key={j} className="border-t border-border/20 hover:bg-muted/30 transition-colors">
+                                                  <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{item.costCode}</td>
+                                                  <td className="px-4 py-2.5 text-foreground">{item.description}</td>
+                                                  <td className="px-4 py-2.5 text-right font-medium text-foreground">{qty.toLocaleString()}</td>
+                                                  <td className="px-4 py-2.5 text-center text-muted-foreground">{item.unit}</td>
+                                                  <td className="px-4 py-2.5 text-right text-muted-foreground">${item.unitCostLow}–${item.unitCostHigh}</td>
+                                                  <td className="px-4 py-2.5 text-right font-semibold text-foreground">${lineLow.toLocaleString()}–${lineHigh.toLocaleString()}</td>
+                                                </tr>
+                                              );
+                                            })}
+                                          </tbody>
+                                          <tfoot>
+                                            <tr className="border-t-2 border-border bg-muted/40">
+                                              <td colSpan={5} className="px-4 py-3 font-semibold text-foreground text-right">Category Total</td>
+                                              <td className="px-4 py-3 font-bold text-foreground text-right">${totals.low.toLocaleString()}–${totals.high.toLocaleString()}</td>
+                                            </tr>
+                                          </tfoot>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </CardContent>
                           </Card>
                         </motion.div>
@@ -609,7 +712,7 @@ export default function PropertyRenovationReport() {
                   </div>
 
                   <p className="text-xs text-muted-foreground/60 mt-4 text-center">
-                    Click a card to add it to your renovation scope below
+                    Click a card to add it to your scope • Expand to see the detailed line-item takeoff
                   </p>
                 </div>
               </section>
@@ -617,41 +720,32 @@ export default function PropertyRenovationReport() {
               {/* ── Scope Builder Summary ── */}
               <AnimatePresence>
                 {selectedScopes.length > 0 && (
-                  <motion.section
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="border-t border-border/50 bg-foreground"
-                  >
+                  <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-t border-border/50 bg-foreground">
                     <div className="mx-auto max-w-6xl px-6 py-10">
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div>
-                          <p className="text-sm text-background/60 mb-1">
-                            {selectedScopes.length} project{selectedScopes.length > 1 ? "s" : ""} selected
-                          </p>
+                          <p className="text-sm text-background/60 mb-1">{selectedScopes.length} scope{selectedScopes.length > 1 ? "s" : ""} selected • {selectedCats.reduce((n, c) => n + c.lineItems.length, 0)} line items</p>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-3xl sm:text-4xl font-bold text-background">
-                              ${totalLow.toLocaleString()} – ${totalHigh.toLocaleString()}
-                            </span>
-                            <span className="text-sm text-background/50">preliminary range</span>
+                            <span className="text-3xl sm:text-4xl font-bold text-background">${totalLow.toLocaleString()} – ${totalHigh.toLocaleString()}</span>
+                            <span className="text-sm text-background/50">preliminary estimate</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-3">
-                            {selectedOpps.map(o => (
-                              <span key={o.id} className="inline-flex items-center gap-1.5 text-xs bg-background/10 text-background/80 px-2.5 py-1 rounded-full">
-                                {o.label}
-                                <button onClick={(e) => { e.stopPropagation(); toggleScope(o.id); }}>
-                                  <X className="h-3 w-3 hover:text-background" />
-                                </button>
+                            {selectedCats.map(c => (
+                              <span key={c.id} className="inline-flex items-center gap-1.5 text-xs bg-background/10 text-background/80 px-2.5 py-1 rounded-full">
+                                {c.label}
+                                <button onClick={(e) => { e.stopPropagation(); toggleScope(c.id); }}><X className="h-3 w-3 hover:text-background" /></button>
                               </span>
                             ))}
                           </div>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                           <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 h-auto rounded-xl">
-                            <Link to="/start-your-renovation">Start Your Project <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                            <Link to="/homeowner/intake">
+                              <Phone className="mr-2 h-4 w-4" /> Schedule Free Consultation
+                            </Link>
                           </Button>
                           <Button asChild size="lg" variant="outline" className="border-background/20 text-background hover:bg-background/10 text-base px-6 py-6 h-auto rounded-xl">
-                            <Link to="/homeowner/intake">Schedule Consultation</Link>
+                            <Link to="/start-your-renovation">Start Your Project</Link>
                           </Button>
                         </div>
                       </div>
@@ -660,7 +754,7 @@ export default function PropertyRenovationReport() {
                 )}
               </AnimatePresence>
 
-              {/* ── Methodology Note ── */}
+              {/* ── Methodology ── */}
               <section className="border-t border-border/50">
                 <div className="mx-auto max-w-4xl px-6 py-10">
                   <div className="flex gap-4 rounded-2xl border border-border/60 bg-muted/30 p-6">
@@ -668,36 +762,47 @@ export default function PropertyRenovationReport() {
                       <Shield className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-foreground mb-1">About These Estimates</h3>
+                      <h3 className="text-sm font-semibold text-foreground mb-1">How We Calculate These Estimates</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Property details are auto-populated using local market data for <strong>{property.town}</strong>. Cost ranges are preliminary, adjusted for your ZIP code and SmartReno's Northern NJ pricing assumptions. They are <strong>not a quote</strong>. Final pricing requires an on-site walkthrough and detailed scope confirmation by a SmartReno estimator.
+                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ material and labor rates. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. These are <strong>preliminary estimates</strong> — a SmartReno estimator will provide exact pricing after an on-site walkthrough.
                       </p>
                     </div>
                   </div>
                 </div>
               </section>
 
-              {/* ── CTA (only if no scopes selected, since sticky bar covers that case) ── */}
-              {selectedScopes.length === 0 && (
-                <section className="border-t border-border/50 bg-foreground">
-                  <div className="mx-auto max-w-3xl px-6 py-20 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-background mb-4">
-                      Ready to Take the Next Step?
-                    </h2>
-                    <p className="text-background/60 mb-10 max-w-lg mx-auto leading-relaxed">
-                      Select renovation projects above, or submit your details and connect with SmartReno's team for a professional walkthrough.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 h-auto rounded-xl">
-                        <Link to="/start-your-renovation">Start Your Project <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                      </Button>
-                      <Button asChild size="lg" variant="outline" className="border-background/20 text-background hover:bg-background/10 text-base px-8 py-6 h-auto rounded-xl">
-                        <Link to="/homeowner/intake">Schedule Consultation</Link>
-                      </Button>
-                    </div>
+              {/* ── Full-width CTA ── */}
+              <section className="border-t border-border/50 bg-foreground">
+                <div className="mx-auto max-w-4xl px-6 py-20 text-center">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-background/10 px-4 py-1.5 text-xs font-medium text-background/70 mb-6">
+                    <Phone className="h-3.5 w-3.5" /> Free Consultation
                   </div>
-                </section>
-              )}
+                  <h2 className="text-3xl sm:text-4xl font-bold text-background mb-4">
+                    Get an Exact Renovation Price
+                  </h2>
+                  <p className="text-background/60 mb-4 max-w-lg mx-auto leading-relaxed">
+                    These estimates are a starting point. Schedule a free 30-minute consultation with a SmartReno estimator who will walk your property, review the scope, and deliver a detailed proposal — no strings attached.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-3 mb-10 text-background/50 text-sm">
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Licensed Estimators</span>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Obligation</span>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Vetted Contractors</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 h-auto rounded-xl">
+                      <Link to="/homeowner/intake">
+                        <Phone className="mr-2 h-5 w-5" /> Schedule Free Consultation
+                      </Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline" className="border-background/20 text-background hover:bg-background/10 text-base px-8 py-6 h-auto rounded-xl">
+                      <Link to="/start-your-renovation">
+                        Start Your Renovation <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </section>
+
             </motion.div>
           )}
         </AnimatePresence>
