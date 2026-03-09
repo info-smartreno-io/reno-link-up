@@ -149,6 +149,67 @@ const MOCK_CONTRACTORS = [
     verified: true, licensed: true, insured: true, yearsExp: 17,
     specialties: ["Residential", "Renovations", "Custom Work"], avatar: null, completedProjects: 210,
   },
+  // Additional 10 real contractors near Ridgewood NJ
+  {
+    id: "21", name: "Glen Rock Construction", trade: "General Contractor",
+    rating: 4.8, reviews: 7, location: "Midland Park, NJ", zip: "07432",
+    verified: true, licensed: true, insured: true, yearsExp: 18,
+    specialties: ["Additions", "Renovations", "Custom Homes"], avatar: null, completedProjects: 275,
+  },
+  {
+    id: "22", name: "Woodcliff Builders LLC", trade: "General Contractor",
+    rating: 4.7, reviews: 4, location: "Woodcliff Lake, NJ", zip: "07677",
+    verified: true, licensed: true, insured: true, yearsExp: 16,
+    specialties: ["New Construction", "Additions", "Renovations"], avatar: null, completedProjects: 195,
+  },
+  {
+    id: "23", name: "Right Choice Construction Corp", trade: "General Contractor",
+    rating: 4.6, reviews: 5, location: "Ridgewood, NJ", zip: "07450",
+    verified: true, licensed: true, insured: true, yearsExp: 14,
+    specialties: ["Residential", "Remodeling", "Kitchens"], avatar: null, completedProjects: 165,
+  },
+  {
+    id: "24", name: "A2Z Construction Management", trade: "General Contractor",
+    rating: 4.9, reviews: 22, location: "Paramus, NJ", zip: "07652",
+    verified: true, licensed: true, insured: true, yearsExp: 12,
+    specialties: ["Full Renovations", "Flips", "Commercial"], avatar: null, completedProjects: 220,
+  },
+  {
+    id: "25", name: "RTJ Construction LLC", trade: "General Contractor",
+    rating: 4.8, reviews: 11, location: "Hawthorne, NJ", zip: "07506",
+    verified: true, licensed: true, insured: true, yearsExp: 20,
+    specialties: ["Additions", "Basement", "Kitchen", "Bathroom"], avatar: null, completedProjects: 340,
+  },
+  {
+    id: "26", name: "Pretty Clean Construction LLC", trade: "General Contractor",
+    rating: 4.7, reviews: 6, location: "Waldwick, NJ", zip: "07463",
+    verified: true, licensed: true, insured: true, yearsExp: 9,
+    specialties: ["Renovations", "Bathroom", "Kitchen", "Painting"], avatar: null, completedProjects: 110,
+  },
+  {
+    id: "27", name: "Remarkoble Contractors LLC", trade: "General Contractor",
+    rating: 4.5, reviews: 3, location: "Ridgewood, NJ", zip: "07450",
+    verified: true, licensed: true, insured: true, yearsExp: 11,
+    specialties: ["Remodeling", "Home Improvement", "Repairs"], avatar: null, completedProjects: 140,
+  },
+  {
+    id: "28", name: "Kozel LLC", trade: "General Contractor",
+    rating: 4.8, reviews: 3, location: "North Bergen, NJ", zip: "07047",
+    verified: true, licensed: true, insured: true, yearsExp: 15,
+    specialties: ["Residential", "Commercial", "Custom Builds"], avatar: null, completedProjects: 260,
+  },
+  {
+    id: "29", name: "FGM Construction LLC", trade: "General Contractor",
+    rating: 4.5, reviews: 1, location: "Paramus, NJ", zip: "07652",
+    verified: true, licensed: true, insured: true, yearsExp: 8,
+    specialties: ["Renovations", "Interior", "Exterior"], avatar: null, completedProjects: 85,
+  },
+  {
+    id: "30", name: "Bergen Premier Construction", trade: "General Contractor",
+    rating: 4.9, reviews: 14, location: "Hackensack, NJ", zip: "07601",
+    verified: true, licensed: true, insured: true, yearsExp: 22,
+    specialties: ["Custom Homes", "Additions", "Design-Build"], avatar: null, completedProjects: 410,
+  },
 ];
 
 function ContractorCard({ contractor, index, onRequestBid }: { contractor: typeof MOCK_CONTRACTORS[0]; index: number; onRequestBid: () => void }) {
