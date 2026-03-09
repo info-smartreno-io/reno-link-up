@@ -593,13 +593,13 @@ export default function PropertyRenovationReport() {
                       <Phone className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">Want precise numbers? Talk to a SmartReno estimator.</p>
-                      <p className="text-xs text-muted-foreground">Free 30-minute consultation • No obligation • Licensed professionals</p>
+                      <p className="text-sm font-semibold text-foreground">Ready for accurate numbers? Let us scope your project.</p>
+                      <p className="text-xs text-muted-foreground">Fill out the form and a construction agent will visit your home to scope the work and get you 3 qualified bids.</p>
                     </div>
                   </div>
                   <Button asChild className="shrink-0 gap-2">
-                    <Link to="/homeowner/intake">
-                      Schedule Free Consultation <ArrowRight className="h-4 w-4" />
+                    <Link to="/start-your-renovation">
+                      Start Your Project <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                 </div>
@@ -798,7 +798,7 @@ export default function PropertyRenovationReport() {
                           <p className="text-sm text-background/60 mb-1">{selectedScopes.length} scope{selectedScopes.length > 1 ? "s" : ""} selected • {selectedCats.reduce((n, c) => n + c.lineItems.length, 0)} line items</p>
                           <div className="flex items-baseline gap-2">
                             <span className="text-3xl sm:text-4xl font-bold text-background">${totalLow.toLocaleString()} – ${totalHigh.toLocaleString()}</span>
-                            <span className="text-sm text-background/50">preliminary estimate</span>
+                            <span className="text-sm text-background/50">preliminary range • vetted contractors provide accurate pricing</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-3">
                             {selectedCats.map(c => (
@@ -811,12 +811,12 @@ export default function PropertyRenovationReport() {
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                           <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 h-auto rounded-xl">
-                            <Link to="/homeowner/intake">
-                              <Phone className="mr-2 h-4 w-4" /> Schedule Free Consultation
+                            <Link to="/start-your-renovation">
+                              <Hammer className="mr-2 h-4 w-4" /> Start Your Project
                             </Link>
                           </Button>
                           <Button asChild size="lg" variant="outline" className="border-background/20 text-background hover:bg-background/10 text-base px-6 py-6 h-auto rounded-xl">
-                            <Link to="/start-your-renovation">Start Your Project</Link>
+                            <Link to="/start-your-renovation">Get 3 Qualified Bids</Link>
                           </Button>
                         </div>
                       </div>
