@@ -718,6 +718,37 @@ export default function PropertyRenovationReport() {
                   <p className="text-xs text-muted-foreground/60 mt-4 text-center">
                     Click a card to add it to your scope • Expand to see the detailed line-item takeoff
                   </p>
+
+                  {/* Disclaimers */}
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Contractor-Grade Materials & Standard Installation</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          All estimates are based on <strong>contractor-grade (mid-range) materials</strong> and <strong>standard installation methods</strong>. Custom cabinetry, designer fixtures, high-end stone, imported tile, or luxury finishes will increase costs significantly — often 40–100%+ above these figures.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <DollarSign className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">General Contractor Pricing Included</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          These estimates include a <strong>25% general contractor markup</strong> for project management, coordination, insurance, and overhead. This reflects the true cost of hiring a licensed GC — not just subcontractor rates.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Shield className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Important Disclaimer</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          These are <strong>preliminary estimates only</strong> and should not be construed as a bid, proposal, or contract. Actual costs depend on site conditions, structural requirements, permit fees, material selections, and contractor availability. Unforeseen conditions (asbestos, mold, structural deficiencies) may increase costs. SmartReno is a technology platform connecting homeowners with independent contractors and does not perform construction services.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
 
