@@ -811,12 +811,12 @@ export default function PropertyRenovationReport() {
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                           <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 h-auto rounded-xl">
-                            <Link to="/homeowner/intake">
-                              <Phone className="mr-2 h-4 w-4" /> Schedule Free Consultation
+                            <Link to="/start-your-renovation">
+                              <Hammer className="mr-2 h-4 w-4" /> Start Your Project
                             </Link>
                           </Button>
                           <Button asChild size="lg" variant="outline" className="border-background/20 text-background hover:bg-background/10 text-base px-6 py-6 h-auto rounded-xl">
-                            <Link to="/start-your-renovation">Start Your Project</Link>
+                            <Link to="/start-your-renovation">Get 3 Qualified Bids</Link>
                           </Button>
                         </div>
                       </div>
