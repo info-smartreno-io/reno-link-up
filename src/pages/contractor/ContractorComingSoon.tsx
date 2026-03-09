@@ -1,21 +1,15 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, CheckCircle2, Shield, ClipboardList, Users } from "lucide-react";
-import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
-import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { Clock, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
+import smartRenoLogo from "@/assets/smartreno-logo-blue.png";
 
-export default function ContractorApply() {
-  const [fullName, setFullName] = useState("");
+export default function ContractorComingSoon() {
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -23,20 +17,11 @@ export default function ContractorApply() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!fullName.trim() || !email.trim() || !password.trim()) {
+    
+    if (!email.trim()) {
       toast({
-        title: "Required fields",
-        description: "Please fill in your name, email, and password.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (password.length < 8) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 8 characters.",
+        title: "Email required",
+        description: "Please enter your email address.",
         variant: "destructive",
       });
       return;
@@ -45,243 +30,129 @@ export default function ContractorApply() {
     setLoading(true);
 
     try {
-      // 1. Create user account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-          },
-        },
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Account creation failed. Please try again.");
-
-      const userId = authData.user.id;
-
-      // 2. Assign contractor role
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: userId, role: "contractor" });
-
-      if (roleError && roleError.code !== "23505") {
-        console.error("Role assignment error:", roleError);
-      }
-
-      // 3. Create contractor application record
-      const { error: appError } = await supabase
-        .from("contractor_applications")
-        .insert({
-          user_id: userId,
-          full_name: fullName.trim(),
+      const { error } = await supabase
+        .from("contractor_waitlist")
+        .insert({ 
           email: email.trim().toLowerCase(),
-          phone: phone.trim() || null,
-          company_name: companyName.trim() || null,
-          status: "pending",
+          source: "contractor_portal"
         });
 
-      if (appError && appError.code !== "23505") {
-        console.error("Application error:", appError);
-      }
-
-      // 4. Create profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: userId,
-          full_name: fullName.trim(),
-          role: "contractor",
-        });
-
-      if (profileError) {
-        console.error("Profile error:", profileError);
-      }
-
-      setSubmitted(true);
-      toast({
-        title: "Application submitted!",
-        description: "Please check your email to verify your account.",
-      });
-    } catch (error: any) {
-      if (error.message?.includes("already registered")) {
-        toast({
-          title: "Account exists",
-          description: "This email is already registered. Try signing in instead.",
-          variant: "destructive",
-        });
+      if (error) {
+        if (error.code === "23505") {
+          // Duplicate email
+          toast({
+            title: "Already on the list!",
+            description: "This email is already registered for our priority list.",
+          });
+          setSubmitted(true);
+        } else {
+          throw error;
+        }
       } else {
+        setSubmitted(true);
         toast({
-          title: "Error",
-          description: error.message || "Something went wrong. Please try again.",
-          variant: "destructive",
+          title: "You're on the list!",
+          description: "We'll notify you when the platform is ready.",
         });
+
+        // Send notification email to info@smartreno.io
+        try {
+          await supabase.functions.invoke("send-waitlist-notification", {
+            body: {
+              email: email.trim().toLowerCase(),
+              source: "contractor_portal"
+            }
+          });
+        } catch (notifyError) {
+          // Don't fail the user's signup if notification fails
+          console.error("Failed to send waitlist notification:", notifyError);
+        }
       }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <MarketingNavbar />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-4 text-center">
+          <div className="flex justify-center">
+            <img src={smartRenoLogo} alt="SmartReno" className="h-12" />
+          </div>
+          
+          <div className="flex justify-center">
+            <div className="bg-primary/10 p-4 rounded-full">
+              <Clock className="h-12 w-12 text-primary" />
+            </div>
+          </div>
 
-      <div className="flex-1 py-16 md:py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-start">
-            {/* Left — Info */}
-            <div className="space-y-8">
+          <div>
+            <CardTitle className="text-3xl font-bold text-primary">
+              COMING SOON
+            </CardTitle>
+            <CardDescription className="text-base mt-2">
+              The SmartReno Contractor Portal is launching soon!
+            </CardDescription>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {!submitted ? (
+            <>
+              <p className="text-center text-muted-foreground">
+                Enter your email to be put on our <strong>priority list</strong> once the platform is ready!
+              </p>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  className="text-center"
+                />
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Join Priority List
+                </Button>
+              </form>
+            </>
+          ) : (
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                </div>
+              </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  Apply to the SmartReno Network
-                </h1>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Join our vetted contractor network and receive pre-scoped residential renovation projects in Northern New Jersey.
+                <h3 className="font-semibold text-lg">You're on the list!</h3>
+                <p className="text-muted-foreground text-sm mt-1">
+                  We'll send you an email when the contractor portal is ready.
                 </p>
               </div>
-
-              <div className="space-y-5">
-                {[
-                  { icon: ClipboardList, title: "Pre-Scoped Projects", desc: "Every project comes with a detailed scope of work and budget range." },
-                  { icon: Users, title: "Qualified Homeowners", desc: "Homeowners are pre-qualified and ready to move forward." },
-                  { icon: Shield, title: "Free to Join", desc: "No subscription fees. Complete your profile and start receiving bid invitations." },
-                ].map((item) => (
-                  <div key={item.title} className="flex gap-4">
-                    <div className="h-10 w-10 rounded-lg bg-foreground/5 flex items-center justify-center shrink-0">
-                      <item.icon className="h-5 w-5 text-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <p className="text-xs text-muted-foreground">
-                Already have an account?{" "}
-                <Link to="/login" className="text-foreground underline hover:no-underline">
-                  Sign in here
-                </Link>
-              </p>
             </div>
+          )}
 
-            {/* Right — Form */}
-            <Card className="border-border/50 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">
-                  {submitted ? "Application Submitted" : "Get Started"}
-                </CardTitle>
-                {!submitted && (
-                  <CardDescription>
-                    Create your account, then complete your profile in the portal.
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent>
-                {!submitted ? (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Full Name *</Label>
-                      <Input
-                        id="fullName"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="John Smith"
-                        required
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name</Label>
-                      <Input
-                        id="companyName"
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
-                        placeholder="Smith Construction LLC"
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="john@smithconstruction.com"
-                        required
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="(201) 555-0100"
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Create Password *</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Minimum 8 characters"
-                        required
-                        minLength={8}
-                        disabled={loading}
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full bg-foreground text-background hover:bg-foreground/90" size="lg" disabled={loading}>
-                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Apply Now
-                    </Button>
-
-                    <p className="text-xs text-center text-muted-foreground">
-                      By applying, you agree to SmartReno's Terms of Service.
-                    </p>
-                  </form>
-                ) : (
-                  <div className="text-center space-y-6 py-4">
-                    <div className="flex justify-center">
-                      <div className="bg-primary/10 p-4 rounded-full">
-                        <CheckCircle2 className="h-10 w-10 text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg text-foreground">You're in!</h3>
-                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                        Check your email to verify your account, then sign in to complete your contractor profile and start receiving bid invitations.
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => navigate("/login")}
-                      className="w-full bg-foreground text-background hover:bg-foreground/90"
-                      size="lg"
-                    >
-                      Sign In to Complete Profile
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <div className="pt-4 border-t">
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => navigate("/")}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <MarketingFooter />
+        </CardContent>
+      </Card>
     </div>
   );
 }
