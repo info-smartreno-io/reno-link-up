@@ -90,130 +90,65 @@ export default function Index() {
       <MarketingNavbar />
 
       {/* ===== 2. HERO SECTION ===== */}
-      <section className="relative overflow-hidden">
-        {/* Subtle gradient mesh */}
-        <div className="absolute inset-0 bg-gradient-to-br from-muted/40 via-background to-accent/5" aria-hidden="true" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent/5 blur-3xl -translate-y-1/2 translate-x-1/3" aria-hidden="true" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-accent via-accent/90 to-primary">
+        {/* Decorative glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--accent)/0.4),transparent_60%)]" aria-hidden="true" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary/40 to-transparent" aria-hidden="true" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 lg:py-40">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left - Copy */}
-            <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.08]">
-                Plan Your Renovation{" "}
-                <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                  the Smart Way
+        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 lg:py-40 text-center">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-foreground/70 mb-6">
+              The First Step Before You Renovate
+            </p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.08] text-accent-foreground">
+              Vetted Contractors,{" "}
+              <span className="block sm:inline">Qualified Bids</span>
+            </h1>
+            <p className="mt-6 text-lg sm:text-xl text-accent-foreground/75 max-w-2xl mx-auto leading-relaxed">
+              SmartReno protects your time, money and home. We scope your project, then vetted contractors provide accurate pricing — you receive 3 qualified bids.
+            </p>
+
+            {/* Trust badges */}
+            <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-accent-foreground/70">
+              {[
+                { icon: CheckCircle, label: "Vetted & Verified" },
+                { icon: Shield, label: "Licensed & Insured" },
+                { icon: Users, label: "3 Bids Per Project" },
+                { icon: Eye, label: "Free Scoping Visit" },
+              ].map(({ icon: Icon, label }) => (
+                <span key={label} className="flex items-center gap-2">
+                  <Icon className="h-4 w-4" />
+                  {label}
                 </span>
-              </h1>
-              <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed">
-                SmartReno organizes your renovation before construction begins — with clearer scope, renovation cost insight, and structured contractor proposals.
-              </p>
+              ))}
+            </div>
 
-              <div className="mt-10 flex flex-wrap gap-3">
+            {/* Search Bar */}
+            <div className="mt-10 flex justify-center">
+              <div className="flex bg-background rounded-xl shadow-2xl overflow-hidden w-full max-w-2xl">
+                <select className="flex-1 px-5 py-4 text-sm text-foreground border-r border-border bg-background focus:outline-none">
+                  <option>All Trades</option>
+                  <option>General Contractor</option>
+                  <option>Kitchen Remodel</option>
+                  <option>Bathroom Remodel</option>
+                  <option>Home Addition</option>
+                  <option>Basement Finishing</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="ZIP Code"
+                  className="w-32 sm:w-40 px-5 py-4 text-sm text-foreground bg-background focus:outline-none"
+                />
                 <button
-                  onClick={() => {
-                    trackEvent("homepage_cta_click", { cta_location: "hero", cta_text: "Start Your Project" });
-                    navigate("/start-your-renovation");
-                  }}
-                  className="rounded-xl bg-foreground px-6 py-3.5 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10 flex items-center gap-2"
+                  onClick={() => navigate("/contractors")}
+                  className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-4 text-sm font-semibold transition-colors"
                 >
-                  Start Your Project <ArrowRight className="h-4 w-4" />
+                  <Eye className="h-4 w-4" />
+                  Search
                 </button>
-                <Link
-                  to="/property-renovation-report"
-                  className="rounded-xl border-2 border-border px-6 py-3.5 text-base font-semibold text-foreground hover:bg-muted transition-all flex items-center gap-2"
-                >
-                  Analyze Your Property
-                </Link>
               </div>
-
-              <Link
-                to="/contractors/join"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Join the Contractor Network <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-
-              {/* Trust indicators */}
-              <div className="mt-10 flex flex-wrap gap-6 text-sm text-muted-foreground">
-                {["Structured project planning", "Experienced contractors", "Built for Northern NJ"].map((t) => (
-                  <span key={t} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Right - Platform Preview (cards stack) */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              <div className="relative space-y-4">
-                {/* Card 1: Dashboard preview */}
-                <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="h-8 w-8 rounded-lg bg-accent/10 grid place-items-center">
-                      <BarChart3 className="h-4 w-4 text-accent" />
-                    </div>
-                    <span className="text-sm font-semibold">Project Dashboard</span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="h-2.5 bg-muted rounded-full w-full" />
-                    <div className="h-2.5 bg-muted rounded-full w-4/5" />
-                    <div className="h-2.5 bg-accent/20 rounded-full w-3/5" />
-                  </div>
-                  <div className="mt-4 grid grid-cols-3 gap-3">
-                    {["Scope", "Budget", "Timeline"].map((label) => (
-                      <div key={label} className="rounded-lg bg-muted/50 p-3 text-center">
-                        <div className="text-xs text-muted-foreground">{label}</div>
-                        <div className="text-sm font-semibold mt-1">✓</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card 2: Property Report */}
-                <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-lg ml-8">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-7 w-7 rounded-lg bg-success/10 grid place-items-center">
-                      <Home className="h-3.5 w-3.5 text-success" />
-                    </div>
-                    <span className="text-xs font-semibold">Property Evaluation</span>
-                    <span className="ml-auto text-xs text-success font-medium">Ready</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="h-2 bg-success/30 rounded-full flex-1" />
-                    <div className="h-2 bg-accent/20 rounded-full flex-1" />
-                    <div className="h-2 bg-muted rounded-full flex-1" />
-                  </div>
-                </div>
-
-                {/* Card 3: Contractor Proposal */}
-                <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-lg mr-8">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-7 w-7 rounded-lg bg-primary/10 grid place-items-center">
-                      <Users className="h-3.5 w-3.5 text-primary" />
-                    </div>
-                    <span className="text-xs font-semibold">Contractor Proposals</span>
-                    <span className="ml-auto text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">3 bids</span>
-                  </div>
-                  <div className="space-y-2">
-                    {[85, 92, 78].map((score, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-full bg-muted" />
-                        <div className="h-2 bg-muted rounded-full flex-1" />
-                        <span className="text-xs font-medium text-muted-foreground">{score}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -334,7 +269,7 @@ export default function Index() {
               </p>
               <Link
                 to="/property-renovation-report"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-foreground px-6 py-3.5 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
               >
                 Analyze Your Property <ArrowRight className="h-4 w-4" />
               </Link>
@@ -478,7 +413,7 @@ export default function Index() {
 
               <Link
                 to="/contractors/join"
-                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3.5 text-base font-semibold text-foreground hover:bg-background/90 transition-all"
+                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
               >
                 Join the Contractor Network <ArrowRight className="h-4 w-4" />
               </Link>
@@ -536,37 +471,30 @@ export default function Index() {
       </section>
 
       {/* ===== 11. FINAL CTA ===== */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-muted/20 to-primary/5" aria-hidden="true" />
+      <section className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-br from-accent via-accent/90 to-primary">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(var(--primary)/0.3),transparent_60%)]" aria-hidden="true" />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-accent-foreground">
             Renovations work better when the process is structured
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-lg text-accent-foreground/70 max-w-2xl mx-auto leading-relaxed">
             Start with better planning, clearer scope, and a smarter path to construction.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/start-your-renovation")}
-              className="rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10 flex items-center gap-2 justify-center"
+              className="rounded-xl bg-background px-8 py-4 text-base font-semibold text-foreground hover:bg-background/90 transition-all shadow-lg flex items-center gap-2 justify-center"
             >
               Start Your Project <ArrowRight className="h-4 w-4" />
             </button>
             <Link
-              to="/property-renovation-report"
-              className="rounded-xl border-2 border-border px-8 py-4 text-base font-semibold text-foreground hover:bg-muted transition-all flex items-center gap-2 justify-center"
+              to="/contractors/join"
+              className="rounded-xl border-2 border-accent-foreground/30 px-8 py-4 text-base font-semibold text-accent-foreground hover:bg-accent-foreground/10 transition-all flex items-center gap-2 justify-center"
             >
-              Analyze Your Property
+              Join the Contractor Network <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
-          <Link
-            to="/contractors/join"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Join the Contractor Network <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
         </div>
       </section>
 
