@@ -98,14 +98,14 @@ export const AIChatBubble = () => {
   if (!isOpen) {
     return (
       <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3 items-end">
-        {/* Get Estimate Floating CTA */}
-        <Link to="/get-estimate">
+        {/* Start Your Project Floating CTA */}
+        <Link to="/start-your-renovation">
           <Button
             size="lg"
             className="shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-full flex items-center gap-2 group"
           >
             <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
-            <span>Get Free Estimate</span>
+            <span>Start Your Project</span>
           </Button>
         </Link>
         

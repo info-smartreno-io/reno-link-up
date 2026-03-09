@@ -3,6 +3,7 @@ import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import {
   ClipboardList,
   TrendingUp,
@@ -16,6 +17,7 @@ import {
   Calendar,
 } from "lucide-react";
 import watermarkContractor from "@/assets/watermark-contractor.png";
+import heroContractor from "@/assets/hero-contractor.jpeg";
 
 const BENEFITS = [
   {
@@ -63,31 +65,68 @@ export default function ForContractors() {
       <MarketingNavbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-background">
+      <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-primary-foreground">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent_60%)]" />
         <img src={watermarkContractor} alt="" className="absolute right-0 bottom-0 w-[800px] opacity-[0.06] pointer-events-none mix-blend-soft-light" />
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-background/10 px-4 py-1.5 text-xs font-medium text-background/80 mb-6">
-              <Star className="h-3.5 w-3.5" />
-              SmartReno Contractor Network
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Copy */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-medium text-primary-foreground/80 mb-6"
+              >
+                <Star className="h-3.5 w-3.5" />
+                SmartReno Contractor Network
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6"
+              >
+                Better Projects.<br />Better Process.<br />Better Business.
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-lg md:text-xl text-primary-foreground/70 max-w-xl mb-8 leading-relaxed"
+              >
+                Join SmartReno's vetted contractor network and receive pre-scoped, qualified renovation projects in Northern New Jersey. No cold leads — just structured opportunities.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <Button asChild size="lg" className="bg-card text-foreground hover:bg-card/90 text-base px-8 rounded-full">
+                  <Link to="/contractors/join">
+                    Apply to Join <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base px-8 rounded-full">
+                  <Link to="/contractors">View Our Network</Link>
+                </Button>
+              </motion.div>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
-              Better Projects.<br />Better Process.<br />Better Business.
-            </h1>
-            <p className="text-lg md:text-xl text-background/70 max-w-2xl mb-8 leading-relaxed">
-              Join SmartReno's vetted contractor network and receive pre-scoped, qualified renovation projects in Northern New Jersey. No cold leads — just structured opportunities.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8">
-                <Link to="/contractors/join">
-                  Apply to Join <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-background/30 text-background hover:bg-background/10 text-base px-8">
-                <Link to="/contractors">View Our Network</Link>
-              </Button>
-            </div>
+
+            {/* Right — Hero Image */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="hidden lg:block"
+            >
+              <img
+                src={heroContractor}
+                alt="House framing construction"
+                className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
+                loading="lazy"
+              />
+            </motion.div>
           </div>
         </div>
       </section>
