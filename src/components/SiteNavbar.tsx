@@ -86,6 +86,9 @@ export function SiteNavbar() {
     label: "Contractors",
     to: "/contractors"
   }, {
+    label: "Architects",
+    to: "/architects"
+  }, {
     label: "Projects",
     to: "/projects"
   }, {

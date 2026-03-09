@@ -78,6 +78,7 @@ import CostGuidePage from "./pages/CostGuidePage";
 import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
+import ArchitectsDirectory from "./pages/ArchitectsDirectory";
 import ContractorProfile from "./pages/ContractorProfile";
 import ForContractors from "./pages/ForContractors";
 import DesignersDirectory from "./pages/DesignersDirectory";
@@ -407,7 +408,7 @@ function AppRoutes() {
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
             <Route path="/contractor/:slug" element={<ContractorProfilePage />} />
             <Route path="/contractors/:id" element={<ContractorProfile />} />
-            <Route path="/architects" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/architects" element={<ArchitectsDirectory />} />
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />

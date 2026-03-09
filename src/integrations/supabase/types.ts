@@ -1172,6 +1172,48 @@ export type Database = {
           },
         ]
       }
+      architect_bid_requests: {
+        Row: {
+          admin_notes: string | null
+          architect_id: string | null
+          architect_name: string
+          created_at: string
+          id: string
+          project_description: string | null
+          requester_email: string | null
+          requester_name: string | null
+          requester_phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          architect_id?: string | null
+          architect_name: string
+          created_at?: string
+          id?: string
+          project_description?: string | null
+          requester_email?: string | null
+          requester_name?: string | null
+          requester_phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          architect_id?: string | null
+          architect_name?: string
+          created_at?: string
+          id?: string
+          project_description?: string | null
+          requester_email?: string | null
+          requester_name?: string | null
+          requester_phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       architect_projects: {
         Row: {
           architect_id: string
