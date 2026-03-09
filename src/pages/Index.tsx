@@ -413,7 +413,7 @@ export default function Index() {
 
               <Link
                 to="/contractors/join"
-                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3.5 text-base font-semibold text-foreground hover:bg-background/90 transition-all"
+                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
               >
                 Join the Contractor Network <ArrowRight className="h-4 w-4" />
               </Link>
