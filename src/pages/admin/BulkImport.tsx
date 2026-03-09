@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, FileJson, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Upload, FileJson, AlertCircle, CheckCircle2, MapPin } from "lucide-react";
+import { AdminGooglePlacesImport } from "@/components/admin/AdminGooglePlacesImport";
 
 export function BulkImport() {
   const [loading, setLoading] = useState(false);
