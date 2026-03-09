@@ -10832,6 +10832,76 @@ export type Database = {
           },
         ]
       }
+      project_schedule: {
+        Row: {
+          cost_code: string | null
+          created_at: string
+          dependency: string | null
+          duration_days: number
+          end_date: string | null
+          id: string
+          notes: string | null
+          phase: string
+          project_id: string
+          start_date: string | null
+          status: string
+          trade: string
+          updated_at: string
+        }
+        Insert: {
+          cost_code?: string | null
+          created_at?: string
+          dependency?: string | null
+          duration_days?: number
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          phase: string
+          project_id: string
+          start_date?: string | null
+          status?: string
+          trade: string
+          updated_at?: string
+        }
+        Update: {
+          cost_code?: string | null
+          created_at?: string
+          dependency?: string | null
+          duration_days?: number
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          phase?: string
+          project_id?: string
+          start_date?: string | null
+          status?: string
+          trade?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_schedule_dependency_fkey"
+            columns: ["dependency"]
+            isOneToOne: false
+            referencedRelation: "project_schedule"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_schedule_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_schedule_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_schedule_locks: {
         Row: {
           created_at: string | null
@@ -12322,6 +12392,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string
+          estimated_duration_days: number | null
           id: string
           is_ai_generated: boolean | null
           labor_cost_high: number | null
@@ -12332,6 +12403,8 @@ export type Database = {
           platform_cost_code_id: string | null
           project_id: string
           quantity: number
+          schedule_phase: string | null
+          total_estimated_cost: number | null
           trade: string
           unit: string
           updated_at: string
@@ -12341,6 +12414,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description: string
+          estimated_duration_days?: number | null
           id?: string
           is_ai_generated?: boolean | null
           labor_cost_high?: number | null
@@ -12351,6 +12425,8 @@ export type Database = {
           platform_cost_code_id?: string | null
           project_id: string
           quantity?: number
+          schedule_phase?: string | null
+          total_estimated_cost?: number | null
           trade: string
           unit?: string
           updated_at?: string
@@ -12360,6 +12436,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string
+          estimated_duration_days?: number | null
           id?: string
           is_ai_generated?: boolean | null
           labor_cost_high?: number | null
@@ -12370,6 +12447,8 @@ export type Database = {
           platform_cost_code_id?: string | null
           project_id?: string
           quantity?: number
+          schedule_phase?: string | null
+          total_estimated_cost?: number | null
           trade?: string
           unit?: string
           updated_at?: string
