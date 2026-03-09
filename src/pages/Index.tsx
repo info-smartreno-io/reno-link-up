@@ -100,13 +100,16 @@ export default function Index() {
             {/* Left - Copy */}
             <motion.div initial="hidden" animate="visible" variants={fadeUp}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.08]">
-                Plan Your Renovation{" "}
+                The First Step{" "}
                 <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                  the Smart Way
+                  Before You Renovate
                 </span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed">
-                SmartReno organizes your renovation before construction begins — with clearer scope, renovation cost insight, and structured contractor proposals.
+                SmartReno organizes your renovation before construction begins so homeowners can move forward with clarity, confidence, and the right professionals.
+              </p>
+              <p className="mt-3 text-base font-semibold text-foreground/80">
+                We protect your time, money and home.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-3">
