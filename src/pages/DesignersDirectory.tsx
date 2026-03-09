@@ -59,75 +59,92 @@ export default function DesignersDirectory() {
       <MarketingNavbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-background">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--accent)/0.08),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.06),transparent_50%)]" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-primary-foreground">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--primary)/0.08),transparent_60%)]" />
         <img src={watermarkDesigner} alt="" className="absolute right-0 top-0 w-[900px] opacity-[0.08] pointer-events-none mix-blend-soft-light" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full bg-background/10 px-4 py-1.5 text-xs font-medium text-background/80 mb-6 backdrop-blur-sm border border-background/10"
-            >
-              <Palette className="h-3.5 w-3.5" />
-              Interior Designers • Ridgewood, NJ Area
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6"
-            >
-              Find the Right Designer for Your Renovation
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-background/70 max-w-2xl mb-8 leading-relaxed"
-            >
-              Browse top-rated interior designers within 10 miles of Ridgewood, NJ. 
-              Connect with professionals who specialize in renovation planning, 
-              space design, and material selection.
-            </motion.p>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Copy */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-xs font-medium text-primary-foreground/80 mb-6 backdrop-blur-sm border border-primary-foreground/10"
+              >
+                <Palette className="h-3.5 w-3.5" />
+                Interior Designers • Ridgewood, NJ Area
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6"
+              >
+                Find the Right Designer for Your Renovation
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-lg md:text-xl text-primary-foreground/70 max-w-xl mb-8 leading-relaxed"
+              >
+                Browse top-rated interior designers within 10 miles of Ridgewood, NJ. 
+                Connect with professionals who specialize in renovation planning, 
+                space design, and material selection.
+              </motion.p>
 
-            {/* Inline search */}
+              {/* Inline search */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-3 max-w-xl"
+              >
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, specialty, or town..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-card text-foreground h-12 rounded-xl border-0 shadow-lg"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Quick stats */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="flex gap-8 mt-8 text-primary-foreground/60 text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 fill-current text-pending" />
+                  <span><strong className="text-primary-foreground">{designers.length}</strong> designers listed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Within <strong className="text-primary-foreground">10 miles</strong> of Ridgewood</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right — Hero Image */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 max-w-xl"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="hidden lg:block"
             >
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, specialty, or town..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-background text-foreground h-12 rounded-xl border-0 shadow-lg"
-                />
-              </div>
+              <img
+                src={heroDesigner}
+                alt="Interior design living room"
+                className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
+                loading="lazy"
+              />
             </motion.div>
           </div>
-
-          {/* Quick stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex gap-8 mt-10 text-background/60 text-sm"
-          >
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 fill-current text-pending" />
-              <span><strong className="text-background">{designers.length}</strong> designers listed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span>Within <strong className="text-background">10 miles</strong> of Ridgewood</span>
-            </div>
-          </motion.div>
         </div>
       </section>
 
