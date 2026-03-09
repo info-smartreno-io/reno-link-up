@@ -1,36 +1,47 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Home, MapPin, DollarSign, Users, CheckCircle, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, Shield, Users, Clock, BadgeCheck, Hammer, ArrowRight, CheckCircle, FileText } from "lucide-react";
 import { SiteNavbar } from "@/components/SiteNavbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getTownBySlug } from "@/data/townData";
 import { trackEvent } from "@/utils/analytics";
+import { motion } from "framer-motion";
 import kitchenImage from "@/assets/kitchen-remodel.jpg";
 import bathroomImage from "@/assets/bathroom-remodel.jpg";
 import basementImage from "@/assets/basement-finished.jpg";
 import additionImage from "@/assets/home-addition.jpg";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
-/**
- * TownPage - SEO-optimized town-specific landing pages
- * Generates unique pages for each town in Northern NJ
- * Features: Local SEO, structured data, unique content per town
- */
 export default function TownPage() {
   const { county = "", town = "" } = useParams();
   const townData = getTownBySlug(county, town);
+  const navigate = useNavigate();
+  const [showProjectDialog, setShowProjectDialog] = useState(false);
 
   if (!townData) {
     return (
       <>
         <SiteNavbar />
         <main className="container mx-auto px-4 py-10 min-h-screen">
-          <div className="max-w-2xl mx-auto text-center py-20">
-            <h1 className="text-3xl font-bold mb-4">Town Not Found</h1>
-            <p className="text-muted-foreground mb-6">
-              We couldn't find information for this location.
-            </p>
+          <div className="max-w-2xl mx-auto text-center py-20 space-y-6">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Shield className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold">Town Not Found</h1>
+            <p className="text-muted-foreground">We couldn't find information for this location.</p>
+            <div className="space-y-2 py-4 border-y border-border">
+              <p className="text-lg font-bold text-primary">SmartReno protects your time, money and home.</p>
+              <p className="text-sm text-muted-foreground italic">The first step before you renovate.</p>
+            </div>
             <Button asChild>
               <Link to="/locations">View All Locations</Link>
             </Button>
@@ -41,6 +52,13 @@ export default function TownPage() {
     );
   }
 
+  const renovationTypes = [
+    { title: "Kitchen Remodels", image: kitchenImage, alt: "Modern kitchen remodel", desc: "Custom cabinetry, countertops, and modern layouts" },
+    { title: "Bathroom Renovations", image: bathroomImage, alt: "Luxury bathroom renovation", desc: "Walk-in showers, vanities, and spa-like retreats" },
+    { title: "Basement Finishing", image: basementImage, alt: "Finished basement", desc: "Family rooms, home offices, and entertainment spaces" },
+    { title: "Home Additions", image: additionImage, alt: "Home addition", desc: "Expand your living space with expert additions" },
+  ];
+
   return (
     <>
       <Helmet>
@@ -48,19 +66,10 @@ export default function TownPage() {
         <meta name="description" content={townData.metaDescription} />
         <link rel="canonical" href={`https://smartreno.io/locations/${county}/${town}`} />
         <meta name="robots" content="index,follow" />
-        
-        {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={townData.metaTitle} />
         <meta property="og:description" content={townData.metaDescription} />
         <meta property="og:url" content={`https://smartreno.io/locations/${county}/${town}`} />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={townData.metaTitle} />
-        <meta name="twitter:description" content={townData.metaDescription} />
-        
-        {/* JSON-LD Structured Data - LocalBusiness */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -78,10 +87,7 @@ export default function TownPage() {
             "areaServed": {
               "@type": "City",
               "name": townData.name,
-              "containedIn": {
-                "@type": "AdministrativeArea",
-                "name": townData.county
-              }
+              "containedIn": { "@type": "AdministrativeArea", "name": townData.county }
             },
             "serviceType": "Home Renovation Services",
             "priceRange": "$$",
@@ -89,60 +95,15 @@ export default function TownPage() {
             "email": "info@smartreno.io"
           })}
         </script>
-        
-        {/* JSON-LD - Service */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            "serviceType": "Home Renovation",
-            "provider": {
-              "@type": "Organization",
-              "name": "SmartReno",
-              "url": "https://smartreno.io/"
-            },
-            "areaServed": {
-              "@type": "City",
-              "name": townData.name,
-              "addressRegion": "NJ"
-            },
-            "availableChannel": {
-              "@type": "ServiceChannel",
-              "serviceUrl": "https://smartreno.io/get-estimate"
-            }
-          })}
-        </script>
-        
-        {/* JSON-LD - BreadcrumbList */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://smartreno.io/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Locations",
-                "item": "https://smartreno.io/locations"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": townData.county,
-                "item": `https://smartreno.io/locations/${county}`
-              },
-              {
-                "@type": "ListItem",
-                "position": 4,
-                "name": townData.name,
-                "item": `https://smartreno.io/locations/${county}/${town}`
-              }
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://smartreno.io/" },
+              { "@type": "ListItem", "position": 2, "name": "Locations", "item": "https://smartreno.io/locations" },
+              { "@type": "ListItem", "position": 3, "name": townData.county, "item": `https://smartreno.io/locations/${county}` },
+              { "@type": "ListItem", "position": 4, "name": townData.name, "item": `https://smartreno.io/locations/${county}/${town}` }
             ]
           })}
         </script>
@@ -152,260 +113,190 @@ export default function TownPage() {
 
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="py-16 md:py-24">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap gap-3 mb-8">
-              <Link to="#kitchens" className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm font-medium transition-colors">
-                Kitchens
-              </Link>
-              <Link to="#bathrooms" className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm font-medium transition-colors">
-                Bathrooms
-              </Link>
-              <Link to="#basements" className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm font-medium transition-colors">
-                Basements
-              </Link>
-              <Link to="#additions" className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm font-medium transition-colors">
-                Additions
-              </Link>
-            </div>
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+          <div className="absolute top-0 left-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
-              Home Renovations in {townData.name}, NJ – Kitchen, Bath, Basement & Additions
-            </h1>
-            
-            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-              {townData.name}'s {townData.county === 'Bergen County' ? 'established neighborhoods and quality homes make it' : 'strong community and housing market make it'} ideal for renovation projects planned through SmartReno.
-            </p>
-
-            <Button 
-              size="lg" 
-              asChild
-              onClick={() => trackEvent('town_page_cta_click', {
-                town: townData.name,
-                county: townData.county,
-                cta_location: 'hero'
-              })}
+          <div className="relative z-10 mx-auto max-w-4xl text-center">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-sm font-semibold tracking-widest uppercase text-white/70 mb-3"
             >
-              <Link to="/get-estimate">
-                Get Free Estimate
-              </Link>
-            </Button>
+              The First Step Before You Renovate
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight"
+            >
+              Home Renovations in {townData.name}, NJ
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mt-4 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto"
+            >
+              SmartReno protects your time, money and home. Get your project scoped and receive 3 qualified bids from vetted contractors in {townData.name}.
+            </motion.p>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="mt-6 flex flex-wrap justify-center gap-6 text-white/70 text-sm"
+            >
+              <span className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> Vetted & Verified</span>
+              <span className="flex items-center gap-1.5"><Shield className="h-4 w-4" /> Licensed & Insured</span>
+              <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> 3 Bids Per Project</span>
+              <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Free Scoping Visit</span>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="mt-8"
+            >
+              <Button
+                size="lg"
+                className="bg-background text-foreground hover:bg-background/90 px-10 py-4 text-lg font-bold rounded-xl shadow-lg h-auto"
+                onClick={() => {
+                  trackEvent('town_page_cta_click', { town: townData.name, county: townData.county, cta_location: 'hero' });
+                  navigate("/start-your-renovation");
+                }}
+              >
+                <Hammer className="mr-2 h-5 w-5" /> Start Your Project
+              </Button>
+            </motion.div>
           </div>
         </section>
 
-        {/* Planning Section */}
+        {/* How It Works */}
+        <section className="bg-muted/50 border-b border-border">
+          <div className="mx-auto max-w-5xl px-4 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+              {[
+                { step: "1", title: "Start Your Project", desc: "Fill out the form and a construction agent schedules a site visit" },
+                { step: "2", title: "We Scope the Work", desc: "Our team creates a detailed scope of work for your renovation" },
+                { step: "3", title: "Get 3 Qualified Bids", desc: "Vetted contractors provide competitive, accurate pricing" },
+              ].map((item) => (
+                <div key={item.step} className="flex flex-col items-center gap-2">
+                  <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
+                    {item.step}
+                  </div>
+                  <h3 className="font-bold text-foreground">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground max-w-xs">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Renovation Types Grid */}
+        <section className="py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
+              Popular Renovations in {townData.name}
+            </h2>
+            <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
+              Whether you're remodeling your kitchen, updating bathrooms, finishing your basement, or adding space — SmartReno connects you with vetted contractors who know {townData.name}.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {renovationTypes.map((reno, i) => (
+                <motion.div
+                  key={reno.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.07 }}
+                >
+                  <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => setShowProjectDialog(true)}>
+                    <div className="aspect-[4/3] overflow-hidden">
+                      <img src={reno.image} alt={reno.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-bold text-foreground mb-1">{reno.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{reno.desc}</p>
+                      <Button size="sm" className="w-full" variant="outline" onClick={(e) => { e.stopPropagation(); setShowProjectDialog(true); }}>
+                        <FileText className="h-4 w-4 mr-1" /> Request to Bid
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* About Town */}
         <section className="py-16 bg-muted/30">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Planning Your Home Renovation in {townData.name}
-            </h2>
-            
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Whether you're remodeling your kitchen, updating bathrooms, finishing your basement, or adding space with an addition, SmartReno provides the tools and connections you need for your renovation in {townData.name}, {townData.county}.
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6">About {townData.name}</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              {townData.name} is a distinctive community in {townData.county}, known for its strong community character and excellent quality of life. Homeowners here often choose to renovate and expand their existing properties rather than relocate.
             </p>
-
-            <p className="text-lg text-muted-foreground mb-12 leading-relaxed">
-              Our free cost calculator helps you understand budget ranges based on local construction costs, while our network of vetted contractors ensures you're working with experienced professionals who know {townData.name} building codes and permitting requirements.
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              The local housing market in {townData.name} supports home renovation investments. Whether you're updating your kitchen, adding a bathroom, finishing a basement, or expanding with an addition, renovations in {townData.name} typically provide strong returns.
             </p>
-
-            <div>
-              <h3 className="text-2xl font-bold mb-6">Popular Renovation Projects in {townData.name}</h3>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="text-center p-6 hover:shadow-md transition-shadow">
-                  <CardTitle className="text-lg mb-2">Kitchens</CardTitle>
-                  <p className="text-sm text-muted-foreground">Modern remodels</p>
-                </Card>
-                <Card className="text-center p-6 hover:shadow-md transition-shadow">
-                  <CardTitle className="text-lg mb-2">Bathrooms</CardTitle>
-                  <p className="text-sm text-muted-foreground">Luxury upgrades</p>
-                </Card>
-                <Card className="text-center p-6 hover:shadow-md transition-shadow">
-                  <CardTitle className="text-lg mb-2">Basements</CardTitle>
-                  <p className="text-sm text-muted-foreground">Finished living space</p>
-                </Card>
-                <Card className="text-center p-6 hover:shadow-md transition-shadow">
-                  <CardTitle className="text-lg mb-2">Additions</CardTitle>
-                  <p className="text-sm text-muted-foreground">Expand your home</p>
-                </Card>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* About Town Section */}
+        {/* Why Homeowners Choose SmartReno */}
         <section className="py-16">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              About {townData.name}
+            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+              Why {townData.name} Homeowners Choose SmartReno
             </h2>
-            
-            <div className="prose prose-lg max-w-none text-muted-foreground">
-              <p className="mb-6 leading-relaxed">
-                {townData.name} is a distinctive community in {townData.county}, known for its strong community character and excellent quality of life. Homeowners here often choose to renovate and expand their existing properties rather than relocate, taking advantage of the town's desirable location and established neighborhoods.
-              </p>
-
-              <p className="leading-relaxed">
-                The local housing market in {townData.name} supports home renovation investments, with property values that reflect both the desirability of the area and the quality of homes. Whether you're updating your kitchen, adding a bathroom, finishing a basement, or expanding with an addition, renovations in {townData.name} typically provide strong returns while allowing you to stay in the community you love.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Why Choose Section */}
-        <section className="py-16 bg-muted/30">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8">
-              Why Homeowners Choose Renovations in {townData.name}
-            </h2>
-
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-2xl font-bold mb-4">Stay in Your Neighborhood</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {townData.name} residents value their community connections. Renovating your current home allows you to improve your living space without leaving the neighborhood, schools, and local amenities you love.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-bold mb-4">Maximize Your Property Value</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Well-planned renovations typically add significant value to {townData.name} homes. Kitchen and bathroom remodels often return 60-80% of investment, while additions and basement finishes provide immediate lifestyle benefits.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-bold mb-4">Customize to Your Needs</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Unlike buying a new home, renovations let you design exactly what you need—whether that's a gourmet kitchen, spa bathroom, finished basement, or added square footage for your growing family.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Renovation Types Detail Sections */}
-        <section id="kitchens" className="py-16">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
-              <div>
-                <h2 className="text-3xl sm:text-4xl font-bold mb-6">Kitchen Remodeling in {townData.name}</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Kitchen renovations are among the most popular projects in {townData.name}. Modern kitchens combine functionality with style, featuring custom cabinetry, quartz or granite countertops, stainless steel appliances, and open layouts that serve as the heart of the home.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Whether you're doing a complete gut renovation or updating finishes, SmartReno connects you with experienced kitchen contractors who understand {townData.name} design trends and building requirements.
-                </p>
-              </div>
-              <div className="rounded-lg overflow-hidden shadow-lg">
-                <img 
-                  src={kitchenImage} 
-                  alt="Modern kitchen remodel in New Jersey home with white cabinets and marble countertops" 
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="bathrooms" className="py-16 bg-muted/30">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
-              <div className="order-2 md:order-1 rounded-lg overflow-hidden shadow-lg">
-                <img 
-                  src={bathroomImage} 
-                  alt="Luxury bathroom renovation with walk-in shower and soaking tub" 
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <div className="order-1 md:order-2">
-                <h2 className="text-3xl sm:text-4xl font-bold mb-6">Bathroom Renovations in {townData.name}</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Bathroom remodels in {townData.name} range from simple updates to luxury spa-like retreats. Popular upgrades include walk-in showers, soaking tubs, heated floors, double vanities, and high-end tile work.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  From powder rooms to primary suites, our vetted contractors bring expertise in plumbing, waterproofing, and finish work to ensure your bathroom renovation meets both aesthetic and functional goals.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="basements" className="py-16">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
-              <div>
-                <h2 className="text-3xl sm:text-4xl font-bold mb-6">Basement Finishing in {townData.name}</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Finished basements add valuable living space to {townData.name} homes. Popular uses include family rooms, home theaters, home offices, gyms, guest suites, and playrooms. Basement finishing requires expertise in waterproofing, insulation, egress requirements, and HVAC.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our network includes contractors experienced with {townData.name} basement conditions and local code requirements for safe, comfortable below-grade living spaces.
-                </p>
-              </div>
-              <div className="rounded-lg overflow-hidden shadow-lg">
-                <img 
-                  src={basementImage} 
-                  alt="Finished basement family room with entertainment center and comfortable seating" 
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="additions" className="py-16 bg-muted/30">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
-              <div className="order-2 md:order-1 rounded-lg overflow-hidden shadow-lg">
-                <img 
-                  src={additionImage} 
-                  alt="Home addition exterior showing seamless architectural integration" 
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <div className="order-1 md:order-2">
-                <h2 className="text-3xl sm:text-4xl font-bold mb-6">Home Additions in {townData.name}</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  When you need more space, home additions offer a solution without relocating. Popular addition types in {townData.name} include first-floor extensions for expanded kitchens or primary suites, add-a-level projects that double your square footage, and dormer additions that transform attic space.
-                </p>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Additions require architectural design, structural engineering, and coordination with local zoning and building departments. SmartReno's contractor network includes firms experienced with the full addition process in {townData.name}.
-                </p>
-              </div>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {[
+                { title: "Protect Your Time", desc: "No chasing contractors. We scope the work, vet the pros, and deliver 3 qualified bids to you." },
+                { title: "Protect Your Money", desc: "Structured bidding with detailed scopes prevents surprises and ensures fair, competitive pricing." },
+                { title: "Protect Your Home", desc: "Every contractor is licensed, insured, and verified. We only work with proven professionals." },
+                { title: "Local Expertise", desc: `Our contractors know ${townData.name} building codes, permitting requirements, and design trends.` },
+              ].map((item) => (
+                <Card key={item.title} className="p-6">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-bold text-foreground mb-1">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="py-16 bg-primary/5">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Ready to Plan Your {townData.name} Renovation?
+        <section className="bg-primary py-16 px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
+              Ready to Start Your {townData.name} Renovation?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Get started with SmartReno's free cost calculator and connect with vetted contractors who specialize in {townData.name} renovations and understand local building codes.
+            <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto">
+              SmartReno protects your time, money and home. A construction agent will scope the work and you'll receive 3 qualified bids from vetted contractors.
             </p>
-            <Button 
-              size="lg" 
-              asChild
-              onClick={() => trackEvent('town_page_cta_click', {
-                town: townData.name,
-                county: townData.county,
-                cta_location: 'bottom'
-              })}
+            <Button
+              size="lg"
+              className="bg-background text-foreground hover:bg-background/90 px-10 py-4 text-lg font-bold rounded-xl shadow-md h-auto"
+              onClick={() => {
+                trackEvent('town_page_cta_click', { town: townData.name, county: townData.county, cta_location: 'bottom' });
+                navigate("/start-your-renovation");
+              }}
             >
-              <Link to="/get-estimate">
-                Get Free Estimate
-              </Link>
+              <Hammer className="mr-2 h-5 w-5" /> Start Your Project
             </Button>
           </div>
         </section>
 
-        {/* Footer Links */}
+        {/* Location Links */}
         <section className="py-12 border-t">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <div className="text-sm text-muted-foreground mb-4">
@@ -413,15 +304,11 @@ export default function TownPage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button variant="link" size="sm" asChild className="h-auto p-0">
-                <Link to={`/locations/${county}`}>
-                  View All {townData.county} Towns
-                </Link>
+                <Link to={`/locations/${county}`}>View All {townData.county} Towns</Link>
               </Button>
               <span className="text-muted-foreground">•</span>
               <Button variant="link" size="sm" asChild className="h-auto p-0">
-                <Link to="/locations">
-                  All Service Areas
-                </Link>
+                <Link to="/locations">All Service Areas</Link>
               </Button>
             </div>
           </div>
@@ -429,6 +316,56 @@ export default function TownPage() {
       </main>
 
       <SiteFooter />
+
+      {/* Start Project Dialog */}
+      <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Hammer className="h-6 w-6 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">Start Your Project</DialogTitle>
+            <DialogDescription className="text-center">
+              Tell us about your renovation in {townData.name}. A SmartReno construction agent will come to your home, scope the work, and you'll receive 3 qualified bids from vetted contractors.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2">
+            <div className="rounded-lg bg-muted/50 border border-border p-3 space-y-2">
+              <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                SmartReno protects your time, money and home
+              </p>
+              <p className="text-xs text-muted-foreground italic">The first step before you renovate.</p>
+            </div>
+
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => {
+                setShowProjectDialog(false);
+                navigate("/start-your-renovation");
+              }}
+            >
+              Start Your Project <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground">
+              Already have an account?{" "}
+              <Button
+                variant="link"
+                className="p-0 h-auto text-xs"
+                onClick={() => {
+                  setShowProjectDialog(false);
+                  navigate("/login");
+                }}
+              >
+                Sign in
+              </Button>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
