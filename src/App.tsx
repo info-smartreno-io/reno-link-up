@@ -81,6 +81,8 @@ import ContractorsDirectory from "./pages/ContractorsDirectory";
 import ContractorProfile from "./pages/ContractorProfile";
 import ForContractors from "./pages/ForContractors";
 import DesignersDirectory from "./pages/DesignersDirectory";
+import DesignerProfilePage from "./pages/DesignerProfilePage";
+import ContractorProfilePage from "./pages/ContractorProfilePage";
 import HowItWorks from "./pages/HowItWorks";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
