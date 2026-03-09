@@ -508,6 +508,16 @@ function AppRoutes() {
                 <AdminDesignPackages />
               </ProtectedRoute>
             } />
+            <Route path="/admin/property-reports" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminPropertyReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/imported-businesses" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminImportedBusinesses />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/smart-estimates" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminSmartEstimates />
