@@ -410,7 +410,7 @@ export default function ContractorsDirectory() {
         </div>
       </section>
 
-      <FooterAdminLogin />
+      <MarketingFooter />
 
       {/* Request to Bid Dialog */}
       <Dialog open={showBidDialog} onOpenChange={setShowBidDialog}>

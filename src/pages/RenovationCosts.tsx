@@ -183,6 +183,7 @@ export default function RenovationCosts() {
           </div>
         </section>
       </main>
+      <MarketingFooter />
     </>
   );
 }
