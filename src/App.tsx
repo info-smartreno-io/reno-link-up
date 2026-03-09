@@ -77,6 +77,7 @@ import CostGuidePage from "./pages/CostGuidePage";
 import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
+import ContractorProfile from "./pages/ContractorProfile";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
