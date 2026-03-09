@@ -92,6 +92,9 @@ export default function ForContractors() {
         </div>
       </section>
 
+      {/* 3-Step SmartReno Process */}
+      <SmartRenoProcessSteps />
+
       {/* Stats Bar */}
       <section className="border-b border-border/50 bg-muted/30">
         <div className="mx-auto max-w-7xl px-6 py-10">

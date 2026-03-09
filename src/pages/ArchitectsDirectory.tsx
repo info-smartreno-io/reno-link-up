@@ -489,26 +489,8 @@ export default function ArchitectsDirectory() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="bg-muted/50 border-b border-border">
-        <div className="mx-auto max-w-5xl px-4 py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {[
-              { step: "1", title: "Browse Architects", desc: "Explore licensed architecture firms serving Northern NJ" },
-              { step: "2", title: "Request a Bid", desc: "Click 'Request to Bid' and submit your project details" },
-              { step: "3", title: "We Coordinate", desc: "SmartReno connects you with the architect and manages the process" },
-            ].map((item) => (
-              <div key={item.step} className="flex flex-col items-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
-                  {item.step}
-                </div>
-                <h3 className="font-bold text-foreground">{item.title}</h3>
-                <p className="text-sm text-muted-foreground max-w-xs">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How SmartReno Works */}
+      <SmartRenoProcessSteps />
 
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
