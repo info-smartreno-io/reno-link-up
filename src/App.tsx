@@ -184,6 +184,8 @@ import AdminAIImages from "./pages/AdminAIImages";
 import AdminAIImageSlot from "./pages/AdminAIImageSlot";
 import AdminResources from "./pages/AdminResources";
 import AdminAI from "./pages/AdminAI";
+import AdminCostCodeLibrary from "./pages/admin/AdminCostCodeLibrary";
+import AdminProjectPipeline from "./pages/admin/AdminProjectPipeline";
 import ResourceCapacity from "./pages/ResourceCapacity";
 import ProfessionalQuickbooks from "./pages/ProfessionalQuickbooks";
 import ProfessionalInvoicing from "./pages/ProfessionalInvoicing";
