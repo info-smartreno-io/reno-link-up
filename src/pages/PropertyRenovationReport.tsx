@@ -12,7 +12,7 @@ import {
   Bath, BedDouble, Ruler, Calendar, Trees, Building2, Pencil,
   ChefHat, Droplets, Warehouse, PlusCircle, PaintBucket,
   Shield, CheckCircle2, X, Sparkles, Info, Phone, Clock,
-  Hammer, Zap, Layers, ChevronDown, ChevronUp
+  Hammer, Zap, Layers, ChevronDown, ChevronUp, AlertTriangle
 } from "lucide-react";
 import { ALL_TOWNS } from "@/data/locations";
 import Fuse from "fuse.js";
