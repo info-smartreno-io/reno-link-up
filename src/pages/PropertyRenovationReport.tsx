@@ -593,13 +593,13 @@ export default function PropertyRenovationReport() {
                       <Phone className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">Want precise numbers? Talk to a SmartReno estimator.</p>
-                      <p className="text-xs text-muted-foreground">Free 30-minute consultation • No obligation • Licensed professionals</p>
+                      <p className="text-sm font-semibold text-foreground">Ready for accurate numbers? Let us scope your project.</p>
+                      <p className="text-xs text-muted-foreground">Fill out the form and a construction agent will visit your home to scope the work and get you 3 qualified bids.</p>
                     </div>
                   </div>
                   <Button asChild className="shrink-0 gap-2">
-                    <Link to="/homeowner/intake">
-                      Schedule Free Consultation <ArrowRight className="h-4 w-4" />
+                    <Link to="/start-your-renovation">
+                      Start Your Project <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                 </div>
