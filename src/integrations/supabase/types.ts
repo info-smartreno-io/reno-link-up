@@ -13797,6 +13797,42 @@ export type Database = {
         }
         Relationships: []
       }
+      system_audit_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          record_id: string | null
+          table_name: string
+          user_id: string | null
+          user_role: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name: string
+          user_id?: string | null
+          user_role?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name?: string
+          user_id?: string | null
+          user_role?: string | null
+        }
+        Relationships: []
+      }
       task_queue: {
         Row: {
           ai_generated: boolean | null
@@ -14173,6 +14209,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_permissions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          granted_by: string | null
+          id: string
+          permission: string
+          resource_id: string | null
+          resource_type: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permission: string
+          resource_id?: string | null
+          resource_type?: string | null
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permission?: string
+          resource_id?: string | null
+          resource_type?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -15127,6 +15199,42 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_events: {
+        Row: {
+          automated: boolean | null
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          from_status: string | null
+          id: string
+          project_id: string
+          to_status: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          automated?: boolean | null
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          from_status?: string | null
+          id?: string
+          project_id: string
+          to_status?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          automated?: boolean | null
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          from_status?: string | null
+          id?: string
+          project_id?: string
+          to_status?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       workload_balancer_logs: {
         Row: {
           applied: boolean | null
@@ -15327,6 +15435,15 @@ export type Database = {
           phone: string
           project_type: string
         }[]
+      }
+      has_permission: {
+        Args: {
+          _permission: string
+          _resource_id?: string
+          _resource_type?: string
+          _user_id: string
+        }
+        Returns: boolean
       }
       has_role: {
         Args: {
