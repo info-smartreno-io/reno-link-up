@@ -243,7 +243,7 @@ export default function ContractorsDirectory() {
         <link rel="canonical" href="https://smartreno.io/contractors" />
       </Helmet>
 
-      <SiteNavbar />
+      <MarketingNavbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
