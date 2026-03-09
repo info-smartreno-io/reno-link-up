@@ -471,37 +471,30 @@ export default function Index() {
       </section>
 
       {/* ===== 11. FINAL CTA ===== */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-muted/20 to-primary/5" aria-hidden="true" />
+      <section className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-br from-accent via-accent/90 to-primary">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(var(--primary)/0.3),transparent_60%)]" aria-hidden="true" />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-accent-foreground">
             Renovations work better when the process is structured
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-lg text-accent-foreground/70 max-w-2xl mx-auto leading-relaxed">
             Start with better planning, clearer scope, and a smarter path to construction.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/start-your-renovation")}
-              className="rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10 flex items-center gap-2 justify-center"
+              className="rounded-xl bg-background px-8 py-4 text-base font-semibold text-foreground hover:bg-background/90 transition-all shadow-lg flex items-center gap-2 justify-center"
             >
               Start Your Project <ArrowRight className="h-4 w-4" />
             </button>
             <Link
-              to="/property-renovation-report"
-              className="rounded-xl border-2 border-border px-8 py-4 text-base font-semibold text-foreground hover:bg-muted transition-all flex items-center gap-2 justify-center"
+              to="/contractors/join"
+              className="rounded-xl border-2 border-accent-foreground/30 px-8 py-4 text-base font-semibold text-accent-foreground hover:bg-accent-foreground/10 transition-all flex items-center gap-2 justify-center"
             >
-              Analyze Your Property
+              Join the Contractor Network <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
-          <Link
-            to="/contractors/join"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Join the Contractor Network <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
         </div>
       </section>
 
