@@ -1598,6 +1598,9 @@ function InternalAppRoutes() {
         <Route path="/admin/website-ai" element={<ProtectedRoute requiredRole="admin"><AdminWebsiteAI /></ProtectedRoute>} />
         <Route path="/admin/test-accounts" element={<ProtectedRoute requiredRole="admin"><AdminTestAccounts /></ProtectedRoute>} />
         <Route path="/admin/daily-logs" element={<ProtectedRoute requiredRole="admin"><DailyLogs /></ProtectedRoute>} />
+        <Route path="/admin/workflow-engine" element={<ProtectedRoute requiredRole="admin"><AdminWorkflowEngine /></ProtectedRoute>} />
+        <Route path="/admin/audit-log" element={<ProtectedRoute requiredRole="admin"><AdminAuditLog /></ProtectedRoute>} />
+        <Route path="/admin/permissions" element={<ProtectedRoute requiredRole="admin"><AdminPermissionsManager /></ProtectedRoute>} />
         {/* AI sub-sections */}
         <Route path="/admin/ai/overview" element={<ProtectedRoute requiredRole="admin"><AIOverview /></ProtectedRoute>} />
         <Route path="/admin/ai/project" element={<ProtectedRoute requiredRole="admin"><ProjectAI /></ProtectedRoute>} />
