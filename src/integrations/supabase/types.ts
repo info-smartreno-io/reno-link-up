@@ -6076,6 +6076,36 @@ export type Database = {
           },
         ]
       }
+      form_logs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          form_name: string
+          id: string
+          status: string | null
+          submission_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          form_name: string
+          id?: string
+          status?: string | null
+          submission_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          form_name?: string
+          id?: string
+          status?: string | null
+          submission_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       gc_applicants: {
         Row: {
           company_name: string
@@ -10968,6 +10998,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      property_reports: {
+        Row: {
+          address: string
+          bathrooms: number | null
+          bedrooms: number | null
+          city: string | null
+          converted_to_project_id: string | null
+          created_at: string | null
+          estimated_cost_high: number | null
+          estimated_cost_low: number | null
+          id: string
+          lot_size: number | null
+          property_data: Json | null
+          selected_scopes: string[] | null
+          square_feet: number | null
+          state: string | null
+          user_id: string | null
+          year_built: number | null
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          converted_to_project_id?: string | null
+          created_at?: string | null
+          estimated_cost_high?: number | null
+          estimated_cost_low?: number | null
+          id?: string
+          lot_size?: number | null
+          property_data?: Json | null
+          selected_scopes?: string[] | null
+          square_feet?: number | null
+          state?: string | null
+          user_id?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          converted_to_project_id?: string | null
+          created_at?: string | null
+          estimated_cost_high?: number | null
+          estimated_cost_low?: number | null
+          id?: string
+          lot_size?: number | null
+          property_data?: Json | null
+          selected_scopes?: string[] | null
+          square_feet?: number | null
+          state?: string | null
+          user_id?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Relationships: []
       }
       proplus_insights: {
         Row: {
