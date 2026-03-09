@@ -799,7 +799,7 @@ export default function PropertyRenovationReport() {
                     <div>
                       <h3 className="text-sm font-semibold text-foreground mb-1">How We Calculate These Estimates</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ material and labor rates. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. These are <strong>preliminary estimates</strong> — a SmartReno estimator will provide exact pricing after an on-site walkthrough.
+                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ contractor-grade material and labor rates with a <strong>25% GC markup</strong> included. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. Custom or luxury finishes, unforeseen conditions, and specialty trades may increase these figures. A SmartReno estimator will provide exact pricing after an on-site walkthrough.
                       </p>
                     </div>
                   </div>
