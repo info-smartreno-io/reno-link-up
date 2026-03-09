@@ -130,13 +130,26 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // ── System (admin only) ──
+  // ── 8. Governance & Automation ──
+  {
+    id: "governance",
+    label: "Governance",
+    icon: Shield,
+    roles: ["admin"],
+    separatorAbove: true,
+    children: [
+      { id: "gov.workflow", label: "Workflow Engine", to: "/admin/workflow-engine", icon: ArrowRightLeft },
+      { id: "gov.permissions", label: "Permissions", to: "/admin/permissions", icon: Shield },
+      { id: "gov.audit", label: "Audit Log", to: "/admin/audit-log", icon: Settings },
+    ],
+  },
+
+  // ── 9. System (admin only) ──
   {
     id: "system",
     label: "System",
     icon: Settings,
     roles: ["admin"],
-    separatorAbove: true,
     children: [
       { id: "sys.notifications", label: "Notifications", to: "/admin/notifications", icon: Bell },
       { id: "sys.ai", label: "SmartReno AI", to: "/admin/ai/overview", icon: Sparkles },
