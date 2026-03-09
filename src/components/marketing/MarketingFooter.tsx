@@ -24,8 +24,8 @@ export function MarketingFooter() {
             <ul className="space-y-2.5 text-sm text-background/60">
               <li><Link to="/how-it-works" className="hover:text-background transition-colors">How It Works</Link></li>
               <li><Link to="/renovation-costs" className="hover:text-background transition-colors">Renovation Costs</Link></li>
-              <li><Link to="/smartreno-process" className="hover:text-background transition-colors">The Process</Link></li>
               <li><Link to="/property-renovation-report" className="hover:text-background transition-colors">Property Analysis</Link></li>
+              <li><Link to="/smartreno-process" className="hover:text-background transition-colors">The Process</Link></li>
             </ul>
           </div>
 
@@ -33,6 +33,7 @@ export function MarketingFooter() {
             <h4 className="text-xs font-semibold uppercase tracking-wider text-background/40 mb-4">Network</h4>
             <ul className="space-y-2.5 text-sm text-background/60">
               <li><Link to="/contractors" className="hover:text-background transition-colors">Contractors</Link></li>
+              <li><Link to="/designers" className="hover:text-background transition-colors">Designers</Link></li>
               <li><Link to="/for-contractors" className="hover:text-background transition-colors">For Contractors</Link></li>
               <li><Link to="/contractors/join" className="hover:text-background transition-colors">Join Network</Link></li>
             </ul>

@@ -100,13 +100,16 @@ export default function Index() {
             {/* Left - Copy */}
             <motion.div initial="hidden" animate="visible" variants={fadeUp}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.08]">
-                Plan Your Renovation{" "}
+                The First Step{" "}
                 <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                  the Smart Way
+                  Before You Renovate
                 </span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed">
-                SmartReno organizes your renovation before construction begins — with clearer scope, renovation cost insight, and structured contractor proposals.
+                SmartReno organizes your renovation before construction begins so homeowners can move forward with clarity, confidence, and the right professionals.
+              </p>
+              <p className="mt-3 text-base font-semibold text-foreground/80">
+                We protect your time, money and home.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-3">
@@ -287,7 +290,7 @@ export default function Index() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Why SmartReno</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-              Renovations work better when organized
+              Renovations work better when the process is structured
             </h2>
           </div>
 
@@ -450,62 +453,73 @@ export default function Index() {
       </section>
 
       {/* ===== 9. CONTRACTOR NETWORK ===== */}
-      <section className="py-24 md:py-32 bg-foreground text-background">
+      <section className="py-24 md:py-32 bg-muted/20">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">For Contractors</p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
-                Work with homeowners who are ready to renovate
-              </h2>
-              <p className="mt-6 text-lg text-background/60 leading-relaxed max-w-lg">
-                SmartReno provides structured renovation opportunities and transparent proposal workflows for experienced contractors.
-              </p>
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Contractors</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+              Connect with experienced renovation professionals
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              SmartReno connects homeowners with qualified contractors who can review structured project scopes and submit proposals.
+            </p>
+          </div>
 
-              <ul className="mt-8 space-y-4">
-                {[
-                  "Qualified homeowner projects",
-                  "Structured project scopes",
-                  "Transparent proposal workflow",
-                  "Professional visibility on the platform",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm text-background/80">
-                    <CheckCircle className="h-4 w-4 text-accent shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                to="/contractors/join"
-                className="mt-10 inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3.5 text-base font-semibold text-foreground hover:bg-background/90 transition-all"
-              >
-                Join the Contractor Network <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            {/* Contractor cards visual */}
-            <div className="space-y-4">
-              {[
-                { name: "ABC Construction", trade: "General Contractor", rating: "4.9", projects: "47" },
-                { name: "Premier Kitchens", trade: "Kitchen Specialist", rating: "4.8", projects: "32" },
-                { name: "Modern Baths NJ", trade: "Bathroom Renovation", rating: "4.7", projects: "28" },
-              ].map((c) => (
-                <div key={c.name} className="rounded-xl border border-background/10 bg-background/5 p-5 flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-background/10 grid place-items-center text-background font-bold text-sm">
+          <div className="grid sm:grid-cols-3 gap-6 mb-10">
+            {[
+              { name: "ABC Construction", trade: "General Contractor", rating: "4.9", projects: "47" },
+              { name: "Premier Kitchens", trade: "Kitchen Specialist", rating: "4.8", projects: "32" },
+              { name: "Modern Baths NJ", trade: "Bathroom Renovation", rating: "4.7", projects: "28" },
+            ].map((c) => (
+              <div key={c.name} className="rounded-2xl border border-border/50 bg-card p-6 hover:shadow-lg transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 rounded-full bg-accent/10 grid place-items-center text-accent font-bold text-sm">
                     {c.name[0]}
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-background">{c.name}</div>
-                    <div className="text-xs text-background/50">{c.trade}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-background">★ {c.rating}</div>
-                    <div className="text-xs text-background/50">{c.projects} projects</div>
+                  <div>
+                    <div className="text-sm font-semibold">{c.name}</div>
+                    <div className="text-xs text-muted-foreground">{c.trade}</div>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">★ {c.rating}</span>
+                  <span className="text-muted-foreground">{c.projects} projects</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/contractors"
+              className="inline-flex items-center gap-2 rounded-xl bg-foreground px-6 py-3.5 text-base font-semibold text-background hover:bg-foreground/90 transition-all"
+            >
+              Browse Contractors <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 9B. DESIGNERS ===== */}
+      <section className="py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Designers</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+              Work with designers who specialize in renovation planning
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Design professionals can collaborate with homeowners early in the renovation process to develop layouts, selections, and project concepts.
+            </p>
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/designers"
+              className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground hover:bg-accent/90 transition-all"
+            >
+              Browse Designers <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>

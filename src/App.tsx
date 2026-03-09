@@ -13,6 +13,7 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 import { OrganizationSchema } from "@/components/seo/JsonLd";
 import { DemoModeProvider } from "@/context/DemoModeContext";
 import { LeadDataProvider } from "@/context/LeadDataContext";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import GetEstimate from "./pages/GetEstimate";
 import NotFound from "./pages/NotFound";
@@ -79,6 +80,7 @@ import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import ContractorProfile from "./pages/ContractorProfile";
 import ForContractors from "./pages/ForContractors";
+import DesignersDirectory from "./pages/DesignersDirectory";
 import HowItWorks from "./pages/HowItWorks";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -301,6 +303,7 @@ function AppRoutes() {
     <>
       {/* Site-wide Organization Schema */}
       <OrganizationSchema />
+      <ScrollToTop />
       
       <Routes>
         <Route path="/" element={<Index />} />
@@ -403,6 +406,8 @@ function AppRoutes() {
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
+            <Route path="/designers" element={<DesignersDirectory />} />
+            <Route path="/designers/:id" element={<DesignersDirectory />} />
             <Route path="/for-contractors" element={<ForContractors />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />

@@ -19,36 +19,50 @@ const STEPS = [
   {
     step: "01",
     icon: Home,
-    title: "Tell Us About Your Project",
-    description: "Start by describing your renovation — what rooms, what work, your goals and timeline. It takes just a few minutes.",
+    title: "Project Planning",
+    description: "Tell us about your renovation — what rooms, what work, your goals and timeline.",
     detail: "Our guided intake captures everything needed to scope your project properly.",
   },
   {
     step: "02",
     icon: Search,
-    title: "We Scope & Estimate",
-    description: "A SmartReno construction agent reviews your project, creates a detailed scope of work, and develops a realistic budget range.",
-    detail: "This is the step most homeowners skip — and it's where most problems start.",
+    title: "On-Site Walkthrough",
+    description: "A SmartReno construction agent visits your home to evaluate scope and take detailed measurements.",
+    detail: "This hands-on step ensures nothing is missed before scoping begins.",
   },
   {
     step: "03",
     icon: FileText,
-    title: "Structured Bid Packet",
-    description: "We compile your scope into a professional bid packet with trade-by-trade breakdowns, material selections, and specifications.",
+    title: "Scope Development",
+    description: "We create a detailed scope of work with trade-by-trade breakdowns, material selections, and specifications.",
     detail: "Every contractor bids on the exact same scope — so you can compare apples to apples.",
   },
   {
     step: "04",
-    icon: Users,
-    title: "3 Qualified Bids",
-    description: "We invite three vetted, licensed contractors from our network to bid on your project. You review and choose.",
+    icon: ClipboardList,
+    title: "Contractor Bidding",
+    description: "We compile your scope into a professional bid packet and invite vetted, licensed contractors to submit proposals.",
     detail: "All contractors are verified for licensing, insurance, and work quality.",
   },
   {
     step: "05",
+    icon: Users,
+    title: "Proposal Review",
+    description: "You review structured proposals side-by-side, with clear pricing breakdowns and contractor qualifications.",
+    detail: "No guesswork — just transparent, comparable bids on identical scope.",
+  },
+  {
+    step: "06",
+    icon: Shield,
+    title: "Pre-Construction Alignment",
+    description: "Once you select a contractor, we align on timeline, milestones, and communication expectations.",
+    detail: "Everything is documented before the first day of construction.",
+  },
+  {
+    step: "07",
     icon: Hammer,
-    title: "Build With Confidence",
-    description: "Once you select a contractor, your project is managed through SmartReno with clear milestones, communication, and documentation.",
+    title: "Project Execution",
+    description: "Your renovation is managed through SmartReno with clear milestones, communication, and documentation.",
     detail: "No surprises. No miscommunication. Just a well-run renovation.",
   },
 ];
@@ -126,7 +140,7 @@ export default function HowItWorks() {
               How SmartReno Works
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Five clear steps from idea to construction — with protection at every stage.
+              Seven clear steps from idea to construction — with protection at every stage.
             </p>
           </div>
           <div className="space-y-12">

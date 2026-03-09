@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
-import { SiteNavbar } from "@/components/SiteNavbar";
-import { FooterAdminLogin } from "@/components/FooterAdminLogin";
+import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Star, MapPin, Shield, Award, Search, CheckCircle2, FileText, Hammer, ArrowRight, Users, Clock, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -243,7 +243,7 @@ export default function ContractorsDirectory() {
         <link rel="canonical" href="https://smartreno.io/contractors" />
       </Helmet>
 
-      <SiteNavbar />
+      <MarketingNavbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
@@ -410,7 +410,7 @@ export default function ContractorsDirectory() {
         </div>
       </section>
 
-      <FooterAdminLogin />
+      <MarketingFooter />
 
       {/* Request to Bid Dialog */}
       <Dialog open={showBidDialog} onOpenChange={setShowBidDialog}>

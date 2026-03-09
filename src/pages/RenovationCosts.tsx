@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { SiteNavbar } from "@/components/SiteNavbar";
+import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -56,7 +57,7 @@ export default function RenovationCosts() {
         <meta name="description" content="Explore real renovation cost ranges for kitchens, bathrooms, basements, additions, and whole-home remodels in Northern New Jersey." />
         <link rel="canonical" href="https://smartreno.io/renovation-costs" />
       </Helmet>
-      <SiteNavbar />
+      <MarketingNavbar />
       <main>
         {/* Hero */}
         <section className="py-20 md:py-32 lg:py-40 bg-gradient-to-b from-primary/5 to-background">
@@ -182,6 +183,7 @@ export default function RenovationCosts() {
           </div>
         </section>
       </main>
+      <MarketingFooter />
     </>
   );
 }
