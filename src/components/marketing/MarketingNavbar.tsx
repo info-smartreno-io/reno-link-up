@@ -70,7 +70,7 @@ export function MarketingNavbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               to="/start-your-renovation"
-              className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background hover:bg-foreground/90 transition-colors"
+              className="rounded-lg bg-[hsl(var(--brand))] px-4 py-2 text-sm font-semibold text-white hover:bg-[hsl(var(--brand))]/90 transition-colors"
             >
               Start Project
             </Link>
@@ -117,7 +117,7 @@ export function MarketingNavbar() {
             <div className="pt-4 flex flex-col gap-2">
               <Link
                 to="/start-your-renovation"
-                className="rounded-lg bg-foreground px-4 py-2.5 text-center text-sm font-semibold text-background"
+                className="rounded-lg bg-[hsl(var(--brand))] px-4 py-2.5 text-center text-sm font-semibold text-white"
                 onClick={() => setMobileOpen(false)}
               >
                 Start Project
