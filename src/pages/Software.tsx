@@ -24,7 +24,7 @@ export default function Software() {
             Renovation Management, Built for Results
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            SmartReno's platform connects homeowners, estimators, and contractors — structuring every renovation from scope to completion.
+            SmartReno's platform connects homeowners, estimators, designers, architects, vendors, and contractors — structuring every renovation from scope to completion.
           </p>
         </div>
       </section>
