@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, FileJson, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Upload, FileJson, AlertCircle, CheckCircle2, MapPin } from "lucide-react";
+import { AdminGooglePlacesImport } from "@/components/admin/AdminGooglePlacesImport";
 
 export function BulkImport() {
   const [loading, setLoading] = useState(false);
@@ -81,115 +83,132 @@ export function BulkImport() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Bulk Contractor Import
-          </CardTitle>
-          <CardDescription>
-            Import contractors from Clay.com, CSV, or JSON data
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>JSON Data</Label>
-            <Textarea
-              placeholder={exampleJson}
-              value={jsonData}
-              onChange={(e) => setJsonData(e.target.value)}
-              rows={12}
-              className="font-mono text-xs"
-            />
-            <p className="text-xs text-muted-foreground">
-              Paste JSON array of contractor objects. See example format above.
-            </p>
-          </div>
+      <Tabs defaultValue="google-places">
+        <TabsList>
+          <TabsTrigger value="google-places" className="gap-2">
+            <MapPin className="h-4 w-4" /> Google Places
+          </TabsTrigger>
+          <TabsTrigger value="json-import" className="gap-2">
+            <FileJson className="h-4 w-4" /> JSON Import
+          </TabsTrigger>
+        </TabsList>
 
-          <Button onClick={handleImport} disabled={loading} className="w-full">
-            {loading ? "Importing..." : "Import Contractors"}
-          </Button>
-        </CardContent>
-      </Card>
+        <TabsContent value="google-places" className="mt-6">
+          <AdminGooglePlacesImport />
+        </TabsContent>
 
-      {result && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileJson className="h-5 w-5" />
-              Import Results
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="border rounded-lg p-3">
-                <div className="text-2xl font-bold">{result.total}</div>
-                <div className="text-xs text-muted-foreground">Total Records</div>
-              </div>
-              <div className="border rounded-lg p-3">
-                <div className="text-2xl font-bold text-green-600">{result.successful}</div>
-                <div className="text-xs text-muted-foreground">Successful</div>
-              </div>
-              <div className="border rounded-lg p-3">
-                <div className="text-2xl font-bold text-red-600">{result.failed}</div>
-                <div className="text-xs text-muted-foreground">Failed</div>
-              </div>
-            </div>
-
-            {result.errors && result.errors.length > 0 && (
+        <TabsContent value="json-import" className="mt-6 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Bulk Contractor Import
+              </CardTitle>
+              <CardDescription>
+                Import contractors from Clay.com, CSV, or JSON data
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-destructive" />
-                  Errors
-                </Label>
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {result.errors.map((error: string, idx: number) => (
-                    <div key={idx} className="bg-destructive/10 p-2 rounded text-xs">
-                      {error}
-                    </div>
-                  ))}
+                <Label>JSON Data</Label>
+                <Textarea
+                  placeholder={exampleJson}
+                  value={jsonData}
+                  onChange={(e) => setJsonData(e.target.value)}
+                  rows={12}
+                  className="font-mono text-xs"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Paste JSON array of contractor objects. See example format above.
+                </p>
+              </div>
+
+              <Button onClick={handleImport} disabled={loading} className="w-full">
+                {loading ? "Importing..." : "Import Contractors"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {result && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileJson className="h-5 w-5" />
+                  Import Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="border rounded-lg p-3">
+                    <div className="text-2xl font-bold">{result.total}</div>
+                    <div className="text-xs text-muted-foreground">Total Records</div>
+                  </div>
+                  <div className="border rounded-lg p-3">
+                    <div className="text-2xl font-bold text-green-600">{result.successful}</div>
+                    <div className="text-xs text-muted-foreground">Successful</div>
+                  </div>
+                  <div className="border rounded-lg p-3">
+                    <div className="text-2xl font-bold text-red-600">{result.failed}</div>
+                    <div className="text-xs text-muted-foreground">Failed</div>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {result.successful > 0 && (
-              <div className="flex items-center gap-2 text-sm text-green-600">
-                <CheckCircle2 className="h-4 w-4" />
-                Import completed successfully
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                {result.errors && result.errors.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-destructive" />
+                      Errors
+                    </Label>
+                    <div className="space-y-1 max-h-48 overflow-y-auto">
+                      {result.errors.map((error: string, idx: number) => (
+                        <div key={idx} className="bg-destructive/10 p-2 rounded text-xs">
+                          {error}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Clay.com Webhook</CardTitle>
-          <CardDescription>
-            Configure Clay to automatically send contractor data
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-muted p-3 rounded font-mono text-xs break-all">
-            {import.meta.env.VITE_SUPABASE_URL}/functions/v1/clay-webhook
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Set this URL as your Clay webhook endpoint. Contractors will be automatically imported
-            and scored when Clay enrichment completes.
-          </p>
-          <div className="space-y-2">
-            <Label className="text-xs">Expected Fields:</Label>
-            <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-              <li>company_name or name (required)</li>
-              <li>email (required)</li>
-              <li>phone, contact_name</li>
-              <li>service_areas, specialties</li>
-              <li>license_number, rating, review_count</li>
-              <li>search_rank, website</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+                {result.successful > 0 && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Import completed successfully
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Clay.com Webhook</CardTitle>
+              <CardDescription>
+                Configure Clay to automatically send contractor data
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-muted p-3 rounded font-mono text-xs break-all">
+                {import.meta.env.VITE_SUPABASE_URL}/functions/v1/clay-webhook
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Set this URL as your Clay webhook endpoint. Contractors will be automatically imported
+                and scored when Clay enrichment completes.
+              </p>
+              <div className="space-y-2">
+                <Label className="text-xs">Expected Fields:</Label>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>company_name or name (required)</li>
+                  <li>email (required)</li>
+                  <li>phone, contact_name</li>
+                  <li>service_areas, specialties</li>
+                  <li>license_number, rating, review_count</li>
+                  <li>search_rank, website</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -6202,6 +6202,39 @@ export type Database = {
         }
         Relationships: []
       }
+      google_places_import_logs: {
+        Row: {
+          business_type: string
+          created_at: string | null
+          duplicates_skipped: number | null
+          id: string
+          imported_by: string | null
+          new_imported: number | null
+          results_found: number | null
+          search_query: string
+        }
+        Insert: {
+          business_type: string
+          created_at?: string | null
+          duplicates_skipped?: number | null
+          id?: string
+          imported_by?: string | null
+          new_imported?: number | null
+          results_found?: number | null
+          search_query: string
+        }
+        Update: {
+          business_type?: string
+          created_at?: string | null
+          duplicates_skipped?: number | null
+          id?: string
+          imported_by?: string | null
+          new_imported?: number | null
+          results_found?: number | null
+          search_query?: string
+        }
+        Relationships: []
+      }
       home_ai_insights: {
         Row: {
           confidence_level: string | null
@@ -7179,6 +7212,102 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      imported_businesses: {
+        Row: {
+          address: string | null
+          business_name: string
+          business_status: string | null
+          business_type: string
+          category: string | null
+          city: string | null
+          claim_status: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string | null
+          google_place_id: string | null
+          google_rating: number | null
+          id: string
+          is_active: boolean | null
+          map_link: string | null
+          phone: string | null
+          photo_attributions: Json | null
+          photo_url: string | null
+          primary_type: string | null
+          raw_place_data: Json | null
+          review_count: number | null
+          search_query: string | null
+          service_area_tags: string[] | null
+          slug: string
+          source: string | null
+          state: string | null
+          updated_at: string | null
+          website: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          business_status?: string | null
+          business_type: string
+          category?: string | null
+          city?: string | null
+          claim_status?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string | null
+          google_place_id?: string | null
+          google_rating?: number | null
+          id?: string
+          is_active?: boolean | null
+          map_link?: string | null
+          phone?: string | null
+          photo_attributions?: Json | null
+          photo_url?: string | null
+          primary_type?: string | null
+          raw_place_data?: Json | null
+          review_count?: number | null
+          search_query?: string | null
+          service_area_tags?: string[] | null
+          slug: string
+          source?: string | null
+          state?: string | null
+          updated_at?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          business_status?: string | null
+          business_type?: string
+          category?: string | null
+          city?: string | null
+          claim_status?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string | null
+          google_place_id?: string | null
+          google_rating?: number | null
+          id?: string
+          is_active?: boolean | null
+          map_link?: string | null
+          phone?: string | null
+          photo_attributions?: Json | null
+          photo_url?: string | null
+          primary_type?: string | null
+          raw_place_data?: Json | null
+          review_count?: number | null
+          search_query?: string | null
+          service_area_tags?: string[] | null
+          slug?: string
+          source?: string | null
+          state?: string | null
+          updated_at?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Relationships: []
       }
       inside_sales_agents: {
         Row: {
@@ -9532,6 +9661,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      profile_claim_requests: {
+        Row: {
+          business_id: string
+          company_name: string
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          relationship: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          website: string | null
+        }
+        Insert: {
+          business_id: string
+          company_name: string
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          website?: string | null
+        }
+        Update: {
+          business_id?: string
+          company_name?: string
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_claim_requests_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "imported_businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
