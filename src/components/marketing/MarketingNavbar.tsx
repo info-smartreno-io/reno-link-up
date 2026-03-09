@@ -117,7 +117,7 @@ export function MarketingNavbar() {
             <div className="pt-4 flex flex-col gap-2">
               <Link
                 to="/start-your-renovation"
-                className="rounded-lg bg-foreground px-4 py-2.5 text-center text-sm font-semibold text-background"
+                className="rounded-lg bg-[hsl(var(--brand))] px-4 py-2.5 text-center text-sm font-semibold text-white"
                 onClick={() => setMobileOpen(false)}
               >
                 Start Project
