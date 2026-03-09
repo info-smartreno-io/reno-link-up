@@ -289,12 +289,12 @@ export default function ArchitectProfile() {
                     Request to Bid
                   </Button>
                   <a href={`tel:${architect.phone}`}>
-                    <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                    <Button variant="outline" className="border-white text-white hover:bg-white/20 bg-white/10">
                       <Phone className="mr-2 h-4 w-4" /> Call
                     </Button>
                   </a>
                   <a href={architect.website} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                    <Button variant="outline" className="border-white text-white hover:bg-white/20 bg-white/10">
                       <Globe className="mr-2 h-4 w-4" /> Website
                     </Button>
                   </a>
