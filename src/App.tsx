@@ -140,6 +140,8 @@ import AdminWarranty from "./pages/AdminWarranty";
 import AdminWarrantyDetail from "./pages/AdminWarrantyDetail";
 import AdminWarrantyMessaging from "./pages/AdminWarrantyMessaging";
 import AgentConsole from "./pages/admin/AgentConsole";
+import AdminPropertyReports from "./pages/admin/AdminPropertyReports";
+import AdminImportedBusinesses from "./pages/admin/AdminImportedBusinesses";
 import AdminContractorNetwork from "./pages/AdminContractorNetwork";
 import AdminChangeOrders from "./pages/AdminChangeOrders";
 import AdminQuickbooks from "./pages/AdminQuickbooks";
@@ -504,6 +506,16 @@ function AppRoutes() {
             <Route path="/admin/design-packages" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminDesignPackages />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/property-reports" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminPropertyReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/imported-businesses" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminImportedBusinesses />
               </ProtectedRoute>
             } />
             <Route path="/admin/smart-estimates" element={
