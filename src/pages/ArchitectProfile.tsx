@@ -20,10 +20,6 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-import kitchenImage from "@/assets/kitchen-remodel.jpg";
-import bathroomImage from "@/assets/bathroom-remodel.jpg";
-import basementImage from "@/assets/basement-finished.jpg";
-import additionImage from "@/assets/home-addition.jpg";
 
 const ARCHITECTS: Record<string, {
   id: string; name: string; specialty: string; rating: number; reviews: number;
