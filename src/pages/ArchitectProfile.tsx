@@ -362,7 +362,7 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6 space-y-3">
                   <h3 className="font-bold text-foreground">Credentials</h3>
                   <div className="space-y-2 text-sm">
