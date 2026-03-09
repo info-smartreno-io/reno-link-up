@@ -365,7 +365,8 @@ export default function PropertyRenovationReport() {
   const bedsNum = property?.bedrooms ? parseInt(property.bedrooms) : 3;
   const suggestedIds = useMemo(() => getSuggestedIds(yearBuiltNum, sqftNum), [yearBuiltNum, sqftNum]);
 
-  const adj = (val: number) => Math.round(val * multiplier);
+  const GC_MARKUP = 1.25; // 25% General Contractor overhead & profit
+  const adj = (val: number) => Math.round(val * multiplier * GC_MARKUP);
 
   const getCategoryTotal = (cat: RenovationCategory): { low: number; high: number } => {
     let low = 0, high = 0;
@@ -374,7 +375,10 @@ export default function PropertyRenovationReport() {
       low += adj(qty * item.unitCostLow);
       high += adj(qty * item.unitCostHigh);
     }
-    return { low: Math.round(low / 500) * 500, high: Math.round(high / 500) * 500 };
+    // Tighter range: raise low by 15%, lower high by 10%
+    const tightLow = Math.round(low * 1.15 / 500) * 500;
+    const tightHigh = Math.round(high * 0.90 / 500) * 500;
+    return { low: tightLow, high: Math.max(tightHigh, tightLow + 500) };
   };
 
   const toggleScope = (id: string) => {
