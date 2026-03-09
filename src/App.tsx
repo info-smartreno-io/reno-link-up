@@ -140,6 +140,8 @@ import AdminWarranty from "./pages/AdminWarranty";
 import AdminWarrantyDetail from "./pages/AdminWarrantyDetail";
 import AdminWarrantyMessaging from "./pages/AdminWarrantyMessaging";
 import AgentConsole from "./pages/admin/AgentConsole";
+import AdminPropertyReports from "./pages/admin/AdminPropertyReports";
+import AdminImportedBusinesses from "./pages/admin/AdminImportedBusinesses";
 import AdminContractorNetwork from "./pages/AdminContractorNetwork";
 import AdminChangeOrders from "./pages/AdminChangeOrders";
 import AdminQuickbooks from "./pages/AdminQuickbooks";
