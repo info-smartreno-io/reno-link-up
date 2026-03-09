@@ -13,6 +13,7 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 import { OrganizationSchema } from "@/components/seo/JsonLd";
 import { DemoModeProvider } from "@/context/DemoModeContext";
 import { LeadDataProvider } from "@/context/LeadDataContext";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import GetEstimate from "./pages/GetEstimate";
 import NotFound from "./pages/NotFound";
