@@ -53,13 +53,15 @@ export default function AdminChangeOrdersManager() {
       if (status === "approved") {
         const co = changeOrders?.find(c => c.id === id);
         if (co?.project_id) {
-          const { data: fin } = await supabase.from("project_financials").select("*").eq("project_id", co.project_id).single();
+          const { data: fin } = await supabase.from("project_financials").select("*").eq("project_id", co.project_id).maybeSingle();
           if (fin) {
             await supabase.from("project_financials").update({
               total_change_orders: (fin.total_change_orders || 0) + (co.change_amount || 0),
               remaining_balance: (fin.remaining_balance || 0) + (co.change_amount || 0),
             }).eq("id", fin.id);
           }
+          // Flag timeline for refresh
+          await supabase.from("contractor_projects").update({ timeline_needs_refresh: true }).eq("id", co.project_id);
         }
       }
     },

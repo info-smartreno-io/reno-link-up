@@ -6,15 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Package } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const VENDOR_TYPES = ["cabinets", "flooring", "tile", "lighting", "countertops", "windows", "doors", "appliances", "lumber", "plumbing_fixtures"];
 
 export default function EstimatorVendorQuotes() {
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId") || null;
   const [open, setOpen] = useState(false);
   const [vendorType, setVendorType] = useState("");
   const [materials, setMaterials] = useState("");
@@ -40,7 +43,7 @@ export default function EstimatorVendorQuotes() {
       if (!user) throw new Error("Not authenticated");
       const materialsList = materials.split("\n").filter(Boolean).map(m => ({ name: m.trim() }));
       const { error } = await supabase.from("vendor_quote_requests").insert({
-        project_id: null as any, // Will be linked when created from project context
+        project_id: projectId, // Automatically linked when launched from project context
         vendor_type: vendorType,
         materials: materialsList,
         quantities: { items: quantities },
@@ -63,14 +66,22 @@ export default function EstimatorVendorQuotes() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Vendor Quote Requests</h1>
-          <p className="text-sm text-muted-foreground">Request material pricing from vendors</p>
+          <p className="text-sm text-muted-foreground">
+            Request material pricing from vendors
+            {projectId && <Badge variant="outline" className="ml-2 text-xs">Project linked</Badge>}
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm"><Plus className="h-4 w-4 mr-1" />New Request</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Create Vendor Quote Request</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Create Vendor Quote Request</DialogTitle>
+              <DialogDescription>
+                {projectId ? "This request will be linked to the current project." : "Select materials and vendor type below."}
+              </DialogDescription>
+            </DialogHeader>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Vendor Type</label>
@@ -107,6 +118,7 @@ export default function EstimatorVendorQuotes() {
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Materials</TableHead>
+                <TableHead>Project</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
@@ -118,12 +130,15 @@ export default function EstimatorVendorQuotes() {
                   <TableCell className="text-sm max-w-[250px] truncate">
                     {Array.isArray(q.materials) ? q.materials.map((m: any) => m.name || m).join(", ") : "—"}
                   </TableCell>
+                  <TableCell className="text-sm">
+                    {q.project_id ? <Badge variant="outline" className="text-xs">Linked</Badge> : <span className="text-muted-foreground text-xs">Unlinked</span>}
+                  </TableCell>
                   <TableCell><Badge variant="secondary" className="text-xs">{q.status}</Badge></TableCell>
                   <TableCell className="text-sm text-muted-foreground">{new Date(q.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))}
               {(!quotes || quotes.length === 0) && (
-                <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No vendor requests yet</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No vendor requests yet</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

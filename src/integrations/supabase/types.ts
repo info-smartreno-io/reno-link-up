@@ -3604,6 +3604,7 @@ export type Database = {
           project_type: string
           square_footage: number | null
           status: string
+          timeline_needs_refresh: boolean | null
           updated_at: string
         }
         Insert: {
@@ -3620,6 +3621,7 @@ export type Database = {
           project_type: string
           square_footage?: number | null
           status?: string
+          timeline_needs_refresh?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -3636,6 +3638,7 @@ export type Database = {
           project_type?: string
           square_footage?: number | null
           status?: string
+          timeline_needs_refresh?: boolean | null
           updated_at?: string
         }
         Relationships: [

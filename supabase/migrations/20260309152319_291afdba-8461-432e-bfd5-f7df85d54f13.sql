@@ -1,0 +1,1 @@
+ALTER TABLE public.contractor_projects ADD COLUMN IF NOT EXISTS timeline_needs_refresh boolean DEFAULT false;
