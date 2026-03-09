@@ -173,6 +173,7 @@ const RENOVATION_CATEGORIES: RenovationCategory[] = [
       { costCode: "22-420", description: "Toilet (supply & install)", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 350, unitCostHigh: 700 },
       { costCode: "22-430", description: "Shower Valve & Trim Kit", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 450, unitCostHigh: 1200 },
       { costCode: "22-440", description: "Shower Glass Enclosure", unit: "EA", qtyFormula: (_s, baths) => Math.round(Math.max(baths, 1) * 0.5), unitCostLow: 900, unitCostHigh: 2200 },
+      { costCode: "15-400", description: "Plumbing – Rough-in, Supply & Drain Lines", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 1200, unitCostHigh: 2800 },
       { costCode: "16-100", description: "Electrical – Exhaust Fan, GFCI, Lighting", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 800, unitCostHigh: 1800 },
       { costCode: "09-900", description: "Painting – Bathroom Walls & Ceiling", unit: "SF", qtyFormula: (_s, baths) => Math.round(160 * Math.max(baths, 1)), unitCostLow: 2, unitCostHigh: 3.5 },
     ],
