@@ -391,9 +391,14 @@ export default function PropertyRenovationReport() {
     setExpandedCards(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
   };
 
+  const CONTINGENCY = 0.10; // 10% buffer for unforeseen extras
   const selectedCats = RENOVATION_CATEGORIES.filter(c => selectedScopes.includes(c.id));
-  const totalLow = selectedCats.reduce((s, c) => s + getCategoryTotal(c).low, 0);
-  const totalHigh = selectedCats.reduce((s, c) => s + getCategoryTotal(c).high, 0);
+  const subtotalLow = selectedCats.reduce((s, c) => s + getCategoryTotal(c).low, 0);
+  const subtotalHigh = selectedCats.reduce((s, c) => s + getCategoryTotal(c).high, 0);
+  const contingencyLow = Math.round(subtotalLow * CONTINGENCY / 100) * 100;
+  const contingencyHigh = Math.round(subtotalHigh * CONTINGENCY / 100) * 100;
+  const totalLow = subtotalLow + contingencyLow;
+  const totalHigh = subtotalHigh + contingencyHigh;
 
   const handlePropertyEdit = (key: string, value: string) => {
     if (!property) return;
