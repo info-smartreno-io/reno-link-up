@@ -302,6 +302,7 @@ function AppRoutes() {
     <>
       {/* Site-wide Organization Schema */}
       <OrganizationSchema />
+      <ScrollToTop />
       
       <Routes>
         <Route path="/" element={<Index />} />
