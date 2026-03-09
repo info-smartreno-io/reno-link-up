@@ -18,7 +18,6 @@ export function useHomeownerProjects() {
             id,
             client_name,
             project_type,
-            address,
             status,
             start_date,
             estimated_completion,
@@ -37,6 +36,8 @@ export function useHomeownerProjects() {
         ...hp.contractor_projects as any,
       })) || [];
     },
+    staleTime: 30000,
+    retry: 1,
   });
 }
 

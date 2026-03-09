@@ -71,6 +71,8 @@ function useSiteVisitAppointments() {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 30000,
+    retry: 1,
   });
 }
 
