@@ -409,84 +409,102 @@ export default function ArchitectsDirectory() {
       <MarketingNavbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-primary-foreground">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--primary)/0.1),transparent_60%)]" />
         <img src={watermarkArchitect} alt="" className="absolute right-0 top-0 w-[900px] opacity-[0.08] pointer-events-none mix-blend-soft-light" />
-        <div className="absolute top-0 left-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-sm font-semibold tracking-widest uppercase text-white/70 mb-3"
-          >
-            Design Your Dream Home
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight"
-          >
-            Licensed Architects, Trusted Results
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-4 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto"
-          >
-            Find vetted architecture firms in Northern NJ. Request a bid and our team coordinates the process.
-          </motion.p>
-
-          {/* Trust Indicators */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-6 flex flex-wrap justify-center gap-6 text-white/70 text-sm"
-          >
-            <span className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> AIA Licensed</span>
-            <span className="flex items-center gap-1.5"><Shield className="h-4 w-4" /> Fully Insured</span>
-            <span className="flex items-center gap-1.5"><Building2 className="h-4 w-4" /> 20+ Firms</span>
-            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Fast Response</span>
-          </motion.div>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-10 mx-auto max-w-2xl"
-          >
-            <div className="flex flex-col sm:flex-row gap-3 rounded-2xl bg-white/95 backdrop-blur-md p-3 shadow-2xl">
-              <select
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                className="flex-1 rounded-xl border-0 bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 md:py-28">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Copy */}
+            <div>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-sm font-semibold tracking-widest uppercase text-primary-foreground/70 mb-3"
               >
-                {SPECIALTIES.map(s => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                placeholder="ZIP Code"
-                maxLength={5}
-                className="w-full sm:w-32 rounded-xl border-0 bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
-              />
-              <Button
-                onClick={handleSearch}
-                className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-3 text-sm font-bold shadow-md"
+                Design Your Dream Home
+              </motion.p>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight"
               >
-                <Search className="h-4 w-4 mr-2" /> Search
-              </Button>
+                Licensed Architects, Trusted Results
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="mt-4 text-lg sm:text-xl text-primary-foreground/70 max-w-xl mb-8 leading-relaxed"
+              >
+                Find vetted architecture firms in Northern NJ. Request a bid and our team coordinates the process.
+              </motion.p>
+
+              {/* Trust Indicators */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="flex flex-wrap gap-6 text-primary-foreground/70 text-sm mb-8"
+              >
+                <span className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> AIA Licensed</span>
+                <span className="flex items-center gap-1.5"><Shield className="h-4 w-4" /> Fully Insured</span>
+                <span className="flex items-center gap-1.5"><Building2 className="h-4 w-4" /> 20+ Firms</span>
+                <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Fast Response</span>
+              </motion.div>
+
+              {/* Search Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="max-w-xl"
+              >
+                <div className="flex flex-col sm:flex-row gap-3 rounded-2xl bg-card/95 backdrop-blur-md p-3 shadow-2xl">
+                  <select
+                    value={specialty}
+                    onChange={(e) => setSpecialty(e.target.value)}
+                    className="flex-1 rounded-xl border-0 bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  >
+                    {SPECIALTIES.map(s => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value)}
+                    placeholder="ZIP Code"
+                    maxLength={5}
+                    className="w-full sm:w-32 rounded-xl border-0 bg-muted px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  <Button
+                    onClick={handleSearch}
+                    className="rounded-xl bg-primary text-primary-foreground hover:bg-accent px-8 py-3 text-sm font-bold shadow-md"
+                  >
+                    <Search className="h-4 w-4 mr-2" /> Search
+                  </Button>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+
+            {/* Right — Hero Image */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="hidden lg:block"
+            >
+              <img
+                src={heroArchitect}
+                alt="Architectural blueprint drawing"
+                className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
+                loading="lazy"
+              />
+            </motion.div>
+          </div>
         </div>
       </section>
 
