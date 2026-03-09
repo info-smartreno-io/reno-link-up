@@ -179,7 +179,7 @@ export default function ForContractors() {
                   "Your profile showcases your license, insurance & work",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                     <span className="text-sm text-foreground">{item}</span>
                   </li>
                 ))}
