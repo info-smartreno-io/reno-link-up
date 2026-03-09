@@ -563,13 +563,13 @@ export default function Index() {
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/start-your-renovation")}
-              className="rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10 flex items-center gap-2 justify-center"
+              className="rounded-full bg-foreground px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10 flex items-center gap-2 justify-center"
             >
               Start Your Project <ArrowRight className="h-4 w-4" />
             </button>
             <Link
               to="/property-renovation-report"
-              className="rounded-xl bg-[hsl(var(--brand))] px-8 py-4 text-base font-semibold text-white hover:bg-[hsl(var(--brand))]/90 transition-all shadow-lg shadow-[hsl(var(--brand))]/20 flex items-center gap-2 justify-center"
+              className="rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-accent transition-all shadow-lg shadow-primary/20 flex items-center gap-2 justify-center"
             >
               Analyze Your Property
             </Link>
