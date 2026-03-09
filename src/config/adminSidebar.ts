@@ -5,7 +5,8 @@ import {
   BarChart3, Building2, FileText, Gavel, Brain, Package,
   TrendingUp, DollarSign, MapPinned, Home, FolderKanban,
   Bell, Settings, FlaskConical, Sparkles, HardDrive,
-  UserPlus, HardHat, Handshake, Shield
+  UserPlus, HardHat, Handshake, Shield, CreditCard, Calendar,
+  ArrowRightLeft
 } from "lucide-react";
 
 /** Which roles can see which items */
@@ -66,6 +67,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
       { id: "proj.bid_packets", label: "Bid Packets", to: "/admin/bid-packets", icon: Package },
       { id: "proj.bids", label: "Bid Review", to: "/admin/bids", icon: Gavel },
       { id: "proj.live", label: "Live Projects", to: "/admin/live-projects", icon: Building2, badgeKey: "projects_open" },
+      { id: "proj.timeline", label: "Project Timeline", to: "/admin/project-timeline", icon: Calendar },
     ],
   },
 
@@ -80,7 +82,19 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // ── 4. Contractor Network ──
+  // ── 4. Financial Engine ──
+  {
+    id: "financials",
+    label: "Financial Engine",
+    icon: DollarSign,
+    children: [
+      { id: "fin.overview", label: "Financial Overview", to: "/admin/financial-engine", icon: DollarSign },
+      { id: "fin.change_orders", label: "Change Orders", to: "/admin/change-orders-manager", icon: ArrowRightLeft, badgeKey: "co_pending" },
+      { id: "fin.vendor_quotes", label: "Vendor Quotes", to: "/admin/vendor-quotes", icon: Package },
+    ],
+  },
+
+  // ── 5. Contractor Network ──
   {
     id: "contractor-network",
     label: "Contractor Network",
@@ -92,7 +106,7 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // ── 5. Designer / Architect Network ──
+  // ── 6. Designer / Architect Network ──
   {
     id: "designer-network",
     label: "Designer Network",
@@ -103,13 +117,14 @@ export const ADMIN_SIDENAV: NavItem[] = [
     ],
   },
 
-  // ── 6. Platform Analytics ──
+  // ── 7. Platform Analytics ──
   {
     id: "analytics",
     label: "Platform Analytics",
     icon: BarChart3,
     children: [
       { id: "an.overview", label: "Analytics Overview", to: "/admin/analytics", icon: BarChart3 },
+      { id: "an.deep", label: "Analytics Deep Dive", to: "/admin/analytics-deep", icon: TrendingUp },
       { id: "an.financials", label: "Financials", to: "/admin/financials", icon: DollarSign },
       { id: "an.sales", label: "Sales Performance", to: "/admin/sales-performance", icon: TrendingUp },
     ],

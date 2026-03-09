@@ -1641,6 +1641,15 @@ function InternalAppRoutes() {
         <Route path="/estimator/messages" element={<ProtectedRoute requiredRole="estimator"><EstimatorMessages /></ProtectedRoute>} />
         <Route path="/estimator/files" element={<ProtectedRoute requiredRole="estimator"><EstimatorFiles /></ProtectedRoute>} />
         <Route path="/estimator/settings" element={<ProtectedRoute requiredRole="estimator"><EstimatorSettings /></ProtectedRoute>} />
+        <Route path="/estimator/vendor-quotes" element={<ProtectedRoute requiredRole="estimator"><EstimatorVendorQuotes /></ProtectedRoute>} />
+        <Route path="/estimator/scope-builder" element={<ProtectedRoute requiredRole="estimator"><EstimatorScopeBuilder /></ProtectedRoute>} />
+
+        {/* Phase 2 Admin Routes */}
+        <Route path="/admin/financial-engine" element={<ProtectedRoute requiredRole="admin"><AdminFinancialEngine /></ProtectedRoute>} />
+        <Route path="/admin/change-orders-manager" element={<ProtectedRoute requiredRole="admin"><AdminChangeOrdersManager /></ProtectedRoute>} />
+        <Route path="/admin/vendor-quotes" element={<ProtectedRoute requiredRole="admin"><AdminVendorQuotes /></ProtectedRoute>} />
+        <Route path="/admin/project-timeline" element={<ProtectedRoute requiredRole="admin"><AdminProjectTimeline /></ProtectedRoute>} />
+        <Route path="/admin/analytics-deep" element={<ProtectedRoute requiredRole="admin"><AdminAnalyticsDeep /></ProtectedRoute>} />
 
         {/* Catch-all: any unknown route → internal login */}
         <Route path="*" element={<InternalLogin />} />
