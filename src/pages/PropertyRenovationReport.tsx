@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
@@ -12,8 +12,25 @@ import {
   Search, Home, DollarSign, TrendingUp, ArrowRight, MapPin,
   Bath, BedDouble, Ruler, Calendar, Trees, Building2, Pencil,
   ChefHat, Droplets, Warehouse, PlusCircle, PaintBucket,
-  Shield, Info, Loader2, CheckCircle2
+  Shield, Loader2, CheckCircle2
 } from "lucide-react";
+import { ALL_TOWNS } from "@/data/locations";
+import Fuse from "fuse.js";
+
+/* ─── Build searchable town index ─── */
+const TOWN_INDEX = ALL_TOWNS.map((t) => ({
+  name: t.name,
+  county: t.county,
+  zip: t.zipCodes[0] || "",
+  allZips: t.zipCodes,
+  slug: t.slug,
+}));
+
+const fuse = new Fuse(TOWN_INDEX, {
+  keys: ["name", "zip"],
+  threshold: 0.3,
+  includeScore: true,
+});
 
 /* ─── Local cost multipliers by region ─── */
 const REGION_MULTIPLIERS: Record<string, { label: string; multiplier: number }> = {
@@ -27,6 +44,16 @@ const REGION_MULTIPLIERS: Record<string, { label: string; multiplier: number }> 
   "07011": { label: "Clifton", multiplier: 0.98 },
   "07052": { label: "West Orange", multiplier: 1.06 },
   "07002": { label: "Bayonne", multiplier: 0.95 },
+  "07960": { label: "Morristown", multiplier: 1.10 },
+  "07054": { label: "Parsippany", multiplier: 1.02 },
+  "07601": { label: "Hackensack", multiplier: 0.98 },
+  "07024": { label: "Fort Lee", multiplier: 1.05 },
+  "07302": { label: "Jersey City", multiplier: 1.08 },
+  "07030": { label: "Hoboken", multiplier: 1.15 },
+  "07666": { label: "Teaneck", multiplier: 1.04 },
+  "07410": { label: "Fair Lawn", multiplier: 1.0 },
+  "07631": { label: "Englewood", multiplier: 1.06 },
+  "07110": { label: "Nutley", multiplier: 1.0 },
 };
 
 const DEFAULT_MULTIPLIER = 1.0;
@@ -66,38 +93,96 @@ const EMPTY_SNAPSHOT: PropertySnapshot = {
   yearBuilt: "", sqft: "", bedrooms: "", bathrooms: "", lotSize: "", propertyType: "", town: "", zip: "",
 };
 
-/* ─── Simulated auto-populate (placeholder for future API integration) ─── */
-function simulatePropertyLookup(address: string): Promise<PropertySnapshot | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulate a successful lookup for demo purposes
-      const hasZip = address.match(/\b(0\d{4})\b/);
-      if (address.trim().length > 5) {
-        resolve({
-          yearBuilt: "1987",
-          sqft: "2,400",
-          bedrooms: "4",
-          bathrooms: "2.5",
-          lotSize: "0.28 acres",
-          propertyType: "Single Family",
-          town: hasZip && REGION_MULTIPLIERS[hasZip[1]] ? REGION_MULTIPLIERS[hasZip[1]].label : "Northern NJ",
-          zip: hasZip ? hasZip[1] : "07450",
-        });
-      } else {
-        resolve(null);
-      }
-    }, 1500);
-  });
-}
-
 /* ─── Component ─── */
 export default function PropertyRenovationReport() {
   const [address, setAddress] = useState("");
-  const [loading, setLoading] = useState(false);
   const [reportReady, setReportReady] = useState(false);
   const [property, setProperty] = useState<PropertySnapshot>(EMPTY_SNAPSHOT);
-  const [editing, setEditing] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<typeof TOWN_INDEX>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedTown, setSelectedTown] = useState<(typeof TOWN_INDEX)[0] | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleAddressChange = (value: string) => {
+    setAddress(value);
+    if (value.trim().length >= 2) {
+      // Search town names and ZIP codes
+      const results = fuse.search(value.trim()).slice(0, 6);
+      setSuggestions(results.map((r) => r.item));
+      setShowSuggestions(results.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectTown = (town: (typeof TOWN_INDEX)[0]) => {
+    setSelectedTown(town);
+    setAddress((prev) => {
+      // If user typed a street address, keep it and append town
+      const hasStreet = /\d/.test(prev.split(",")[0] || "");
+      if (hasStreet) {
+        return `${prev.split(",")[0].trim()}, ${town.name}, NJ ${town.zip}`;
+      }
+      return `${town.name}, NJ ${town.zip}`;
+    });
+    setProperty((p) => ({
+      ...p,
+      town: town.name,
+      zip: town.zip,
+    }));
+    setShowSuggestions(false);
+  };
+
+  const handleAnalyze = () => {
+    if (!address.trim()) return;
+
+    // Try to extract ZIP from address if no town was selected
+    if (!selectedTown) {
+      const zipMatch = address.match(/\b(0\d{4})\b/);
+      if (zipMatch) {
+        const foundTown = TOWN_INDEX.find((t) => t.allZips.includes(zipMatch[1]));
+        if (foundTown) {
+          setSelectedTown(foundTown);
+          setProperty((p) => ({ ...p, town: foundTown.name, zip: foundTown.zip }));
+        } else {
+          setProperty((p) => ({ ...p, zip: zipMatch[1] }));
+        }
+      }
+      // Try to match town name from address
+      if (!zipMatch) {
+        const results = fuse.search(address.trim());
+        if (results.length > 0) {
+          const best = results[0].item;
+          setSelectedTown(best);
+          setProperty((p) => ({ ...p, town: best.name, zip: best.zip }));
+        }
+      }
+    }
+
+    setReportReady(true);
+    setSelectedScopes([]);
+  };
 
   const multiplier = useMemo(() => {
     const entry = REGION_MULTIPLIERS[property.zip];
@@ -118,22 +203,6 @@ export default function PropertyRenovationReport() {
   const totalLow = selectedOpps.reduce((s, o) => s + getAdjustedCost(o.baseLow), 0);
   const totalHigh = selectedOpps.reduce((s, o) => s + getAdjustedCost(o.baseHigh), 0);
 
-  const handleAnalyze = async () => {
-    if (!address.trim()) return;
-    setLoading(true);
-    setReportReady(false);
-    setSelectedScopes([]);
-    const result = await simulatePropertyLookup(address);
-    if (result) {
-      setProperty(result);
-    } else {
-      setProperty(EMPTY_SNAPSHOT);
-      setEditing(true);
-    }
-    setLoading(false);
-    setReportReady(true);
-  };
-
   const snapshotFields: { key: keyof PropertySnapshot; label: string; icon: React.ElementType; placeholder: string }[] = [
     { key: "yearBuilt", label: "Year Built", icon: Calendar, placeholder: "e.g. 1987" },
     { key: "sqft", label: "Square Footage", icon: Ruler, placeholder: "e.g. 2,400" },
@@ -144,6 +213,9 @@ export default function PropertyRenovationReport() {
     { key: "town", label: "Town", icon: MapPin, placeholder: "e.g. Ridgewood" },
     { key: "zip", label: "ZIP Code", icon: MapPin, placeholder: "e.g. 07450" },
   ];
+
+  const filledCount = Object.values(property).filter(Boolean).length;
+  const totalFields = Object.keys(property).length;
 
   return (
     <>
@@ -172,29 +244,69 @@ export default function PropertyRenovationReport() {
               </p>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }} className="mt-10 mx-auto max-w-lg">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }} className="mt-10 mx-auto max-w-lg relative">
               <div className="flex rounded-2xl border-2 border-border bg-background shadow-xl shadow-foreground/5 overflow-hidden focus-within:border-foreground/30 transition-colors">
                 <div className="flex items-center pl-4 text-muted-foreground">
                   <Search className="h-5 w-5" />
                 </div>
                 <input
+                  ref={inputRef}
                   type="text"
                   className="flex-1 bg-transparent px-3 py-4 text-base text-foreground placeholder:text-muted-foreground/60 outline-none"
-                  placeholder="Enter your property address..."
+                  placeholder="Type your address, town, or ZIP code..."
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                  onChange={(e) => handleAddressChange(e.target.value)}
+                  onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setShowSuggestions(false);
+                      handleAnalyze();
+                    }
+                  }}
                 />
                 <button
                   onClick={handleAnalyze}
-                  disabled={loading || !address.trim()}
+                  disabled={!address.trim()}
                   className="m-1.5 rounded-xl bg-foreground px-6 py-2.5 text-sm font-semibold text-background hover:bg-foreground/90 transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><span>Analyze</span><ArrowRight className="h-4 w-4" /></>}
+                  <span>Analyze</span>
+                  <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
+
+              {/* Autocomplete dropdown */}
+              <AnimatePresence>
+                {showSuggestions && suggestions.length > 0 && (
+                  <motion.div
+                    ref={suggestionsRef}
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 right-0 top-full mt-2 z-50 rounded-xl border-2 border-border bg-background shadow-2xl shadow-foreground/10 overflow-hidden"
+                  >
+                    {suggestions.map((town, i) => (
+                      <button
+                        key={`${town.slug}-${i}`}
+                        onClick={() => handleSelectTown(town)}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 transition-colors border-b border-border/30 last:border-b-0"
+                      >
+                        <div className="h-8 w-8 rounded-lg bg-muted grid place-items-center shrink-0">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">{town.name}, NJ</p>
+                          <p className="text-xs text-muted-foreground">{town.county} · {town.zip}</p>
+                        </div>
+                        <span className="text-xs text-muted-foreground/60 font-mono">{town.zip}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <p className="mt-3 text-xs text-muted-foreground">
-                Serving Bergen, Passaic, Morris, Essex & Hudson counties
+                Serving Bergen, Passaic, Morris, Essex & Hudson counties · Start typing a town name or ZIP
               </p>
             </motion.div>
           </div>
@@ -204,47 +316,43 @@ export default function PropertyRenovationReport() {
           {reportReady && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
 
-              {/* ───── Property Snapshot ───── */}
+              {/* ───── Property Snapshot — always editable ───── */}
               <section className="border-t border-border/50 bg-muted/20">
                 <div className="mx-auto max-w-5xl px-6 py-16">
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Home Snapshot</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {editing ? "Update any fields to improve accuracy." : "Auto-populated from property data. Edit if needed."}
-                      </p>
+                  <div className="mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Your Home Details</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {selectedTown
+                        ? <>We identified <strong>{selectedTown.name}</strong> in <strong>{selectedTown.county}</strong>. Fill in your property details below to refine cost estimates.</>
+                        : "Enter your property details below to get personalized renovation cost ranges."
+                      }
+                    </p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="h-1.5 flex-1 rounded-full bg-border overflow-hidden max-w-[200px]">
+                        <div className="h-full rounded-full bg-foreground transition-all duration-500" style={{ width: `${(filledCount / totalFields) * 100}%` }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">{filledCount}/{totalFields} fields</span>
                     </div>
-                    <button
-                      onClick={() => setEditing(!editing)}
-                      className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      {editing ? "Done" : "Edit"}
-                    </button>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {snapshotFields.map((field) => {
                       const Icon = field.icon;
+                      const isAutoFilled = (field.key === "town" || field.key === "zip") && selectedTown && property[field.key];
                       return (
-                        <Card key={field.key} className="border border-border/60 bg-background shadow-none">
+                        <Card key={field.key} className={`border transition-all ${isAutoFilled ? "border-foreground/20 bg-foreground/[0.02]" : "border-border/60 bg-background"} shadow-none`}>
                           <CardContent className="p-4">
                             <div className="flex items-center gap-2 text-muted-foreground mb-2">
                               <Icon className="h-4 w-4" />
                               <span className="text-xs font-medium uppercase tracking-wider">{field.label}</span>
+                              {isAutoFilled && <CheckCircle2 className="h-3 w-3 text-foreground/50 ml-auto" />}
                             </div>
-                            {editing ? (
-                              <Input
-                                className="h-8 text-sm border-border/50"
-                                placeholder={field.placeholder}
-                                value={property[field.key]}
-                                onChange={(e) => setProperty((p) => ({ ...p, [field.key]: e.target.value }))}
-                              />
-                            ) : (
-                              <p className="text-lg font-semibold text-foreground">
-                                {property[field.key] || <span className="text-muted-foreground/50 text-sm font-normal">—</span>}
-                              </p>
-                            )}
+                            <Input
+                              className="h-8 text-sm border-border/50"
+                              placeholder={field.placeholder}
+                              value={property[field.key]}
+                              onChange={(e) => setProperty((p) => ({ ...p, [field.key]: e.target.value }))}
+                            />
                           </CardContent>
                         </Card>
                       );
