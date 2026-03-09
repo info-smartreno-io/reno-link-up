@@ -269,7 +269,7 @@ export default function Index() {
               </p>
               <Link
                 to="/property-renovation-report"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-foreground px-6 py-3.5 text-base font-semibold text-background hover:bg-foreground/90 transition-all shadow-lg shadow-foreground/10"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-semibold text-accent-foreground hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
               >
                 Analyze Your Property <ArrowRight className="h-4 w-4" />
               </Link>
