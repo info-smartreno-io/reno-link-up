@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Button } from "@/components/ui/button";
 import {
   ClipboardList,
@@ -14,6 +15,7 @@ import {
   DollarSign,
   Calendar,
 } from "lucide-react";
+import watermarkContractor from "@/assets/watermark-contractor.png";
 
 const BENEFITS = [
   {
@@ -63,6 +65,7 @@ export default function ForContractors() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-background">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent_60%)]" />
+        <img src={watermarkContractor} alt="" className="absolute right-0 bottom-0 w-[800px] opacity-[0.06] pointer-events-none mix-blend-soft-light" />
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-background/10 px-4 py-1.5 text-xs font-medium text-background/80 mb-6">
@@ -88,6 +91,9 @@ export default function ForContractors() {
           </div>
         </div>
       </section>
+
+      {/* 3-Step SmartReno Process */}
+      <SmartRenoProcessSteps />
 
       {/* Stats Bar */}
       <section className="border-b border-border/50 bg-muted/30">

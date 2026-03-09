@@ -3,7 +3,9 @@ import { Helmet } from "react-helmet-async";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Star, MapPin, Shield, Award, Search, CheckCircle2, FileText, Hammer, ArrowRight, Users, Clock, BadgeCheck, Building2 } from "lucide-react";
+import watermarkArchitect from "@/assets/watermark-architect.png";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -408,6 +410,7 @@ export default function ArchitectsDirectory() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+        <img src={watermarkArchitect} alt="" className="absolute right-0 top-0 w-[900px] opacity-[0.08] pointer-events-none mix-blend-soft-light" />
         <div className="absolute top-0 left-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
 
@@ -486,26 +489,8 @@ export default function ArchitectsDirectory() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="bg-muted/50 border-b border-border">
-        <div className="mx-auto max-w-5xl px-4 py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {[
-              { step: "1", title: "Browse Architects", desc: "Explore licensed architecture firms serving Northern NJ" },
-              { step: "2", title: "Request a Bid", desc: "Click 'Request to Bid' and submit your project details" },
-              { step: "3", title: "We Coordinate", desc: "SmartReno connects you with the architect and manages the process" },
-            ].map((item) => (
-              <div key={item.step} className="flex flex-col items-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
-                  {item.step}
-                </div>
-                <h3 className="font-bold text-foreground">{item.title}</h3>
-                <p className="text-sm text-muted-foreground max-w-xs">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How SmartReno Works */}
+      <SmartRenoProcessSteps />
 
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12">

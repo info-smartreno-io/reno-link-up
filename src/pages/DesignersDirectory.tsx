@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Button } from "@/components/ui/button";
 import { BusinessCard } from "@/components/directory/BusinessCard";
 import { useImportedBusinesses, type ImportedBusiness } from "@/hooks/useImportedBusinesses";
@@ -15,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import watermarkDesigner from "@/assets/watermark-designer.png";
 
 const TOWNS = ["All Towns", "Ridgewood", "Wyckoff", "Montclair", "Paramus", "Glen Rock", "Ho-Ho-Kus", "Waldwick", "Somerville", "Fair Lawn", "Midland Park", "Oradell", "Ramsey", "Hackensack", "Mahwah", "Tenafly", "Westwood", "Allendale", "Saddle River"];
 const SPECIALTIES = ["All Specialties", "Full-Service", "Luxury", "Kitchen & Bath", "Modern", "Staging", "Renovation", "Contemporary", "Transitional"];
@@ -59,6 +61,7 @@ export default function DesignersDirectory() {
       <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-background">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--accent)/0.08),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.06),transparent_50%)]" />
+        <img src={watermarkDesigner} alt="" className="absolute right-0 top-0 w-[900px] opacity-[0.08] pointer-events-none mix-blend-soft-light" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
           <div className="max-w-3xl">
             <motion.div
@@ -126,6 +129,9 @@ export default function DesignersDirectory() {
           </motion.div>
         </div>
       </section>
+
+      {/* 3-Step SmartReno Process */}
+      <SmartRenoProcessSteps />
 
       {/* Filters + Results */}
       <section className="mx-auto max-w-7xl w-full px-6 py-10">
