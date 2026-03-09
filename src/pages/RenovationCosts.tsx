@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { SiteNavbar } from "@/components/SiteNavbar";
+import { MarketingNavbar } from "@/components/marketing/MarketingNavbar";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
