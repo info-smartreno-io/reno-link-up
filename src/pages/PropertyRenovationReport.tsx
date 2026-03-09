@@ -726,8 +726,37 @@ export default function PropertyRenovationReport() {
                     Click a card to add it to your scope • Expand to see the detailed line-item takeoff
                   </p>
 
+                  {/* Contingency line */}
+                  {selectedScopes.length > 0 && (
+                    <div className="mt-4 flex items-center justify-between rounded-xl border border-dashed border-primary/40 bg-primary/5 px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">10% Contingency Buffer</span>
+                      </div>
+                      <span className="text-sm font-semibold text-foreground">+ ${contingencyLow.toLocaleString()} – ${contingencyHigh.toLocaleString()}</span>
+                    </div>
+                  )}
+
                   {/* Disclaimers */}
                   <div className="mt-6 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">10% Contingency Included</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          All totals include a <strong>10% contingency buffer</strong> for unforeseen extras that commonly arise during renovation — including hidden damage, code upgrades, material price changes, and scope adjustments. This is industry best practice and strongly recommended for any renovation project.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Layers className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Structural & Layout Changes May Increase Cost</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          If your renovation involves <strong>removing or relocating walls, adding beams or headers, relocating plumbing stacks, or modifying structural elements</strong>, costs can increase significantly. Structural engineering ($2,000–$5,000+), steel beams ($3,000–$10,000+), and associated permits are not fully captured in standard line items. A site assessment is strongly recommended.
+                        </p>
+                      </div>
+                    </div>
                     <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
                       <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                       <div className="space-y-1.5">
