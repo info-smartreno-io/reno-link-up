@@ -189,12 +189,6 @@ const ARCHITECTS: Record<string, {
   },
 };
 
-const SAMPLE_PHOTOS = [
-  { src: kitchenImage, alt: "Modern kitchen designed by architect" },
-  { src: bathroomImage, alt: "Luxury bathroom renovation" },
-  { src: basementImage, alt: "Finished basement space" },
-  { src: additionImage, alt: "Home addition project" },
-];
 
 export default function ArchitectProfile() {
   const { id = "" } = useParams();
