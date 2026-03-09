@@ -79,6 +79,7 @@ import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import ArchitectsDirectory from "./pages/ArchitectsDirectory";
+import ArchitectProfile from "./pages/ArchitectProfile";
 import ContractorProfile from "./pages/ContractorProfile";
 import ForContractors from "./pages/ForContractors";
 import DesignersDirectory from "./pages/DesignersDirectory";
