@@ -39,8 +39,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/contractor/dashboard",
     portalLabel: "Contractor Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA contractor account",
   },
   {
     id: "3",
@@ -50,8 +50,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/homeowner/dashboard",
     portalLabel: "Homeowner Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA homeowner account",
   },
   {
     id: "4",
@@ -61,8 +61,8 @@ const TEST_ACCOUNTS: TestAccount[] = [
     password: "Smart2025!!",
     portalPath: "/design-professional/dashboard",
     portalLabel: "Design Professional Portal",
-    status: "inactive",
-    notes: "Pending setup",
+    status: "active",
+    notes: "QA design professional account",
   },
 ];
 
