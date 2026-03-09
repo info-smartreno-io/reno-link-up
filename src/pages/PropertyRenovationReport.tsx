@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ALL_TOWNS } from "@/data/locations";
 import Fuse from "fuse.js";
+import { savePropertyReport } from "@/lib/formLogging";
 
 /* ─── Build searchable town index ─── */
 const TOWN_INDEX = ALL_TOWNS.map((t) => ({
