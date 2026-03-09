@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { SiteNavbar } from "@/components/SiteNavbar";
-import { Star, MapPin, Shield, Award, Phone, ChevronDown, Search, CheckCircle2 } from "lucide-react";
+import { FooterAdminLogin } from "@/components/FooterAdminLogin";
+import { Star, MapPin, Shield, Award, Search, CheckCircle2, FileText, Hammer, ArrowRight, Users, Clock, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const TRADES = [
   { value: "", label: "All Trades" },
@@ -117,7 +125,7 @@ const MOCK_CONTRACTORS = [
   },
 ];
 
-function ContractorCard({ contractor, index }: { contractor: typeof MOCK_CONTRACTORS[0]; index: number }) {
+function ContractorCard({ contractor, index, onRequestBid }: { contractor: typeof MOCK_CONTRACTORS[0]; index: number; onRequestBid: () => void }) {
   const initials = contractor.name.split(" ").map(w => w[0]).join("").slice(0, 2);
 
   return (
@@ -127,7 +135,6 @@ function ContractorCard({ contractor, index }: { contractor: typeof MOCK_CONTRAC
       transition={{ duration: 0.4, delay: index * 0.07 }}
       className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm hover:shadow-xl hover:border-accent/40 transition-all duration-300"
     >
-      {/* Glossy shine overlay */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col gap-4">
@@ -192,8 +199,12 @@ function ContractorCard({ contractor, index }: { contractor: typeof MOCK_CONTRAC
 
         {/* Actions */}
         <div className="flex gap-2 pt-2">
-          <Button size="sm" className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm">
-            <Phone className="h-4 w-4 mr-1" /> Contact
+          <Button
+            size="sm"
+            className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm"
+            onClick={onRequestBid}
+          >
+            <FileText className="h-4 w-4 mr-1" /> Request to Bid
           </Button>
           <Button size="sm" variant="outline" className="flex-1">
             View Profile
@@ -208,6 +219,8 @@ export default function ContractorsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [trade, setTrade] = useState(searchParams.get("trade") || "");
   const [zip, setZip] = useState(searchParams.get("zip") || "");
+  const [showBidDialog, setShowBidDialog] = useState(false);
+  const navigate = useNavigate();
 
   const filteredContractors = MOCK_CONTRACTORS.filter((c) => {
     if (trade && !c.trade.toLowerCase().includes(trade.toLowerCase())) return false;
@@ -226,7 +239,7 @@ export default function ContractorsDirectory() {
     <div className="min-h-screen bg-background">
       <Helmet>
         <title>Find Contractors in Northern NJ | SmartReno Directory</title>
-        <meta name="description" content="Browse vetted, licensed contractors in Northern New Jersey. Read reviews, compare bids, and hire with confidence through SmartReno." />
+        <meta name="description" content="Browse vetted, licensed contractors in Northern New Jersey. Get your project scoped and receive 3 qualified bids through SmartReno." />
         <link rel="canonical" href="https://smartreno.io/contractors" />
       </Helmet>
 
@@ -234,19 +247,26 @@ export default function ContractorsDirectory() {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary py-20 px-4">
-        {/* Glossy overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
         <div className="absolute top-0 left-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-sm font-semibold tracking-widest uppercase text-white/70 mb-3"
+          >
+            The First Step Before You Renovate
+          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight"
           >
-            Find Trusted Contractors
+            Vetted Contractors, Qualified Bids
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -254,8 +274,21 @@ export default function ContractorsDirectory() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-4 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto"
           >
-            Every contractor is vetted, licensed, and insured. Compare bids, read verified reviews, and hire with confidence.
+            SmartReno protects your time, money and home. We scope your project, then vetted contractors provide accurate pricing — you receive 3 qualified bids.
           </motion.p>
+
+          {/* Trust Indicators */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-6 flex flex-wrap justify-center gap-6 text-white/70 text-sm"
+          >
+            <span className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> Vetted & Verified</span>
+            <span className="flex items-center gap-1.5"><Shield className="h-4 w-4" /> Licensed & Insured</span>
+            <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> 3 Bids Per Project</span>
+            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> Free Scoping Visit</span>
+          </motion.div>
 
           {/* Search Bar */}
           <motion.div
@@ -293,6 +326,27 @@ export default function ContractorsDirectory() {
         </div>
       </section>
 
+      {/* How It Works Banner */}
+      <section className="bg-muted/50 border-b border-border">
+        <div className="mx-auto max-w-5xl px-4 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            {[
+              { step: "1", title: "Start Your Project", desc: "Fill out the form and a construction agent schedules a site visit" },
+              { step: "2", title: "We Scope the Work", desc: "Our team creates a detailed scope of work for your renovation" },
+              { step: "3", title: "Get 3 Qualified Bids", desc: "Vetted contractors provide competitive, accurate pricing" },
+            ].map((item) => (
+              <div key={item.step} className="flex flex-col items-center gap-2">
+                <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
+                  {item.step}
+                </div>
+                <h3 className="font-bold text-foreground">{item.title}</h3>
+                <p className="text-sm text-muted-foreground max-w-xs">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
         <div className="flex items-center justify-between mb-8">
@@ -306,7 +360,12 @@ export default function ContractorsDirectory() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredContractors.map((contractor, i) => (
-            <ContractorCard key={contractor.id} contractor={contractor} index={i} />
+            <ContractorCard
+              key={contractor.id}
+              contractor={contractor}
+              index={i}
+              onRequestBid={() => setShowBidDialog(true)}
+            />
           ))}
         </div>
 
@@ -319,7 +378,24 @@ export default function ContractorsDirectory() {
         )}
       </section>
 
-      {/* CTA */}
+      {/* CTA - Start Your Project */}
+      <section className="bg-primary py-16 px-4">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground">Ready to Get Started?</h2>
+          <p className="mt-3 text-lg text-primary-foreground/80 max-w-xl mx-auto">
+            SmartReno protects your time, money and home. Start your project and receive 3 qualified bids from vetted contractors.
+          </p>
+          <Button
+            size="lg"
+            className="mt-6 bg-background text-foreground hover:bg-background/90 px-10 py-4 text-lg font-bold rounded-xl shadow-md"
+            onClick={() => navigate("/start-your-renovation")}
+          >
+            <Hammer className="mr-2 h-5 w-5" /> Start Your Project
+          </Button>
+        </div>
+      </section>
+
+      {/* Contractor CTA */}
       <section className="bg-muted py-16 px-4">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-foreground">Are You a Contractor?</h2>
@@ -333,6 +409,58 @@ export default function ContractorsDirectory() {
           </Link>
         </div>
       </section>
+
+      <FooterAdminLogin />
+
+      {/* Request to Bid Dialog */}
+      <Dialog open={showBidDialog} onOpenChange={setShowBidDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Hammer className="h-6 w-6 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">Start Your Project First</DialogTitle>
+            <DialogDescription className="text-center">
+              To request bids from vetted contractors, start by telling us about your project. A SmartReno construction agent will come to your home, scope the work, and you'll receive 3 qualified bids.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2">
+            <div className="rounded-lg bg-muted/50 border border-border p-3 space-y-2">
+              <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                SmartReno protects your time, money and home
+              </p>
+              <p className="text-xs text-muted-foreground italic">The first step before you renovate.</p>
+            </div>
+
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => {
+                setShowBidDialog(false);
+                navigate("/start-your-renovation");
+              }}
+            >
+              Start Your Project <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground">
+              Already have an account?{" "}
+              <Button
+                variant="link"
+                className="p-0 h-auto text-xs"
+                onClick={() => {
+                  setShowBidDialog(false);
+                  navigate("/login");
+                }}
+              >
+                Sign in
+              </Button>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
