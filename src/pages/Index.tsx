@@ -121,7 +121,7 @@ export default function Index() {
                 </button>
                 <Link
                   to="/property-renovation-report"
-                  className="rounded-xl border-2 border-border px-6 py-3.5 text-base font-semibold text-foreground hover:bg-muted transition-all flex items-center gap-2"
+                  className="rounded-xl bg-[hsl(var(--brand))] px-6 py-3.5 text-base font-semibold text-white hover:bg-[hsl(var(--brand))]/90 transition-all shadow-lg shadow-[hsl(var(--brand))]/20 flex items-center gap-2"
                 >
                   Analyze Your Property
                 </Link>
