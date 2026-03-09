@@ -24,6 +24,7 @@ export type ImportedBusiness = {
   claim_status: string;
   is_active: boolean;
   created_at: string;
+  source?: string;
 };
 
 export function useImportedBusinesses(businessType: "contractor" | "designer", city?: string) {
