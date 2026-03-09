@@ -690,7 +690,7 @@ export default function PropertyRenovationReport() {
                                                   <td className="px-4 py-2.5 text-foreground">{item.description}</td>
                                                   <td className="px-4 py-2.5 text-right font-medium text-foreground">{qty.toLocaleString()}</td>
                                                   <td className="px-4 py-2.5 text-center text-muted-foreground">{item.unit}</td>
-                                                  <td className="px-4 py-2.5 text-right text-muted-foreground">${item.unitCostLow}–${item.unitCostHigh}</td>
+                                              <td className="px-4 py-2.5 text-right text-muted-foreground">${adj(item.unitCostLow)}–${adj(item.unitCostHigh)}</td>
                                                   <td className="px-4 py-2.5 text-right font-semibold text-foreground">${lineLow.toLocaleString()}–${lineHigh.toLocaleString()}</td>
                                                 </tr>
                                               );
