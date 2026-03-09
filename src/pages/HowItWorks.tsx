@@ -140,7 +140,7 @@ export default function HowItWorks() {
               How SmartReno Works
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Five clear steps from idea to construction — with protection at every stage.
+              Seven clear steps from idea to construction — with protection at every stage.
             </p>
           </div>
           <div className="space-y-12">
