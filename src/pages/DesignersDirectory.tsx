@@ -6,6 +6,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { Button } from "@/components/ui/button";
 import { BusinessCard } from "@/components/directory/BusinessCard";
 import { useImportedBusinesses, type ImportedBusiness } from "@/hooks/useImportedBusinesses";
+import { FALLBACK_DESIGNERS } from "@/data/fallbackDesigners";
 import { motion } from "framer-motion";
 import {
   Search, MapPin, Star, ArrowRight, Palette, SlidersHorizontal, X,
@@ -14,179 +15,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
-const REAL_DESIGNERS: ImportedBusiness[] = [
-  {
-    id: "rd-1", slug: "coco-interior-design-ridgewood", business_name: "Coco Interior Design",
-    category: "Full-Service Interior Design", google_rating: 4.9, review_count: 52,
-    city: "Ridgewood", state: "NJ", service_area_tags: ["Ridgewood", "Bergen County", "Full-Service"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: "https://cocointeriordesign.net", address: "Ridgewood, NJ", zip: "07450",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-2", slug: "christie-adams-design-ridgewood", business_name: "Christie Adams Design",
-    category: "Residential Interior Design", google_rating: 5.0, review_count: 38,
-    city: "Ridgewood", state: "NJ", service_area_tags: ["Bergen County", "Residential", "Furnishing"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: "https://www.christieadamsdesign.com", address: "Ridgewood, NJ", zip: "07450",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-3", slug: "boucher-interiors-ridgewood", business_name: "Boucher Interiors",
-    category: "Full-Service Interior Design", google_rating: 4.8, review_count: 27,
-    city: "Ridgewood", state: "NJ", service_area_tags: ["Ridgewood", "Renovation", "Whole Home"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: "https://www.boucherinteriors.com", address: "Ridgewood, NJ", zip: "07450",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-4", slug: "laurie-digiacomo-interiors-wyckoff", business_name: "Laurie DiGiacomo Interiors",
-    category: "Luxury Interior Design", google_rating: 4.9, review_count: 41,
-    city: "Wyckoff", state: "NJ", service_area_tags: ["Luxury", "High-End", "Bergen County"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: "(201) 755-9640", website: "https://lauriedigiacomointeriors.com", address: "Wyckoff, NJ", zip: "07481",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-5", slug: "insabella-design-montclair", business_name: "Insabella Design",
-    category: "Award-Winning Interior Design", google_rating: 4.8, review_count: 63,
-    city: "Montclair", state: "NJ", service_area_tags: ["Montclair", "Award-Winning", "Modern"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: "https://www.insabelladesign.com", address: "Montclair, NJ", zip: "07042",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-6", slug: "design-studio-of-somerville", business_name: "Design Studio of Somerville",
-    category: "Full-Service Interior Design", google_rating: 4.7, review_count: 34,
-    city: "Somerville", state: "NJ", service_area_tags: ["Somerville", "Kitchen", "Bath"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: "https://dsosdesign.com", address: "Somerville, NJ", zip: "08876",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-7", slug: "casa-vilora-interiors-paramus", business_name: "Casa Vilora Interiors",
-    category: "Luxury Residential Design", google_rating: 4.9, review_count: 48,
-    city: "Paramus", state: "NJ", service_area_tags: ["Paramus", "Luxury", "Custom Homes"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Paramus, NJ", zip: "07652",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-8", slug: "tracey-butler-interior-design-glen-rock", business_name: "Tracey Butler Interior Design",
-    category: "Residential Design & Staging", google_rating: 4.8, review_count: 22,
-    city: "Glen Rock", state: "NJ", service_area_tags: ["Glen Rock", "Staging", "Renovation"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Glen Rock, NJ", zip: "07452",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-9", slug: "michelle-johnson-interiors-ho-ho-kus", business_name: "Michelle Johnson Interiors",
-    category: "Transitional & Modern Design", google_rating: 4.7, review_count: 19,
-    city: "Ho-Ho-Kus", state: "NJ", service_area_tags: ["Ho-Ho-Kus", "Modern", "Transitional"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Ho-Ho-Kus, NJ", zip: "07423",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-10", slug: "vanessa-rome-interiors-waldwick", business_name: "Vanessa Rome Interiors",
-    category: "Kitchen & Bath Design", google_rating: 4.6, review_count: 31,
-    city: "Waldwick", state: "NJ", service_area_tags: ["Waldwick", "Kitchen", "Bathroom"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Waldwick, NJ", zip: "07463",
-    primary_type: "interior_designer",
-  },
-  {
-    id: "rd-11", slug: "anna-marie-design-studio-fair-lawn", business_name: "Anna Marie Design Studio",
-    category: "Contemporary Interior Design", google_rating: 4.8, review_count: 36,
-    city: "Fair Lawn", state: "NJ", service_area_tags: ["Fair Lawn", "Contemporary", "Color Consultation"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Fair Lawn, NJ", zip: "07410", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-12", slug: "the-design-atelier-midland-park", business_name: "The Design Atelier",
-    category: "Luxury Residential Design", google_rating: 4.9, review_count: 28,
-    city: "Midland Park", state: "NJ", service_area_tags: ["Midland Park", "Luxury", "Custom Homes"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Midland Park, NJ", zip: "07432", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-13", slug: "bergen-home-interiors-oradell", business_name: "Bergen Home Interiors",
-    category: "Full-Service Interior Design", google_rating: 4.7, review_count: 44,
-    city: "Oradell", state: "NJ", service_area_tags: ["Oradell", "Full-Service", "Renovation"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Oradell, NJ", zip: "07649", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-14", slug: "sage-and-stone-design-ramsey", business_name: "Sage & Stone Design",
-    category: "Kitchen & Bath Design", google_rating: 4.8, review_count: 33,
-    city: "Ramsey", state: "NJ", service_area_tags: ["Ramsey", "Kitchen", "Bathroom"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Ramsey, NJ", zip: "07446", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-15", slug: "whitmore-design-group-hackensack", business_name: "Whitmore Design Group",
-    category: "Modern & Minimalist Design", google_rating: 4.6, review_count: 25,
-    city: "Hackensack", state: "NJ", service_area_tags: ["Hackensack", "Modern", "Minimalist"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Hackensack, NJ", zip: "07601", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-16", slug: "j-lauren-interiors-mahwah", business_name: "J. Lauren Interiors",
-    category: "Transitional & Classic Design", google_rating: 4.9, review_count: 39,
-    city: "Mahwah", state: "NJ", service_area_tags: ["Mahwah", "Transitional", "Classic"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Mahwah, NJ", zip: "07430", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-17", slug: "riverstone-interiors-tenafly", business_name: "Riverstone Interiors",
-    category: "Full-Service Interior Design", google_rating: 4.7, review_count: 42,
-    city: "Tenafly", state: "NJ", service_area_tags: ["Tenafly", "Full-Service", "Space Planning"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Tenafly, NJ", zip: "07670", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-18", slug: "ella-park-design-westwood", business_name: "Ella Park Design",
-    category: "Staging & Renovation Design", google_rating: 4.8, review_count: 21,
-    city: "Westwood", state: "NJ", service_area_tags: ["Westwood", "Staging", "Renovation"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Westwood, NJ", zip: "07675", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-19", slug: "haven-studio-design-allendale", business_name: "Haven Studio Design",
-    category: "Modern Interior Design", google_rating: 4.9, review_count: 17,
-    city: "Allendale", state: "NJ", service_area_tags: ["Allendale", "Modern", "Open Concept"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Allendale, NJ", zip: "07401", primary_type: "interior_designer",
-  },
-  {
-    id: "rd-20", slug: "lux-north-design-saddle-river", business_name: "Lux North Design",
-    category: "Luxury Residential Design", google_rating: 5.0, review_count: 15,
-    city: "Saddle River", state: "NJ", service_area_tags: ["Saddle River", "Luxury", "High-End"],
-    claim_status: "unclaimed", is_active: true, business_type: "designer", photo_url: null,
-    business_status: "operational", created_at: "", google_place_id: null, map_link: null,
-    phone: null, website: null, address: "Saddle River, NJ", zip: "07458", primary_type: "interior_designer",
-  },
-];
 
 const TOWNS = ["All Towns", "Ridgewood", "Wyckoff", "Montclair", "Paramus", "Glen Rock", "Ho-Ho-Kus", "Waldwick", "Somerville", "Fair Lawn", "Midland Park", "Oradell", "Ramsey", "Hackensack", "Mahwah", "Tenafly", "Westwood", "Allendale", "Saddle River"];
 const SPECIALTIES = ["All Specialties", "Full-Service", "Luxury", "Kitchen & Bath", "Modern", "Staging", "Renovation", "Contemporary", "Transitional"];
@@ -199,7 +27,7 @@ export default function DesignersDirectory() {
   const navigate = useNavigate();
   const { data: importedDesigners, isLoading } = useImportedBusinesses("designer");
 
-  const designers = (importedDesigners && importedDesigners.length > 0) ? importedDesigners : REAL_DESIGNERS;
+  const designers = (importedDesigners && importedDesigners.length > 0) ? importedDesigners : FALLBACK_DESIGNERS;
 
   const filtered = useMemo(() => {
     return designers.filter((d) => {
