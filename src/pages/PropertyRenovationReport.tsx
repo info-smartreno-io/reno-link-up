@@ -365,7 +365,8 @@ export default function PropertyRenovationReport() {
   const bedsNum = property?.bedrooms ? parseInt(property.bedrooms) : 3;
   const suggestedIds = useMemo(() => getSuggestedIds(yearBuiltNum, sqftNum), [yearBuiltNum, sqftNum]);
 
-  const adj = (val: number) => Math.round(val * multiplier);
+  const GC_MARKUP = 1.25; // 25% General Contractor overhead & profit
+  const adj = (val: number) => Math.round(val * multiplier * GC_MARKUP);
 
   const getCategoryTotal = (cat: RenovationCategory): { low: number; high: number } => {
     let low = 0, high = 0;
@@ -374,7 +375,10 @@ export default function PropertyRenovationReport() {
       low += adj(qty * item.unitCostLow);
       high += adj(qty * item.unitCostHigh);
     }
-    return { low: Math.round(low / 500) * 500, high: Math.round(high / 500) * 500 };
+    // Tighter range: raise low by 15%, lower high by 10%
+    const tightLow = Math.round(low * 1.15 / 500) * 500;
+    const tightHigh = Math.round(high * 0.90 / 500) * 500;
+    return { low: tightLow, high: Math.max(tightHigh, tightLow + 500) };
   };
 
   const toggleScope = (id: string) => {
@@ -686,7 +690,7 @@ export default function PropertyRenovationReport() {
                                                   <td className="px-4 py-2.5 text-foreground">{item.description}</td>
                                                   <td className="px-4 py-2.5 text-right font-medium text-foreground">{qty.toLocaleString()}</td>
                                                   <td className="px-4 py-2.5 text-center text-muted-foreground">{item.unit}</td>
-                                                  <td className="px-4 py-2.5 text-right text-muted-foreground">${item.unitCostLow}–${item.unitCostHigh}</td>
+                                              <td className="px-4 py-2.5 text-right text-muted-foreground">${adj(item.unitCostLow)}–${adj(item.unitCostHigh)}</td>
                                                   <td className="px-4 py-2.5 text-right font-semibold text-foreground">${lineLow.toLocaleString()}–${lineHigh.toLocaleString()}</td>
                                                 </tr>
                                               );
@@ -714,6 +718,37 @@ export default function PropertyRenovationReport() {
                   <p className="text-xs text-muted-foreground/60 mt-4 text-center">
                     Click a card to add it to your scope • Expand to see the detailed line-item takeoff
                   </p>
+
+                  {/* Disclaimers */}
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Contractor-Grade Materials & Standard Installation</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          All estimates are based on <strong>contractor-grade (mid-range) materials</strong> and <strong>standard installation methods</strong>. Custom cabinetry, designer fixtures, high-end stone, imported tile, or luxury finishes will increase costs significantly — often 40–100%+ above these figures.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <DollarSign className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">General Contractor Pricing Included</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          These estimates include a <strong>25% general contractor markup</strong> for project management, coordination, insurance, and overhead. This reflects the true cost of hiring a licensed GC — not just subcontractor rates.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Shield className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Important Disclaimer</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          These are <strong>preliminary estimates only</strong> and should not be construed as a bid, proposal, or contract. Actual costs depend on site conditions, structural requirements, permit fees, material selections, and contractor availability. Unforeseen conditions (asbestos, mold, structural deficiencies) may increase costs. SmartReno is a technology platform connecting homeowners with independent contractors and does not perform construction services.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
 
@@ -764,7 +799,7 @@ export default function PropertyRenovationReport() {
                     <div>
                       <h3 className="text-sm font-semibold text-foreground mb-1">How We Calculate These Estimates</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ material and labor rates. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. These are <strong>preliminary estimates</strong> — a SmartReno estimator will provide exact pricing after an on-site walkthrough.
+                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ contractor-grade material and labor rates with a <strong>25% GC markup</strong> included. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. Custom or luxury finishes, unforeseen conditions, and specialty trades may increase these figures. A SmartReno estimator will provide exact pricing after an on-site walkthrough.
                       </p>
                     </div>
                   </div>
