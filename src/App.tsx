@@ -80,6 +80,7 @@ import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import ContractorProfile from "./pages/ContractorProfile";
 import ForContractors from "./pages/ForContractors";
+import DesignersDirectory from "./pages/DesignersDirectory";
 import HowItWorks from "./pages/HowItWorks";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
