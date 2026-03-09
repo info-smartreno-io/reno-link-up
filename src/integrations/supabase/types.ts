@@ -3411,6 +3411,53 @@ export type Database = {
           },
         ]
       }
+      contractor_payments: {
+        Row: {
+          contractor_id: string | null
+          created_at: string
+          id: string
+          milestone_id: string | null
+          notes: string | null
+          payment_amount: number
+          payment_date: string | null
+          payment_status: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          contractor_id?: string | null
+          created_at?: string
+          id?: string
+          milestone_id?: string | null
+          notes?: string | null
+          payment_amount?: number
+          payment_date?: string | null
+          payment_status?: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          contractor_id?: string | null
+          created_at?: string
+          id?: string
+          milestone_id?: string | null
+          notes?: string | null
+          payment_amount?: number
+          payment_date?: string | null
+          payment_status?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_payments_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "payment_milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_portfolio_images: {
         Row: {
           caption: string | null
@@ -9070,6 +9117,48 @@ export type Database = {
           },
         ]
       }
+      payment_milestones: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string | null
+          id: string
+          milestone_name: string
+          paid_date: string | null
+          payee: string | null
+          payer: string | null
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          milestone_name: string
+          paid_date?: string | null
+          payee?: string | null
+          payer?: string | null
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          milestone_name?: string
+          paid_date?: string | null
+          payee?: string | null
+          payer?: string | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_schedules: {
         Row: {
           amount: number | null
@@ -9548,6 +9637,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_cost_codes: {
+        Row: {
+          category: string
+          cost_code: string
+          created_at: string
+          description: string
+          estimated_duration_days: number | null
+          id: string
+          is_active: boolean
+          labor_cost_high: number
+          labor_cost_low: number
+          material_cost_high: number
+          material_cost_low: number
+          schedule_phase: string | null
+          subcategory: string | null
+          trade: string
+          trade_dependency: string | null
+          unit_type: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          cost_code: string
+          created_at?: string
+          description: string
+          estimated_duration_days?: number | null
+          id?: string
+          is_active?: boolean
+          labor_cost_high?: number
+          labor_cost_low?: number
+          material_cost_high?: number
+          material_cost_low?: number
+          schedule_phase?: string | null
+          subcategory?: string | null
+          trade: string
+          trade_dependency?: string | null
+          unit_type?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          cost_code?: string
+          created_at?: string
+          description?: string
+          estimated_duration_days?: number | null
+          id?: string
+          is_active?: boolean
+          labor_cost_high?: number
+          labor_cost_low?: number
+          material_cost_high?: number
+          material_cost_low?: number
+          schedule_phase?: string | null
+          subcategory?: string | null
+          trade?: string
+          trade_dependency?: string | null
+          unit_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       po_receipts: {
         Row: {
@@ -10166,6 +10315,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      project_financials: {
+        Row: {
+          approved_project_value: number | null
+          contractor_bid_value: number | null
+          created_at: string
+          estimated_project_value: number | null
+          id: string
+          project_id: string
+          remaining_balance: number | null
+          smartreno_platform_fee: number | null
+          total_change_orders: number | null
+          total_paid: number | null
+          updated_at: string
+        }
+        Insert: {
+          approved_project_value?: number | null
+          contractor_bid_value?: number | null
+          created_at?: string
+          estimated_project_value?: number | null
+          id?: string
+          project_id: string
+          remaining_balance?: number | null
+          smartreno_platform_fee?: number | null
+          total_change_orders?: number | null
+          total_paid?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approved_project_value?: number | null
+          contractor_bid_value?: number | null
+          created_at?: string
+          estimated_project_value?: number | null
+          id?: string
+          project_id?: string
+          remaining_balance?: number | null
+          smartreno_platform_fee?: number | null
+          total_change_orders?: number | null
+          total_paid?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       project_inspections: {
         Row: {
@@ -11040,6 +11231,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      property_profiles: {
+        Row: {
+          address: string
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string
+          id: string
+          last_sale_price: number | null
+          lead_id: string | null
+          lot_size: string | null
+          project_id: string | null
+          property_type: string | null
+          square_feet: number | null
+          updated_at: string
+          year_built: number | null
+        }
+        Insert: {
+          address: string
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          id?: string
+          last_sale_price?: number | null
+          lead_id?: string | null
+          lot_size?: string | null
+          project_id?: string | null
+          property_type?: string | null
+          square_feet?: number | null
+          updated_at?: string
+          year_built?: number | null
+        }
+        Update: {
+          address?: string
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          id?: string
+          last_sale_price?: number | null
+          lead_id?: string | null
+          lot_size?: string | null
+          project_id?: string | null
+          property_type?: string | null
+          square_feet?: number | null
+          updated_at?: string
+          year_built?: number | null
+        }
+        Relationships: []
       }
       property_reports: {
         Row: {
@@ -12076,6 +12315,74 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      scope_items: {
+        Row: {
+          cost_code: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_ai_generated: boolean | null
+          labor_cost_high: number | null
+          labor_cost_low: number | null
+          material_cost_high: number | null
+          material_cost_low: number | null
+          notes: string | null
+          platform_cost_code_id: string | null
+          project_id: string
+          quantity: number
+          trade: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          cost_code: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          is_ai_generated?: boolean | null
+          labor_cost_high?: number | null
+          labor_cost_low?: number | null
+          material_cost_high?: number | null
+          material_cost_low?: number | null
+          notes?: string | null
+          platform_cost_code_id?: string | null
+          project_id: string
+          quantity?: number
+          trade: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          cost_code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_ai_generated?: boolean | null
+          labor_cost_high?: number | null
+          labor_cost_low?: number | null
+          material_cost_high?: number | null
+          material_cost_low?: number | null
+          notes?: string | null
+          platform_cost_code_id?: string | null
+          project_id?: string
+          quantity?: number
+          trade?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scope_items_platform_cost_code_id_fkey"
+            columns: ["platform_cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "platform_cost_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scripts: {
         Row: {
@@ -13971,6 +14278,45 @@ export type Database = {
           service_areas?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      vendor_quote_requests: {
+        Row: {
+          created_at: string
+          delivery_timeline: string | null
+          id: string
+          materials: Json
+          project_id: string
+          requested_by: string | null
+          status: string
+          updated_at: string
+          vendor_response: Json | null
+          vendor_type: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_timeline?: string | null
+          id?: string
+          materials?: Json
+          project_id: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+          vendor_response?: Json | null
+          vendor_type: string
+        }
+        Update: {
+          created_at?: string
+          delivery_timeline?: string | null
+          id?: string
+          materials?: Json
+          project_id?: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+          vendor_response?: Json | null
+          vendor_type?: string
         }
         Relationships: []
       }
