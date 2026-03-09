@@ -20,10 +20,6 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-import kitchenImage from "@/assets/kitchen-remodel.jpg";
-import bathroomImage from "@/assets/bathroom-remodel.jpg";
-import basementImage from "@/assets/basement-finished.jpg";
-import additionImage from "@/assets/home-addition.jpg";
 
 const ARCHITECTS: Record<string, {
   id: string; name: string; specialty: string; rating: number; reviews: number;
@@ -193,12 +189,6 @@ const ARCHITECTS: Record<string, {
   },
 };
 
-const SAMPLE_PHOTOS = [
-  { src: kitchenImage, alt: "Modern kitchen designed by architect" },
-  { src: bathroomImage, alt: "Luxury bathroom renovation" },
-  { src: basementImage, alt: "Finished basement space" },
-  { src: additionImage, alt: "Home addition project" },
-];
 
 export default function ArchitectProfile() {
   const { id = "" } = useParams();
@@ -319,14 +309,14 @@ export default function ArchitectProfile() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main */}
             <div className="lg:col-span-2 space-y-8">
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-3">About</h2>
                   <p className="text-muted-foreground leading-relaxed">{architect.description}</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-4">Specialties</h2>
                   <div className="flex flex-wrap gap-2">
@@ -337,15 +327,16 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-4">Portfolio</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {SAMPLE_PHOTOS.map((photo, i) => (
-                      <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }} className="rounded-xl overflow-hidden aspect-[4/3]">
-                        <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                      </motion.div>
-                    ))}
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center mb-4">
+                      <Building2 className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-sm max-w-xs">
+                      This architect hasn't added portfolio items yet. Check back soon or visit their website for project examples.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -353,7 +344,7 @@ export default function ArchitectProfile() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6 space-y-4">
                   <h3 className="font-bold text-foreground">Contact</h3>
                   <div className="space-y-3 text-sm">
@@ -371,7 +362,7 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6 space-y-3">
                   <h3 className="font-bold text-foreground">Credentials</h3>
                   <div className="space-y-2 text-sm">
@@ -394,7 +385,7 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h3 className="font-bold text-foreground mb-3">At a Glance</h3>
                   <div className="grid grid-cols-2 gap-4">
