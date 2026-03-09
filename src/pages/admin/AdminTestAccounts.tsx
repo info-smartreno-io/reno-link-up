@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, ExternalLink, Eye, EyeOff, ShieldAlert } from "lucide-react";
+import { Copy, ExternalLink, Eye, EyeOff, ShieldAlert, Loader2, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TestAccount {
   id: string;
