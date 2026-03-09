@@ -61,6 +61,7 @@ export default function DesignersDirectory() {
       <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground/90 text-background">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--accent)/0.08),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsl(var(--primary)/0.06),transparent_50%)]" />
+        <img src={watermarkDesigner} alt="" className="absolute right-0 top-0 w-[900px] opacity-[0.08] pointer-events-none mix-blend-soft-light" />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
           <div className="max-w-3xl">
             <motion.div
