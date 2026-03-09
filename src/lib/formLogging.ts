@@ -66,13 +66,15 @@ export async function savePropertyReport(reportData: {
       return null;
     }
 
+    const reportId = (data as any)?.id || null;
+
     await logFormSubmission({
       form_name: "property_evaluation",
       submission_data: reportData,
       status: "success",
     });
 
-    return data?.id || null;
+    return reportId;
   } catch (err) {
     console.error("Failed to save property report:", err);
     return null;
