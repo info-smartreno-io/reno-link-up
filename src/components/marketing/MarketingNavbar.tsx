@@ -7,6 +7,7 @@ import smartrenoLogo from "@/assets/smartreno-logo-main.png";
 const NAV_LINKS = [
   { label: "How It Works", to: "/how-it-works" },
   { label: "Renovation Costs", to: "/renovation-costs" },
+  { label: "Architects", to: "/architects" },
   { label: "Contractors", to: "/contractors" },
   { label: "Designers", to: "/designers" },
   { label: "For Contractors", to: "/for-contractors" },

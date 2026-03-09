@@ -407,7 +407,7 @@ function AppRoutes() {
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
             <Route path="/contractor/:slug" element={<ContractorProfilePage />} />
             <Route path="/contractors/:id" element={<ContractorProfile />} />
-            <Route path="/architects" element={<Navigate to="/design-professionals" replace />} />
+            <Route path="/architects" element={<ArchitectsDirectory />} />
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
