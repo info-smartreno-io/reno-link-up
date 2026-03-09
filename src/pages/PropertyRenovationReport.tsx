@@ -12,7 +12,7 @@ import {
   Bath, BedDouble, Ruler, Calendar, Trees, Building2, Pencil,
   ChefHat, Droplets, Warehouse, PlusCircle, PaintBucket,
   Shield, CheckCircle2, X, Sparkles, Info, Phone, Clock,
-  Hammer, Zap, Layers, ChevronDown, ChevronUp
+  Hammer, Zap, Layers, ChevronDown, ChevronUp, AlertTriangle
 } from "lucide-react";
 import { ALL_TOWNS } from "@/data/locations";
 import Fuse from "fuse.js";
@@ -149,7 +149,8 @@ const RENOVATION_CATEGORIES: RenovationCategory[] = [
       { costCode: "12-361", description: "Countertops – Quartz/Granite", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.018 + 5), unitCostLow: 55, unitCostHigh: 80 },
       { costCode: "09-300", description: "Tile Backsplash", unit: "SF", qtyFormula: () => 30, unitCostLow: 14, unitCostHigh: 28 },
       { costCode: "09-650", description: "Flooring – Kitchen (LVP/Tile)", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12), unitCostLow: 6, unitCostHigh: 12 },
-      { costCode: "15-400", description: "Plumbing – Sink & Dishwasher", unit: "EA", qtyFormula: () => 2, unitCostLow: 600, unitCostHigh: 1200 },
+      { costCode: "15-400", description: "Plumbing – Rough-in, Sink & Dishwasher Lines", unit: "EA", qtyFormula: () => 2, unitCostLow: 900, unitCostHigh: 1800 },
+      { costCode: "05-120", description: "Structural – Beam/Header (wall relocation, if applicable)", unit: "LS", qtyFormula: () => 1, unitCostLow: 1500, unitCostHigh: 4500 },
       { costCode: "16-100", description: "Electrical – Circuits, Lighting, Outlets", unit: "EA", qtyFormula: () => 1, unitCostLow: 2500, unitCostHigh: 4500 },
       { costCode: "11-450", description: "Appliance Package (range, fridge, DW, micro)", unit: "LS", qtyFormula: () => 1, unitCostLow: 3500, unitCostHigh: 6500 },
       { costCode: "09-900", description: "Painting – Kitchen Walls & Ceiling", unit: "SF", qtyFormula: (sqft) => Math.round(sqft * 0.12 * 3), unitCostLow: 2, unitCostHigh: 3.5 },
@@ -172,6 +173,7 @@ const RENOVATION_CATEGORIES: RenovationCategory[] = [
       { costCode: "22-420", description: "Toilet (supply & install)", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 350, unitCostHigh: 700 },
       { costCode: "22-430", description: "Shower Valve & Trim Kit", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 450, unitCostHigh: 1200 },
       { costCode: "22-440", description: "Shower Glass Enclosure", unit: "EA", qtyFormula: (_s, baths) => Math.round(Math.max(baths, 1) * 0.5), unitCostLow: 900, unitCostHigh: 2200 },
+      { costCode: "15-400", description: "Plumbing – Rough-in, Supply & Drain Lines", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 1200, unitCostHigh: 2800 },
       { costCode: "16-100", description: "Electrical – Exhaust Fan, GFCI, Lighting", unit: "EA", qtyFormula: (_s, baths) => Math.max(baths, 1), unitCostLow: 800, unitCostHigh: 1800 },
       { costCode: "09-900", description: "Painting – Bathroom Walls & Ceiling", unit: "SF", qtyFormula: (_s, baths) => Math.round(160 * Math.max(baths, 1)), unitCostLow: 2, unitCostHigh: 3.5 },
     ],
@@ -389,9 +391,14 @@ export default function PropertyRenovationReport() {
     setExpandedCards(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
   };
 
+  const CONTINGENCY = 0.10; // 10% buffer for unforeseen extras
   const selectedCats = RENOVATION_CATEGORIES.filter(c => selectedScopes.includes(c.id));
-  const totalLow = selectedCats.reduce((s, c) => s + getCategoryTotal(c).low, 0);
-  const totalHigh = selectedCats.reduce((s, c) => s + getCategoryTotal(c).high, 0);
+  const subtotalLow = selectedCats.reduce((s, c) => s + getCategoryTotal(c).low, 0);
+  const subtotalHigh = selectedCats.reduce((s, c) => s + getCategoryTotal(c).high, 0);
+  const contingencyLow = Math.round(subtotalLow * CONTINGENCY / 100) * 100;
+  const contingencyHigh = Math.round(subtotalHigh * CONTINGENCY / 100) * 100;
+  const totalLow = subtotalLow + contingencyLow;
+  const totalHigh = subtotalHigh + contingencyHigh;
 
   const handlePropertyEdit = (key: string, value: string) => {
     if (!property) return;
@@ -719,8 +726,37 @@ export default function PropertyRenovationReport() {
                     Click a card to add it to your scope • Expand to see the detailed line-item takeoff
                   </p>
 
+                  {/* Contingency line */}
+                  {selectedScopes.length > 0 && (
+                    <div className="mt-4 flex items-center justify-between rounded-xl border border-dashed border-primary/40 bg-primary/5 px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">10% Contingency Buffer</span>
+                      </div>
+                      <span className="text-sm font-semibold text-foreground">+ ${contingencyLow.toLocaleString()} – ${contingencyHigh.toLocaleString()}</span>
+                    </div>
+                  )}
+
                   {/* Disclaimers */}
                   <div className="mt-6 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">10% Contingency Included</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          All totals include a <strong>10% contingency buffer</strong> for unforeseen extras that commonly arise during renovation — including hidden damage, code upgrades, material price changes, and scope adjustments. This is industry best practice and strongly recommended for any renovation project.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
+                      <Layers className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">Structural & Layout Changes May Increase Cost</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          If your renovation involves <strong>removing or relocating walls, adding beams or headers, relocating plumbing stacks, or modifying structural elements</strong>, costs can increase significantly. Structural engineering ($2,000–$5,000+), steel beams ($3,000–$10,000+), and associated permits are not fully captured in standard line items. A site assessment is strongly recommended.
+                        </p>
+                      </div>
+                    </div>
                     <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4">
                       <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                       <div className="space-y-1.5">
