@@ -327,15 +327,16 @@ export default function ArchitectProfile() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-4">Portfolio</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {SAMPLE_PHOTOS.map((photo, i) => (
-                      <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }} className="rounded-xl overflow-hidden aspect-[4/3]">
-                        <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                      </motion.div>
-                    ))}
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center mb-4">
+                      <Building2 className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-sm max-w-xs">
+                      This architect hasn't added portfolio items yet. Check back soon or visit their website for project examples.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
