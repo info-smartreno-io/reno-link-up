@@ -309,7 +309,7 @@ export default function ArchitectProfile() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main */}
             <div className="lg:col-span-2 space-y-8">
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-bold text-foreground mb-3">About</h2>
                   <p className="text-muted-foreground leading-relaxed">{architect.description}</p>
