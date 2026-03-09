@@ -400,15 +400,17 @@ function AppRoutes() {
               </ProtectedRoute>
             } />
             <Route path="/contractors" element={<ContractorsDirectory />} />
-            <Route path="/contractors/:id" element={<ContractorProfile />} />
             <Route path="/contractors/join" element={<ContractorsJoin />} />
             <Route path="/contractors/apply" element={<ContractorComingSoon />} />
             <Route path="/contractors/confirmation" element={<ApplicationConfirmation />} />
+            <Route path="/contractor/:slug" element={<ContractorProfilePage />} />
+            <Route path="/contractors/:id" element={<ContractorProfile />} />
             <Route path="/architects" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
             <Route path="/designers" element={<DesignersDirectory />} />
+            <Route path="/designer/:slug" element={<DesignerProfilePage />} />
             <Route path="/designers/:id" element={<DesignersDirectory />} />
             <Route path="/for-contractors" element={<ForContractors />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
