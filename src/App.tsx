@@ -78,6 +78,8 @@ import IntakeConfirmation from "./pages/IntakeConfirmation";
 import ContractorsJoin from "./pages/ContractorsJoin";
 import ContractorsDirectory from "./pages/ContractorsDirectory";
 import ContractorProfile from "./pages/ContractorProfile";
+import ForContractors from "./pages/ForContractors";
+import HowItWorks from "./pages/HowItWorks";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
