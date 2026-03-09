@@ -294,7 +294,7 @@ export function SiteNavbar() {
             {/* Left: Logo */}
             <div className="flex items-center gap-2">
               <a href="/" aria-label="SmartReno Home" className="flex items-center gap-2 no-underline hover:opacity-80 transition-opacity">
-                <img src={smartrenoLogo} alt="SmartReno" className="h-10" />
+                <img src={smartrenoLogo} alt="SmartReno" className="h-14" />
               </a>
             </div>
 
