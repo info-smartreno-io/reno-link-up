@@ -130,6 +130,9 @@ export default function DesignersDirectory() {
         </div>
       </section>
 
+      {/* 3-Step SmartReno Process */}
+      <SmartRenoProcessSteps />
+
       {/* Filters + Results */}
       <section className="mx-auto max-w-7xl w-full px-6 py-10">
         {/* Filter bar */}
