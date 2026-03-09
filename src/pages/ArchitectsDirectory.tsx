@@ -276,10 +276,22 @@ function ArchitectCard({ architect, index, onRequestBid }: { architect: typeof M
           <span className="text-sm text-muted-foreground">{architect.completedProjects} projects</span>
         </div>
 
-        {/* Location */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
-          <span>{architect.location}</span>
+        {/* Location & Contact */}
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            <span>{architect.location}</span>
+          </div>
+          {architect.phone && (
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <span className="ml-5.5">{architect.phone}</span>
+            </div>
+          )}
+          {architect.website && (
+            <a href={architect.website} target="_blank" rel="noopener noreferrer" className="ml-5.5 text-sm text-primary hover:underline truncate">
+              {architect.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            </a>
+          )}
         </div>
 
         {/* Badges */}
