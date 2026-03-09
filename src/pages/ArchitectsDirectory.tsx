@@ -6,6 +6,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { SmartRenoProcessSteps } from "@/components/marketing/SmartRenoProcessSteps";
 import { Star, MapPin, Shield, Award, Search, CheckCircle2, FileText, Hammer, ArrowRight, Users, Clock, BadgeCheck, Building2 } from "lucide-react";
 import watermarkArchitect from "@/assets/watermark-architect.png";
+import heroArchitect from "@/assets/hero-architect.jpeg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
