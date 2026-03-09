@@ -403,6 +403,8 @@ function AppRoutes() {
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
+            <Route path="/for-contractors" element={<ForContractors />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/apply" element={<CareersApply />} />
