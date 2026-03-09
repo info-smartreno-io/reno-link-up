@@ -23,7 +23,12 @@ export type BadgeKey =
   | "estimates_due"
   | "bids_open"
   | "messages_unread"
-  | "co_pending";
+  | "co_pending"
+  | "logs_today"
+  | "rfis_open"
+  | "selections_pending"
+  | "fleet_maintenance_due"
+  | "schedule_conflicts";
 
 export type NavItem = {
   id: string;
