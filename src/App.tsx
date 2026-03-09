@@ -485,6 +485,16 @@ function AppRoutes() {
                 <AdminLiveProjects />
               </ProtectedRoute>
             } />
+            <Route path="/admin/cost-codes" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminCostCodeLibrary />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/pipeline" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminProjectPipeline />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/estimating" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminEstimatingHub />
