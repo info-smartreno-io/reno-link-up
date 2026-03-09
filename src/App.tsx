@@ -1490,55 +1490,138 @@ function InternalAppRoutes() {
       <OrganizationSchema />
       <ScrollToTop />
       <Routes>
+        {/* Internal login — landing page on admin subdomain */}
         <Route path="/" element={<InternalLogin />} />
         <Route path="/admin/auth" element={<InternalLogin />} />
         <Route path="/estimator/auth" element={<InternalLogin />} />
         <Route path="/auth" element={<InternalLogin />} />
+        <Route path="/login" element={<InternalLogin />} />
 
-        {/* Admin routes */}
+        {/* ===================== ADMIN ROUTES ===================== */}
         <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboardHome /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboardHome /></ProtectedRoute>} />
         <Route path="/admin/intake" element={<ProtectedRoute requiredRole="admin"><AdminIntakeReview /></ProtectedRoute>} />
         <Route path="/admin/contractors" element={<ProtectedRoute requiredRole="admin"><AdminContractorManagement /></ProtectedRoute>} />
         <Route path="/admin/rfps" element={<ProtectedRoute requiredRole="admin"><AdminRFPManagement /></ProtectedRoute>} />
         <Route path="/admin/bids" element={<ProtectedRoute requiredRole="admin"><AdminBidReview /></ProtectedRoute>} />
         <Route path="/admin/live-projects" element={<ProtectedRoute requiredRole="admin"><AdminLiveProjects /></ProtectedRoute>} />
         <Route path="/admin/estimating" element={<ProtectedRoute requiredRole="admin"><AdminEstimatingHub /></ProtectedRoute>} />
+        <Route path="/admin/estimating/:leadId/field-mode" element={<ProtectedRoute requiredRole="admin"><EstimatingFieldMode /></ProtectedRoute>} />
+        <Route path="/admin/estimating/:leadId/bid-packet" element={<ProtectedRoute requiredRole="admin"><EstimatingBidPacket /></ProtectedRoute>} />
+        <Route path="/admin/designers" element={<ProtectedRoute requiredRole="admin"><AdminDesignProfessionals /></ProtectedRoute>} />
+        <Route path="/admin/design-professionals" element={<ProtectedRoute requiredRole="admin"><AdminDesignProfessionals /></ProtectedRoute>} />
+        <Route path="/admin/design-packages" element={<ProtectedRoute requiredRole="admin"><AdminDesignPackages /></ProtectedRoute>} />
+        <Route path="/admin/property-reports" element={<ProtectedRoute requiredRole="admin"><AdminPropertyReports /></ProtectedRoute>} />
+        <Route path="/admin/imported-businesses" element={<ProtectedRoute requiredRole="admin"><AdminImportedBusinesses /></ProtectedRoute>} />
+        <Route path="/admin/smart-estimates" element={<ProtectedRoute requiredRole="admin"><AdminSmartEstimates /></ProtectedRoute>} />
+        <Route path="/admin/smart-estimates/:estimateId" element={<ProtectedRoute requiredRole="admin"><AdminSmartEstimateDetail /></ProtectedRoute>} />
+        <Route path="/admin/bid-packets" element={<ProtectedRoute requiredRole="admin"><AdminBidPackets /></ProtectedRoute>} />
+        <Route path="/admin/bid-packets/:packetId" element={<ProtectedRoute requiredRole="admin"><AdminBidPacketDetail /></ProtectedRoute>} />
+        <Route path="/admin/bid-comparison/:packetId" element={<ProtectedRoute requiredRole="admin"><AdminBidComparison /></ProtectedRoute>} />
+        <Route path="/admin/vendor-monitoring" element={<ProtectedRoute requiredRole="admin"><AdminVendorMonitoring /></ProtectedRoute>} />
+        <Route path="/admin/file-storage" element={<ProtectedRoute requiredRole="admin"><AdminFileStorage /></ProtectedRoute>} />
+        <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessagesOversight /></ProtectedRoute>} />
+        <Route path="/admin/logs" element={<ProtectedRoute requiredRole="admin"><AdminDailyLogsOversight /></ProtectedRoute>} />
+        <Route path="/admin/timeline" element={<ProtectedRoute requiredRole="admin"><AdminTimelineOversight /></ProtectedRoute>} />
+        <Route path="/admin/notifications" element={<ProtectedRoute requiredRole="admin"><AdminNotificationsCenter /></ProtectedRoute>} />
+        <Route path="/admin/calendars" element={<ProtectedRoute requiredRole="admin"><AdminCalendars /></ProtectedRoute>} />
+        <Route path="/admin/smartplan" element={<ProtectedRoute requiredRole="admin"><AdminSmartPlan /></ProtectedRoute>} />
+        <Route path="/admin/ai-automation" element={<ProtectedRoute requiredRole="admin"><AdminAIAutomation /></ProtectedRoute>} />
+        <Route path="/admin/ai" element={<ProtectedRoute requiredRole="admin"><AdminAI /></ProtectedRoute>} />
+        <Route path="/admin/revenue-optimization" element={<ProtectedRoute requiredRole="admin"><AdminRevenueOptimization /></ProtectedRoute>} />
+        <Route path="/admin/autonomous-coordinator" element={<ProtectedRoute requiredRole="admin"><AdminAutonomousCoordinator /></ProtectedRoute>} />
+        <Route path="/admin/knowledge-base" element={<ProtectedRoute requiredRole="admin"><AdminKnowledgeBase /></ProtectedRoute>} />
+        <Route path="/admin/schedule" element={<ProtectedRoute requiredRole="admin"><AdminSchedule /></ProtectedRoute>} />
+        <Route path="/admin/resources" element={<ProtectedRoute requiredRole="admin"><AdminResources /></ProtectedRoute>} />
+        <Route path="/admin/resource-capacity" element={<ProtectedRoute requiredRole="admin"><ResourceCapacity /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/security" element={<ProtectedRoute requiredRole="admin"><AdminSecurityDashboard /></ProtectedRoute>} />
+        <Route path="/admin/agents" element={<ProtectedRoute requiredRole="admin"><AgentConsole /></ProtectedRoute>} />
+        <Route path="/admin/applications" element={<ProtectedRoute requiredRole="admin"><AdminApplications /></ProtectedRoute>} />
+        <Route path="/admin/contractor-applications" element={<ProtectedRoute requiredRole="admin"><ContractorApplications /></ProtectedRoute>} />
+        <Route path="/admin/vendor-applications" element={<ProtectedRoute requiredRole="admin"><AdminVendorApplications /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUserManagement /></ProtectedRoute>} />
         <Route path="/admin/roles" element={<ProtectedRoute requiredRole="admin"><AdminRoleManagement /></ProtectedRoute>} />
-        <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRM /></ProtectedRoute>} />
-        <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
+        <Route path="/admin/role-management" element={<ProtectedRoute requiredRole="admin"><AdminRoleManagement /></ProtectedRoute>} />
         <Route path="/admin/workflow" element={<ProtectedRoute requiredRole="admin"><AdminWorkflow /></ProtectedRoute>} />
-        <Route path="/admin/security" element={<ProtectedRoute requiredRole="admin"><AdminSecurityDashboard /></ProtectedRoute>} />
-        <Route path="/admin/ai" element={<ProtectedRoute requiredRole="admin"><AdminAI /></ProtectedRoute>} />
-        <Route path="/admin/resources" element={<ProtectedRoute requiredRole="admin"><AdminResources /></ProtectedRoute>} />
+        <Route path="/admin/pricing" element={<ProtectedRoute requiredRole="admin"><AdminPricing /></ProtectedRoute>} />
+        <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRM /></ProtectedRoute>} />
+        <Route path="/admin/project-assignments" element={<ProtectedRoute requiredRole="admin"><AdminProjectAssignments /></ProtectedRoute>} />
+        <Route path="/admin/architect-assignments" element={<ProtectedRoute requiredRole="admin"><AdminArchitectAssignments /></ProtectedRoute>} />
+        <Route path="/admin/architect-proposals" element={<ProtectedRoute requiredRole="admin"><AdminArchitectProposals /></ProtectedRoute>} />
+        <Route path="/admin/interior-designer-applications" element={<ProtectedRoute requiredRole="admin"><AdminInteriorDesignerApplications /></ProtectedRoute>} />
+        <Route path="/admin/estimator-management" element={<ProtectedRoute requiredRole="admin"><AdminEstimatorManagement /></ProtectedRoute>} />
+        <Route path="/admin/selections" element={<ProtectedRoute requiredRole="admin"><AdminSelections /></ProtectedRoute>} />
+        <Route path="/admin/change-orders" element={<ProtectedRoute requiredRole="admin"><AdminChangeOrders /></ProtectedRoute>} />
+        <Route path="/admin/quickbooks" element={<ProtectedRoute requiredRole="admin"><AdminQuickbooks /></ProtectedRoute>} />
+        <Route path="/admin/invoicing" element={<ProtectedRoute requiredRole="admin"><AdminInvoicing /></ProtectedRoute>} />
+        <Route path="/admin/procurement" element={<ProtectedRoute requiredRole="admin"><AdminPurchasing /></ProtectedRoute>} />
+        <Route path="/admin/vendors" element={<ProtectedRoute requiredRole="admin"><AdminVendors /></ProtectedRoute>} />
         <Route path="/admin/permits" element={<ProtectedRoute requiredRole="admin"><AdminPermits /></ProtectedRoute>} />
-        <Route path="/admin/schedule" element={<ProtectedRoute requiredRole="admin"><AdminSchedule /></ProtectedRoute>} />
         <Route path="/admin/warranty" element={<ProtectedRoute requiredRole="admin"><AdminWarranty /></ProtectedRoute>} />
         <Route path="/admin/warranty/messages" element={<ProtectedRoute requiredRole="admin"><AdminWarrantyMessaging /></ProtectedRoute>} />
         <Route path="/admin/warranty/claims/:claimId" element={<ProtectedRoute requiredRole="admin"><AdminWarrantyDetail /></ProtectedRoute>} />
         <Route path="/admin/warranty/:claimId" element={<ProtectedRoute requiredRole="admin"><AdminWarrantyDetail /></ProtectedRoute>} />
-        <Route path="/admin/estimator-management" element={<ProtectedRoute requiredRole="admin"><AdminEstimatorManagement /></ProtectedRoute>} />
-        <Route path="/admin/bid-packets" element={<ProtectedRoute requiredRole="admin"><AdminBidPackets /></ProtectedRoute>} />
-        <Route path="/admin/bid-packets/:packetId" element={<ProtectedRoute requiredRole="admin"><AdminBidPacketDetail /></ProtectedRoute>} />
-        <Route path="/admin/smart-estimates" element={<ProtectedRoute requiredRole="admin"><AdminSmartEstimates /></ProtectedRoute>} />
+        <Route path="/admin/estimate-requests" element={<ProtectedRoute requiredRole="admin"><AdminEstimateRequests /></ProtectedRoute>} />
+        <Route path="/admin/ai-images" element={<ProtectedRoute requiredRole="admin"><AdminAIImages /></ProtectedRoute>} />
+        <Route path="/admin/ai-images/:slotId" element={<ProtectedRoute requiredRole="admin"><AdminAIImageSlot /></ProtectedRoute>} />
+        <Route path="/admin/sales-performance" element={<ProtectedRoute requiredRole="admin"><SalesPerformance /></ProtectedRoute>} />
+        <Route path="/admin/contractor-network" element={<ProtectedRoute requiredRole="admin"><AdminContractorNetwork /></ProtectedRoute>} />
+        <Route path="/admin/pro-monetization" element={<ProtectedRoute requiredRole="admin"><AdminProMonetization /></ProtectedRoute>} />
+        <Route path="/admin/marketplace" element={<ProtectedRoute requiredRole="admin"><AdminMarketplace /></ProtectedRoute>} />
+        <Route path="/admin/national-expansion" element={<ProtectedRoute requiredRole="admin"><AdminNationalExpansion /></ProtectedRoute>} />
+        <Route path="/admin/autonomous-ops" element={<ProtectedRoute requiredRole="admin"><AdminAutonomousOps /></ProtectedRoute>} />
+        <Route path="/admin/website-ai" element={<ProtectedRoute requiredRole="admin"><AdminWebsiteAI /></ProtectedRoute>} />
+        <Route path="/admin/test-accounts" element={<ProtectedRoute requiredRole="admin"><AdminTestAccounts /></ProtectedRoute>} />
+        <Route path="/admin/daily-logs" element={<ProtectedRoute requiredRole="admin"><DailyLogs /></ProtectedRoute>} />
+        {/* AI sub-sections */}
+        <Route path="/admin/ai/overview" element={<ProtectedRoute requiredRole="admin"><AIOverview /></ProtectedRoute>} />
+        <Route path="/admin/ai/project" element={<ProtectedRoute requiredRole="admin"><ProjectAI /></ProtectedRoute>} />
+        <Route path="/admin/ai/contractor" element={<ProtectedRoute requiredRole="admin"><ContractorAI /></ProtectedRoute>} />
+        <Route path="/admin/ai/timeline" element={<ProtectedRoute requiredRole="admin"><TimelineAI /></ProtectedRoute>} />
+        <Route path="/admin/ai/permit" element={<ProtectedRoute requiredRole="admin"><PermitAI /></ProtectedRoute>} />
+        <Route path="/admin/ai/warranty" element={<ProtectedRoute requiredRole="admin"><WarrantyAI /></ProtectedRoute>} />
+        <Route path="/admin/ai/feedback" element={<ProtectedRoute requiredRole="admin"><AIFeedback /></ProtectedRoute>} />
+        {/* Applicant sub-sections */}
+        <Route path="/admin/applicants/homeowners" element={<ProtectedRoute requiredRole="admin"><HomeownerApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/estimators" element={<ProtectedRoute requiredRole="admin"><EstimatorApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/gc" element={<ProtectedRoute requiredRole="admin"><GCApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/architects" element={<ProtectedRoute requiredRole="admin"><ArchitectApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/vendors" element={<ProtectedRoute requiredRole="admin"><VendorApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/partners" element={<ProtectedRoute requiredRole="admin"><PartnerApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/subcontractors" element={<ProtectedRoute requiredRole="admin"><SubcontractorApplicants /></ProtectedRoute>} />
+        <Route path="/admin/applicants/financing" element={<ProtectedRoute requiredRole="admin"><FinancingInquiries /></ProtectedRoute>} />
+        <Route path="/admin/applicants/cost-calculator" element={<ProtectedRoute requiredRole="admin"><CostCalculatorSubmissions /></ProtectedRoute>} />
 
-        {/* Estimator routes */}
+        {/* =================== ESTIMATOR ROUTES =================== */}
         <Route path="/estimator/dashboard" element={<ProtectedRoute requiredRole="estimator"><EstimatorDashboard /></ProtectedRoute>} />
         <Route path="/estimator/leads" element={<ProtectedRoute requiredRole="estimator"><EstimatorLeads /></ProtectedRoute>} />
-        <Route path="/estimator/projects" element={<ProtectedRoute requiredRole="estimator"><EstimatorProjectDashboard /></ProtectedRoute>} />
-        <Route path="/estimator/projects/:projectId" element={<ProtectedRoute requiredRole="estimator"><EstimatorProjectDetail /></ProtectedRoute>} />
-        <Route path="/estimator/walkthroughs" element={<ProtectedRoute requiredRole="estimator"><EstimatorWalkthroughs /></ProtectedRoute>} />
-        <Route path="/estimator/calendar" element={<ProtectedRoute requiredRole="estimator"><EstimatorCalendar /></ProtectedRoute>} />
+        <Route path="/estimator/pipeline" element={<ProtectedRoute requiredRole="estimator"><LeadPipeline /></ProtectedRoute>} />
+        <Route path="/estimator/lost-lead-analytics" element={<ProtectedRoute requiredRole="estimator"><LostLeadAnalytics /></ProtectedRoute>} />
+        <Route path="/estimator/winback-campaigns" element={<ProtectedRoute requiredRole="estimator"><WinbackCampaigns /></ProtectedRoute>} />
+        <Route path="/estimator/profile" element={<ProtectedRoute requiredRole="estimator"><EstimatorProfile /></ProtectedRoute>} />
+        <Route path="/estimator/requests" element={<ProtectedRoute requiredRole="estimator"><EstimateRequests /></ProtectedRoute>} />
+        <Route path="/estimator/estimate-requests" element={<ProtectedRoute requiredRole="estimator"><EstimateRequests /></ProtectedRoute>} />
         <Route path="/estimator/estimates" element={<ProtectedRoute requiredRole="estimator"><EstimatorEstimates /></ProtectedRoute>} />
+        <Route path="/estimator/walkthroughs" element={<ProtectedRoute requiredRole="estimator"><EstimatorWalkthroughs /></ProtectedRoute>} />
+        <Route path="/estimator/smart-estimates" element={<ProtectedRoute requiredRole="estimator"><EstimatorSmartEstimates /></ProtectedRoute>} />
+        <Route path="/estimator/smart-estimates/:estimateId" element={<ProtectedRoute requiredRole="estimator"><AdminSmartEstimateDetail /></ProtectedRoute>} />
+        <Route path="/estimator/calendar" element={<ProtectedRoute requiredRole="estimator"><EstimatorCalendar /></ProtectedRoute>} />
+        <Route path="/estimator/prepare-estimate/:id?" element={<ProtectedRoute requiredRoles={["estimator", "admin"]}><PrepareEstimate /></ProtectedRoute>} />
+        <Route path="/estimator/review-lead/:id?" element={<ProtectedRoute requiredRole="estimator"><ReviewLead /></ProtectedRoute>} />
+        <Route path="/estimator/upload-photos/:id?" element={<ProtectedRoute requiredRole="estimator"><UploadPhotos /></ProtectedRoute>} />
+        <Route path="/estimator/generate-scope/:id?" element={<ProtectedRoute requiredRole="estimator"><GenerateScope /></ProtectedRoute>} />
+        <Route path="/estimator/bid-review" element={<ProtectedRoute requiredRole="estimator"><BidReviewDashboard /></ProtectedRoute>} />
+        <Route path="/estimator/bid-analytics" element={<ProtectedRoute requiredRole="estimator"><BidAnalytics /></ProtectedRoute>} />
+        <Route path="/estimator/bid-room" element={<ProtectedRoute requiredRole="estimator"><EstimatorBidRoom /></ProtectedRoute>} />
+        <Route path="/estimator/bid-submissions" element={<ProtectedRoute requiredRole="estimator"><EstimatorBidSubmissions /></ProtectedRoute>} />
+        <Route path="/estimator/projects" element={<ProtectedRoute requiredRole="estimator"><EstimatorProjectDashboard /></ProtectedRoute>} />
+        <Route path="/estimator/project/:projectId" element={<ProtectedRoute requiredRole="estimator"><EstimatorProjectDetail /></ProtectedRoute>} />
         <Route path="/estimator/messages" element={<ProtectedRoute requiredRole="estimator"><EstimatorMessages /></ProtectedRoute>} />
         <Route path="/estimator/files" element={<ProtectedRoute requiredRole="estimator"><EstimatorFiles /></ProtectedRoute>} />
         <Route path="/estimator/settings" element={<ProtectedRoute requiredRole="estimator"><EstimatorSettings /></ProtectedRoute>} />
-        <Route path="/estimator/profile" element={<ProtectedRoute requiredRole="estimator"><EstimatorProfile /></ProtectedRoute>} />
-        <Route path="/estimator/smart-estimates" element={<ProtectedRoute requiredRole="estimator"><EstimatorSmartEstimates /></ProtectedRoute>} />
-        <Route path="/estimator/bid-review" element={<ProtectedRoute requiredRole="estimator"><BidReviewDashboard /></ProtectedRoute>} />
-        <Route path="/estimator/bid-analytics" element={<ProtectedRoute requiredRole="estimator"><BidAnalytics /></ProtectedRoute>} />
 
-        {/* Catch-all → internal login */}
+        {/* Catch-all: any unknown route → internal login */}
         <Route path="*" element={<InternalLogin />} />
       </Routes>
     </>
