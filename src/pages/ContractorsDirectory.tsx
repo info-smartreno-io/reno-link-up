@@ -206,8 +206,8 @@ function ContractorCard({ contractor, index, onRequestBid }: { contractor: typeo
           >
             <FileText className="h-4 w-4 mr-1" /> Request to Bid
           </Button>
-          <Button size="sm" variant="outline" className="flex-1">
-            View Profile
+          <Button size="sm" variant="outline" className="flex-1" asChild>
+            <Link to={`/contractors/${contractor.id}`}>View Profile</Link>
           </Button>
         </div>
       </div>
