@@ -798,7 +798,7 @@ export default function PropertyRenovationReport() {
                           <p className="text-sm text-background/60 mb-1">{selectedScopes.length} scope{selectedScopes.length > 1 ? "s" : ""} selected • {selectedCats.reduce((n, c) => n + c.lineItems.length, 0)} line items</p>
                           <div className="flex items-baseline gap-2">
                             <span className="text-3xl sm:text-4xl font-bold text-background">${totalLow.toLocaleString()} – ${totalHigh.toLocaleString()}</span>
-                            <span className="text-sm text-background/50">preliminary estimate</span>
+                            <span className="text-sm text-background/50">preliminary range • vetted contractors provide accurate pricing</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-3">
                             {selectedCats.map(c => (
