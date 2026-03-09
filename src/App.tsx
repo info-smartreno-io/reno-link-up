@@ -1482,24 +1482,67 @@ function AppRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <HelmetProvider>
-      <DemoModeProvider>
-        <LeadDataProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <KeyboardShortcutsProvider>
-                <AppRoutes />
-              </KeyboardShortcutsProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </LeadDataProvider>
-      </DemoModeProvider>
-    </HelmetProvider>
-  </QueryClientProvider>
-);
+function InternalAppRoutes() {
+  usePageTracking();
+
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Internal login is the landing page on admin subdomain */}
+        <Route path="/" element={<InternalLogin />} />
+        <Route path="/admin/auth" element={<InternalLogin />} />
+        <Route path="/estimator/auth" element={<InternalLogin />} />
+
+        {/* All admin routes */}
+        <Route path="/admin/*" element={
+          <ProtectedRoute requiredRole="admin">
+            <Routes>
+              <Route path="dashboard" element={<AdminDashboardHome />} />
+              <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+            </Routes>
+          </ProtectedRoute>
+        } />
+
+        {/* All estimator routes */}
+        <Route path="/estimator/*" element={
+          <ProtectedRoute requiredRole="estimator">
+            <Routes>
+              <Route path="dashboard" element={<EstimatorDashboard />} />
+              <Route path="*" element={<Navigate to="/estimator/dashboard" replace />} />
+            </Routes>
+          </ProtectedRoute>
+        } />
+
+        {/* Any other path on admin subdomain → internal login */}
+        <Route path="*" element={<InternalLogin />} />
+      </Routes>
+    </>
+  );
+}
+
+const App = () => {
+  const adminSubdomain = isAdminSubdomain();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <DemoModeProvider>
+          <LeadDataProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <KeyboardShortcutsProvider>
+                  {adminSubdomain ? <InternalAppRoutes /> : <AppRoutes />}
+                </KeyboardShortcutsProvider>
+              </BrowserRouter>
+            </TooltipProvider>
+          </LeadDataProvider>
+        </DemoModeProvider>
+      </HelmetProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
