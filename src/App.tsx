@@ -186,6 +186,13 @@ import AdminResources from "./pages/AdminResources";
 import AdminAI from "./pages/AdminAI";
 import AdminCostCodeLibrary from "./pages/admin/AdminCostCodeLibrary";
 import AdminProjectPipeline from "./pages/admin/AdminProjectPipeline";
+import AdminFinancialEngine from "./pages/admin/AdminFinancialEngine";
+import AdminChangeOrdersManager from "./pages/admin/AdminChangeOrdersManager";
+import AdminVendorQuotes from "./pages/admin/AdminVendorQuotes";
+import AdminProjectTimeline from "./pages/admin/AdminProjectTimeline";
+import AdminAnalyticsDeep from "./pages/admin/AdminAnalyticsDeep";
+import EstimatorVendorQuotes from "./pages/estimator/EstimatorVendorQuotes";
+import EstimatorScopeBuilder from "./pages/estimator/EstimatorScopeBuilder";
 import ResourceCapacity from "./pages/ResourceCapacity";
 import ProfessionalQuickbooks from "./pages/ProfessionalQuickbooks";
 import ProfessionalInvoicing from "./pages/ProfessionalInvoicing";
@@ -1634,6 +1641,15 @@ function InternalAppRoutes() {
         <Route path="/estimator/messages" element={<ProtectedRoute requiredRole="estimator"><EstimatorMessages /></ProtectedRoute>} />
         <Route path="/estimator/files" element={<ProtectedRoute requiredRole="estimator"><EstimatorFiles /></ProtectedRoute>} />
         <Route path="/estimator/settings" element={<ProtectedRoute requiredRole="estimator"><EstimatorSettings /></ProtectedRoute>} />
+        <Route path="/estimator/vendor-quotes" element={<ProtectedRoute requiredRole="estimator"><EstimatorVendorQuotes /></ProtectedRoute>} />
+        <Route path="/estimator/scope-builder" element={<ProtectedRoute requiredRole="estimator"><EstimatorScopeBuilder /></ProtectedRoute>} />
+
+        {/* Phase 2 Admin Routes */}
+        <Route path="/admin/financial-engine" element={<ProtectedRoute requiredRole="admin"><AdminFinancialEngine /></ProtectedRoute>} />
+        <Route path="/admin/change-orders-manager" element={<ProtectedRoute requiredRole="admin"><AdminChangeOrdersManager /></ProtectedRoute>} />
+        <Route path="/admin/vendor-quotes" element={<ProtectedRoute requiredRole="admin"><AdminVendorQuotes /></ProtectedRoute>} />
+        <Route path="/admin/project-timeline" element={<ProtectedRoute requiredRole="admin"><AdminProjectTimeline /></ProtectedRoute>} />
+        <Route path="/admin/analytics-deep" element={<ProtectedRoute requiredRole="admin"><AdminAnalyticsDeep /></ProtectedRoute>} />
 
         {/* Catch-all: any unknown route → internal login */}
         <Route path="*" element={<InternalLogin />} />
