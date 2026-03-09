@@ -410,6 +410,7 @@ function AppRoutes() {
             <Route path="/contractor/:slug" element={<ContractorProfilePage />} />
             <Route path="/contractors/:id" element={<ContractorProfile />} />
             <Route path="/architects" element={<ArchitectsDirectory />} />
+            <Route path="/architects/:id" element={<ArchitectProfile />} />
             <Route path="/interiordesigners" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/interiordesigner/apply" element={<Navigate to="/design-professionals" replace />} />
             <Route path="/vendors" element={<Vendors />} />
