@@ -1517,6 +1517,8 @@ function InternalAppRoutes() {
         <Route path="/admin/rfps" element={<ProtectedRoute requiredRole="admin"><AdminRFPManagement /></ProtectedRoute>} />
         <Route path="/admin/bids" element={<ProtectedRoute requiredRole="admin"><AdminBidReview /></ProtectedRoute>} />
         <Route path="/admin/live-projects" element={<ProtectedRoute requiredRole="admin"><AdminLiveProjects /></ProtectedRoute>} />
+        <Route path="/admin/cost-codes" element={<ProtectedRoute requiredRole="admin"><AdminCostCodeLibrary /></ProtectedRoute>} />
+        <Route path="/admin/pipeline" element={<ProtectedRoute requiredRole="admin"><AdminProjectPipeline /></ProtectedRoute>} />
         <Route path="/admin/estimating" element={<ProtectedRoute requiredRole="admin"><AdminEstimatingHub /></ProtectedRoute>} />
         <Route path="/admin/estimating/:leadId/field-mode" element={<ProtectedRoute requiredRole="admin"><EstimatingFieldMode /></ProtectedRoute>} />
         <Route path="/admin/estimating/:leadId/bid-packet" element={<ProtectedRoute requiredRole="admin"><EstimatingBidPacket /></ProtectedRoute>} />
