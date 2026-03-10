@@ -319,25 +319,6 @@ function AppRoutes() {
   // Track page views automatically
   usePageTracking();
 
-  // Temporary debug logging for root-route redirect behavior
-  const debugHostname =
-    typeof window !== "undefined" ? window.location.hostname : "no-window";
-  const debugPathname =
-    typeof window !== "undefined" ? window.location.pathname : "no-window";
-  const appHostMatch =
-    typeof window !== "undefined" &&
-    window.location.hostname.startsWith("app.");
-
-  const useLoginRedirect =
-    appHostMatch && window.location.hostname !== "localhost";
-
-  console.log("[AppRoutes root-debug]", {
-    hostname: debugHostname,
-    pathname: debugPathname,
-    appHostMatch,
-    chosenRootElement: useLoginRedirect ? "login-redirect" : "index",
-  });
-
   return (
     <>
       {/* Site-wide Organization Schema */}
@@ -348,7 +329,8 @@ function AppRoutes() {
         <Route
           path="/"
           element={
-            useLoginRedirect ? (
+            window.location.hostname.startsWith("app.") &&
+            window.location.hostname !== "localhost" ? (
               <Navigate to="/login" replace />
             ) : (
               <Index />

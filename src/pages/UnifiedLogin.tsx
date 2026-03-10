@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { getDashboardPathForRole, type AppRole } from "@/utils/roleRedirect";
 
 type AppRole = Database['public']['Enums']['app_role'];
 
@@ -50,53 +51,28 @@ export default function UnifiedLogin() {
     }
 
     if (roles && roles.length > 0) {
-      const userRole = roles[0].role;
-      
-      // Route based on role - open portals in new tabs
-      if (userRole === 'contractor') {
+      const userRole = roles[0].role as AppRole;
+      const dashboardPath = getDashboardPathForRole(userRole);
+
+      if (!dashboardPath) {
         toast({
-          title: "Welcome!",
-          description: "Opening your contractor portal in a new tab.",
+          title: "Access pending",
+          description: "Please contact an administrator.",
+          variant: "destructive",
         });
-        window.open('/contractor/portal', "_blank", "noopener,noreferrer");
-        navigate('/');
-      } else if (userRole === 'homeowner') {
-        navigate('/homeowner/dashboard');
-        toast({
-          title: "Welcome!",
-          description: "You're now logged in to your homeowner portal.",
-        });
-      } else if (userRole === 'estimator') {
-        toast({
-          title: "Welcome!",
-          description: "Opening your estimator portal in a new tab.",
-        });
-        window.open('/estimator/dashboard', "_blank", "noopener,noreferrer");
-        navigate('/');
-      } else if (userRole === 'admin') {
-        toast({
-          title: "Welcome!",
-          description: "Opening your admin portal in a new tab.",
-        });
-        window.open('/admin/dashboard', "_blank", "noopener,noreferrer");
-        navigate('/');
-      } else if (userRole === 'architect' || userRole === 'interior_designer' || userRole === 'design_professional') {
-        toast({
-          title: "Welcome!",
-          description: "Opening your design professional portal in a new tab.",
-        });
-        window.open('/design-professional/dashboard', "_blank", "noopener,noreferrer");
-        navigate('/');
-      } else {
-        toast({
-          title: "Dashboard Coming Soon",
-          description: `The ${userRole.replace(/_/g, ' ')} dashboard is currently under development.`,
-        });
+        await supabase.auth.signOut();
+        return;
       }
+
+      toast({
+        title: "Welcome!",
+        description: "Redirecting you to your dashboard.",
+      });
+      navigate(dashboardPath, { replace: true });
     } else {
       toast({
-        title: "No Role Assigned",
-        description: "Your account doesn't have a role assigned yet. Please contact an administrator.",
+        title: "Access pending",
+        description: "Please contact an administrator.",
         variant: "destructive",
       });
       await supabase.auth.signOut();
@@ -188,15 +164,6 @@ export default function UnifiedLogin() {
       return;
     }
 
-    // Temporary debug: log Supabase env configuration and login attempt
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKeyDefined = !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    console.log("[UnifiedLogin] Supabase env debug", {
-      supabaseUrlDefined: !!supabaseUrl,
-      supabaseUrl,
-      supabaseKeyDefined,
-    });
-
     setPending(true);
 
     try {
@@ -217,18 +184,13 @@ export default function UnifiedLogin() {
       }
 
       if (data.user) {
-        // For design_professional, also accept legacy roles
-        const acceptedRoles = (role === 'design_professional'
-          ? ['design_professional', 'architect', 'interior_designer']
-          : [role]) as AppRole[];
-
         const { data: roles, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', data.user.id)
-          .in('role', acceptedRoles);
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id);
 
         if (roleError) {
+          console.error("[UnifiedLogin] role lookup error", roleError);
           toast({
             title: "Error",
             description: "Failed to verify your role. Please try again.",
@@ -240,21 +202,28 @@ export default function UnifiedLogin() {
         }
 
         if (!roles || roles.length === 0) {
-          // Auto-assign role if user has none (e.g. signed up via dedicated auth page)
-          const { error: assignError } = await supabase
-            .from('user_roles')
-            .insert({ user_id: data.user.id, role: role as AppRole });
+          toast({
+            title: "Access pending",
+            description: "Please contact an administrator.",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setPending(false);
+          return;
+        }
 
-          if (assignError) {
-            toast({
-              title: "Access Denied",
-              description: `You don't have ${role.replace(/_/g, ' ')} access. Please select the correct role or contact an administrator.`,
-              variant: "destructive",
-            });
-            await supabase.auth.signOut();
-            setPending(false);
-            return;
-          }
+        const userRole = roles[0].role as AppRole;
+        const dashboardPath = getDashboardPathForRole(userRole);
+
+        if (!dashboardPath) {
+          toast({
+            title: "Access pending",
+            description: "Please contact an administrator.",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setPending(false);
+          return;
         }
 
         toast({
@@ -262,7 +231,7 @@ export default function UnifiedLogin() {
           description: "Signed in successfully!",
         });
 
-        await checkRoleAndRedirect(data.user.id);
+        navigate(dashboardPath, { replace: true });
       }
     } catch (error) {
       console.error("[UnifiedLogin] unexpected login error", error);
@@ -357,6 +326,7 @@ export default function UnifiedLogin() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={pending}
+                    autoComplete="email"
                   />
                 </div>
 
@@ -421,6 +391,7 @@ export default function UnifiedLogin() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={pending}
+                  autoComplete="email"
                 />
               </div>
 
@@ -435,6 +406,7 @@ export default function UnifiedLogin() {
                   required 
                   disabled={pending}
                   minLength={6}
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
                 />
               </div>
 
