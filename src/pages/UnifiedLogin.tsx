@@ -188,6 +188,15 @@ export default function UnifiedLogin() {
       return;
     }
 
+    // Temporary debug: log Supabase env configuration and login attempt
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKeyDefined = !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    console.log("[UnifiedLogin] Supabase env debug", {
+      supabaseUrlDefined: !!supabaseUrl,
+      supabaseUrl,
+      supabaseKeyDefined,
+    });
+
     setPending(true);
 
     try {
@@ -197,6 +206,7 @@ export default function UnifiedLogin() {
       });
 
       if (error) {
+        console.error("[UnifiedLogin] signInWithPassword error", error);
         toast({
           title: "Authentication Error",
           description: error.message,
@@ -255,7 +265,7 @@ export default function UnifiedLogin() {
         await checkRoleAndRedirect(data.user.id);
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("[UnifiedLogin] unexpected login error", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
