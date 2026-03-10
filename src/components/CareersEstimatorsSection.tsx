@@ -17,17 +17,17 @@ export type Opening = {
 
 const openingsConfig: Opening[] = [
   {
-    group: "Estimators",
+  group: "Construction Agents",
     summary:
       "Visit homes, scope projects, capture measurements and photos, and prepare transparent digital estimates that power our 3‑bid proposals.",
     icon: <ClipboardList className="h-5 w-5" aria-hidden />,
     roles: [
-      { title: "Estimator — Exterior Trades", keywords: ["Roofing", "Siding", "Windows", "Masonry"] },
-      { title: "Estimator — Interior Trades", keywords: ["Flooring", "Painting", "Custom Carpentry"] },
-      { title: "Estimator — Kitchen & Bathroom" },
-      { title: "Estimator — Basements & Attics" },
-      { title: "Estimator — Additions / Major Renovations" },
-      { title: "Estimator — Mechanicals", keywords: ["Plumbing", "Electrical", "HVAC", "Solar"] },
+      { title: "Construction Agent — Exterior Trades", keywords: ["Roofing", "Siding", "Windows", "Masonry"] },
+      { title: "Construction Agent — Interior Trades", keywords: ["Flooring", "Painting", "Custom Carpentry"] },
+      { title: "Construction Agent — Kitchen & Bathroom" },
+      { title: "Construction Agent — Basements & Attics" },
+      { title: "Construction Agent — Additions / Major Renovations" },
+      { title: "Construction Agent — Mechanicals", keywords: ["Plumbing", "Electrical", "HVAC", "Solar"] },
     ],
   },
   {
@@ -84,7 +84,7 @@ export function CareersEstimatorsSection() {
         >
           <div className="flex items-start justify-between gap-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Estimators & Trade Specialists</h2>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Construction Agents & Trade Specialists</h2>
               <p className="mt-2 text-muted-foreground max-w-2xl">
                 Help homeowners scope projects with clarity and connect them to trusted contractors. We value
                 craftsmanship, transparency, and modern tools.
@@ -137,7 +137,7 @@ export function CareersEstimatorsSection() {
                   </h4>
                   <ul className="ml-5 list-disc space-y-1 text-sm text-muted-foreground">
                     <li>Perform on‑site assessments and capture accurate measurements.</li>
-                    <li>Upload project photos and notes through the SmartReno Estimator App.</li>
+                    <li>Upload project photos and notes through the SmartReno Construction Agent App.</li>
                     <li>Collaborate with coordinators and contractors to produce 3‑bid proposals.</li>
                     <li>Communicate timelines, scope, and expectations clearly with homeowners.</li>
                   </ul>

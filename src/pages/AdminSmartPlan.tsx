@@ -696,7 +696,7 @@ export default function AdminSmartPlan() {
                   checked={notifyEstimator}
                   onCheckedChange={(checked) => setNotifyEstimator(checked as boolean)}
                 />
-                <span>Notify Estimator</span>
+                <span>Notify Construction Agent</span>
               </div>
             </div>
           </CardContent>

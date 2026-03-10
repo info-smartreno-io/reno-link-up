@@ -203,19 +203,19 @@ export default function AdminEstimatorManagement() {
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-semibold">Estimator Management</h1>
+            <h1 className="text-3xl font-semibold">Construction Agent Management</h1>
             <p className="text-muted-foreground">Manage estimator profiles, service areas, and specializations</p>
           </div>
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-muted-foreground" />
             <span className="text-2xl font-bold">{estimators.length}</span>
-            <span className="text-muted-foreground">Estimators</span>
+            <span className="text-muted-foreground">Construction Agents</span>
           </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>All Estimators</CardTitle>
+            <CardTitle>All Construction Agents</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -305,7 +305,7 @@ export default function AdminEstimatorManagement() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Edit Estimator: {editingEstimator?.profiles?.full_name}
+              Edit Construction Agent: {editingEstimator?.profiles?.full_name}
             </DialogTitle>
           </DialogHeader>
 

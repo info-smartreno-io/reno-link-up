@@ -31,7 +31,7 @@ interface TechnicalRole {
 const technicalRoles: TechnicalRole[] = [
   {
     title: "UI / UX Designer",
-    summary: "Own the design system and user flows across homeowner, contractor, and estimator portals. Ship Figma specs, prototypes, and conduct usability tests to reduce friction.",
+    summary: "Own the design system and user flows across homeowner, contractor, and Construction Agent portals. Ship Figma specs, prototypes, and conduct usability tests to reduce friction.",
     keywords: ["Figma", "Design Systems", "Prototyping", "User Research", "UI/UX"],
     icon: <Palette className="h-5 w-5" />,
   },

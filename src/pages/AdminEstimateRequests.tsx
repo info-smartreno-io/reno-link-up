@@ -75,7 +75,7 @@ export default function AdminEstimateRequests() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-estimate-requests"] });
-      toast.success("Estimator assigned and notified via SMS");
+      toast.success("Construction Agent assigned and notified via SMS");
     },
     onError: (error) => {
       toast.error("Failed to assign estimator: " + error.message);
@@ -94,7 +94,7 @@ export default function AdminEstimateRequests() {
         <CardHeader>
           <CardTitle>Estimate Requests</CardTitle>
           <CardDescription>
-            View and assign incoming estimate requests to estimators
+            View and assign incoming estimate requests to Construction Agents
           </CardDescription>
         </CardHeader>
         <CardContent>

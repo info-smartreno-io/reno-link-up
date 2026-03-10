@@ -24,7 +24,7 @@ export default function Software() {
             Renovation Management, Built for Results
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            SmartReno's platform connects homeowners, estimators, designers, architects, vendors, and contractors — structuring every renovation from scope to completion.
+            SmartReno's platform connects homeowners, Construction Agents, designers, architects, vendors, and contractors — structuring every renovation from scope to completion.
           </p>
         </div>
       </section>
@@ -36,7 +36,7 @@ export default function Software() {
             {[
               { icon: FileText, title: "Structured Scopes", desc: "Detailed project scopes ensure every contractor bids on the same work — reducing change orders and confusion." },
               { icon: Users, title: "Contractor Matching", desc: "Vetted local contractors are matched to projects based on trade, location, budget, and availability." },
-              { icon: BarChart3, title: "Bid Comparison", desc: "Side-by-side proposal comparison with estimator guidance helps homeowners choose with confidence." },
+              { icon: BarChart3, title: "Bid Comparison", desc: "Side-by-side proposal comparison with Construction Agent guidance helps homeowners choose with confidence." },
               { icon: LayoutDashboard, title: "Project Dashboard", desc: "Track project progress, communicate with your team, and manage documents in one place." },
               { icon: ShieldCheck, title: "Quality Assurance", desc: "Tracked walkthroughs, photo documentation, and milestone tracking keep projects on course." },
               { icon: FileText, title: "Document Management", desc: "Contracts, blueprints, permits, and photos — organized and accessible throughout the project." },

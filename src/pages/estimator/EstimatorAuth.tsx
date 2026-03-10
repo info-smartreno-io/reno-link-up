@@ -129,11 +129,11 @@ export default function EstimatorAuth() {
         <Card className="w-full">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">
-            {isLogin ? "Estimator Sign In" : "Create Estimator Account"}
+            {isLogin ? "Construction Agent Sign In" : "Create Construction Agent Account"}
           </CardTitle>
           <CardDescription>
             {isLogin 
-              ? "Enter your credentials to access the estimator portal" 
+              ? "Enter your credentials to access the Construction Agent portal" 
               : "Sign up to start managing estimates and walkthroughs"}
           </CardDescription>
         </CardHeader>

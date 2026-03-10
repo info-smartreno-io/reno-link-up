@@ -162,7 +162,7 @@ export default function AdminWorkflow() {
         return {
           id: ur.user_id,
           name: profile?.full_name || `Team Member ${index + 1}`,
-          role: ur.role === 'admin' ? 'Admin' : ur.role === 'estimator' ? 'Estimator' : 'Staff',
+          role: ur.role === 'admin' ? 'Admin' : ur.role === 'estimator' ? 'Construction Agent' : 'Staff',
           status: userStatus?.status || 'available',
           current_activity: userStatus?.current_activity || undefined,
           activeLeads: Math.floor(Math.random() * 10) + 3, // In production, calculate from actual data

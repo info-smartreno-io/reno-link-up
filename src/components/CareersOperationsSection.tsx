@@ -42,7 +42,7 @@ const operationsRoles: OperationsRole[] = [
     icon: <MapPin className="h-5 w-5" />,
   },
   {
-    title: "Estimator Team Lead",
+    title: "Construction Agent Team Lead",
     summary: "Coach a squad of estimators, review scopes for accuracy and completeness, improve bid conversion rates, and standardize processes through training and mentorship.",
     keywords: ["Team Leadership", "Training", "Quality Control", "Process Improvement", "Construction Estimating"],
     icon: <Users className="h-5 w-5" />,

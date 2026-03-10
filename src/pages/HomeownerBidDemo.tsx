@@ -258,7 +258,7 @@ export default function HomeownerBidDemo() {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="notes">
-                  Notes or Questions for Your Estimator (Optional)
+                  Notes or Questions for Your Construction Agent (Optional)
                 </Label>
                 <Textarea
                   id="notes"

@@ -67,6 +67,12 @@ const AVAILABLE_ROLES: AppRole[] = [
   'vendor'
 ];
 
+/** User-facing label for role (estimator → Construction Agent; others use role with underscores as spaces). */
+function getRoleDisplayLabel(role: AppRole): string {
+  if (role === 'estimator') return 'Construction Agent';
+  return role.replace(/_/g, ' ');
+}
+
 export default function AdminUserManagement() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -208,7 +214,7 @@ export default function AdminUserManagement() {
 
       toast({
         title: "Role Added",
-        description: `Successfully added ${selectedRole.replace(/_/g, ' ')} role to ${selectedUser.full_name || selectedUser.email}.`,
+        description: `Successfully added ${getRoleDisplayLabel(selectedRole)} role to ${selectedUser.full_name || selectedUser.email}.`,
       });
 
       await fetchUsers();
@@ -239,7 +245,7 @@ export default function AdminUserManagement() {
 
       toast({
         title: "Role Removed",
-        description: `Successfully removed ${role.replace(/_/g, ' ')} role.`,
+        description: `Successfully removed ${getRoleDisplayLabel(role)} role.`,
       });
 
       await fetchUsers();
@@ -274,7 +280,7 @@ export default function AdminUserManagement() {
 
       toast({
         title: "Bulk Role Assignment Complete",
-        description: `Successfully added ${bulkSelectedRole.replace(/_/g, ' ')} role to ${successCount} user(s).${failCount > 0 ? ` ${failCount} failed.` : ''}`,
+        description: `Successfully added ${getRoleDisplayLabel(bulkSelectedRole)} role to ${successCount} user(s).${failCount > 0 ? ` ${failCount} failed.` : ''}`,
       });
 
       await fetchUsers();
@@ -397,7 +403,7 @@ export default function AdminUserManagement() {
                     <SelectContent>
                       {AVAILABLE_ROLES.map((role) => (
                         <SelectItem key={role} value={role}>
-                          {role.replace(/_/g, ' ')}
+                          {getRoleDisplayLabel(role)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -475,7 +481,7 @@ export default function AdminUserManagement() {
                                 variant={getRoleBadgeVariant(role)}
                                 className="gap-1"
                               >
-                                {role.replace(/_/g, ' ')}
+                                {getRoleDisplayLabel(role)}
                                 <button
                                   onClick={() => handleRemoveRole(userProfile.id, role)}
                                   disabled={processing}
@@ -530,7 +536,7 @@ export default function AdminUserManagement() {
                                     .filter(role => !userProfile.roles.includes(role))
                                     .map((role) => (
                                       <SelectItem key={role} value={role}>
-                                        {role.replace(/_/g, ' ')}
+                                        {getRoleDisplayLabel(role)}
                                       </SelectItem>
                                     ))}
                                 </SelectContent>

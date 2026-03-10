@@ -174,7 +174,7 @@ export function BidComparisonReview({ projectId }: { projectId: string }) {
           body: {
             estimatorId: selectedReport.created_by,
             estimatorEmail: estimatorEmail,
-            estimatorName: estimatorProfile?.full_name || 'Estimator',
+            estimatorName: estimatorProfile?.full_name || 'Construction Agent',
             homeownerName: homeownerProfile?.full_name || 'Homeowner',
             projectName: selectedReport.report_data.opportunityTitle,
             contractorName: selectedBidData.professional,
@@ -216,7 +216,7 @@ export function BidComparisonReview({ projectId }: { projectId: string }) {
       <Card>
         <CardContent className="py-8 text-center">
           <p className="text-muted-foreground">
-            No bid comparisons available yet. Your estimator will send options for your review.
+            No bid comparisons available yet. Your Construction Agent will send options for your review.
           </p>
         </CardContent>
       </Card>
@@ -248,12 +248,12 @@ export function BidComparisonReview({ projectId }: { projectId: string }) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            Your estimator has prepared a comparison of the top {report_data.topThree.length} bids for
+            Your Construction Agent has prepared a comparison of the top {report_data.topThree.length} bids for
             your project. Review the options below and select your preferred contractor.
           </p>
           {selectedReport.estimator_recommendation && (
             <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
-              <p className="font-semibold text-sm mb-2">Estimator's Recommendation:</p>
+              <p className="font-semibold text-sm mb-2">Construction Agent's Recommendation:</p>
               <p className="text-sm">{selectedReport.estimator_recommendation}</p>
             </div>
           )}
@@ -281,7 +281,7 @@ export function BidComparisonReview({ projectId }: { projectId: string }) {
                 <div className="absolute -top-2 -right-2 z-10">
                   <Badge className="bg-green-600 shadow-lg">
                     <Star className="h-3 w-3 mr-1 fill-white" />
-                    Estimator's Choice
+                    Construction Agent's Choice
                   </Badge>
                 </div>
               )}

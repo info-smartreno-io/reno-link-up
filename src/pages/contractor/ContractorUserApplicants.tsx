@@ -92,7 +92,7 @@ export default function ContractorUserApplicants() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="estimator">Estimator Applicants</SelectItem>
+                  <SelectItem value="estimator">Construction Agent Applicants</SelectItem>
                   <SelectItem value="gc">General Contractor Applicants</SelectItem>
                 </SelectContent>
               </Select>

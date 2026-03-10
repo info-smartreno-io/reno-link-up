@@ -621,7 +621,7 @@ export const getDemoMessages = () => [
   },
   {
     id: "demo-msg-6",
-    sender_name: "Maria Garcia (Estimator)",
+    sender_name: "Maria Garcia (Construction Agent)",
     subject: "Bid submission received",
     preview: "Your bid for the Paramus kitchen project has been received and is under review...",
     message: "Your bid for the Paramus kitchen project has been received and is under review.",
@@ -673,7 +673,7 @@ export const getDemoTeamMembers = () => [
   {
     id: "demo-team-2",
     name: "Maria Garcia",
-    role: "Estimator",
+    role: "Construction Agent",
     email: "maria@democonstruction.com",
     phone: "(555) 234-5678",
     status: "active",

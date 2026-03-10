@@ -17,7 +17,7 @@ interface BuildReadyGateTrackerProps {
 const DEFAULT_GATES = [
   { gate_type: "contract_signed", gate_name: "Contract signed", owner: "Financing", sort_order: 1 },
   { gate_type: "deposit_received", gate_name: "Deposit received", owner: "Financing", sort_order: 2 },
-  { gate_type: "final_plans", gate_name: "Final plans complete", owner: "Estimator", sort_order: 3 },
+  { gate_type: "final_plans", gate_name: "Final plans complete", owner: "Construction Agent", sort_order: 3 },
   { gate_type: "scope_approved", gate_name: "Final scope approved", owner: "Homeowner", sort_order: 4 },
   { gate_type: "zoning_prepared", gate_name: "Zoning prepared", owner: "PC", sort_order: 5 },
   { gate_type: "permit_prepared", gate_name: "Permit prepared", owner: "PC", sort_order: 6 },

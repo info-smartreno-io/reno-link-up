@@ -24,7 +24,7 @@ interface UserProfile {
 const AVAILABLE_ROLES = [
   { value: "admin", label: "Admin", color: "destructive" },
   { value: "contractor", label: "Contractor", color: "default" },
-  { value: "estimator", label: "Estimator", color: "secondary" },
+  { value: "estimator", label: "Construction Agent", color: "secondary" },
   { value: "foreman", label: "Foreman", color: "outline" },
   { value: "subcontractor", label: "Subcontractor", color: "outline" },
   { value: "project_manager", label: "Project Manager", color: "default" },

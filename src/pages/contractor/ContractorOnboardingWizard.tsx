@@ -467,7 +467,7 @@ export default function ContractorOnboardingWizard() {
                       <SelectItem value="owner">Owner</SelectItem>
                       <SelectItem value="office_manager">Office Manager</SelectItem>
                       <SelectItem value="project_manager">Project Manager</SelectItem>
-                      <SelectItem value="estimator">Estimator</SelectItem>
+                      <SelectItem value="estimator">Construction Agent</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -579,7 +579,7 @@ export default function ContractorOnboardingWizard() {
                   <Input type="number" value={pmCount} onChange={e => setPmCount(e.target.value)} placeholder="0" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Estimators</Label>
+                  <Label>Construction Agents</Label>
                   <Input type="number" value={estimatorCount} onChange={e => setEstimatorCount(e.target.value)} placeholder="0" />
                 </div>
               </div>

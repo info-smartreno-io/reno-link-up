@@ -114,7 +114,7 @@ const routeConfig: BreadcrumbConfig = {
 
 const portalNames: { [key: string]: string } = {
   architect: "Architect Portal",
-  estimator: "Estimator Portal",
+  estimator: "Construction Agent Portal",
   interiordesigner: "Interior Designer Portal",
   contractor: "Contractor Portal",
   admin: "Admin Portal",

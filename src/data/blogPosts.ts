@@ -29,7 +29,7 @@ export const blogPosts: BlogPost[] = [
 
 ## The SmartReno Flow
 
-1. **On‑site Estimator Visit** — An experienced estimator measures your space and captures photos/notes.
+1. **On‑site Site Visit** — An experienced Construction Agent measures your space and captures photos/notes.
 2. **Transparent Estimate** — You receive a clear scope with line items.
 3. **Three Competitive Bids** — Vetted contractors submit through SmartReno.
 4. **You Choose** — Compare price, timeline, and approach side‑by‑side.

@@ -77,7 +77,7 @@ export default function CompanyCalendar() {
 
   // Mock team members - replace with actual data from your system
   const teamMembers: TeamMember[] = [
-    { id: "1", name: "John Smith", email: "john@smartreno.io", role: "Estimator", color: "#3b82f6" },
+    { id: "1", name: "John Smith", email: "john@smartreno.io", role: "Construction Agent", color: "#3b82f6" },
     { id: "2", name: "Sarah Johnson", email: "sarah@smartreno.io", role: "Project Manager", color: "#10b981" },
     { id: "3", name: "Mike Chen", email: "mike@smartreno.io", role: "Contractor", color: "#f59e0b" },
     { id: "4", name: "Lisa Anderson", email: "lisa@smartreno.io", role: "Architect", color: "#8b5cf6" },

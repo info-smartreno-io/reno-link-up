@@ -4,16 +4,17 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { ADMIN_SIDENAV, type NavItem, type NavRole } from "@/config/adminSidebar";
 import { BackButton } from "@/components/BackButton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { NavLink } from "@/components/NavLink";
+import { useLogout } from "@/hooks/useLogout";
 
 /** Role-based login dropdown */
 const adminRoles = [
   { label: "Admin", to: "/admin/auth" },
-  { label: "Estimator", to: "/estimator/auth" },
+  { label: "Construction Agent", to: "/estimator/auth" },
   { label: "Architect", to: "/architect/auth" },
   { label: "Contractor", to: "/contractor/auth" },
   { label: "Interior Designer", to: "/interiordesigner/auth" },
@@ -50,6 +51,7 @@ export function AdminSideNav({
     new Set(ADMIN_SIDENAV.map(g => g.id))
   );
   const { pathname } = useLocation();
+   const { logout } = useLogout("/admin/auth");
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => {
@@ -162,8 +164,8 @@ export function AdminSideNav({
             </ul>
           </nav>
 
-          {/* Role login dropdown */}
-          <div className="border-t border-[hsl(217,32%,14%)] p-2">
+          {/* Role login dropdown + Logout */}
+          <div className="border-t border-[hsl(217,32%,14%)] p-2 space-y-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -184,6 +186,15 @@ export function AdminSideNav({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button
+              variant="outline"
+              className="w-full justify-center text-xs bg-[hsl(217,28%,11%)] border-[hsl(217,32%,14%)] text-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,20%)]/20 hover:text-[hsl(0,84%,70%)]"
+              onClick={logout}
+            >
+              <LogOut className="mr-2 h-3.5 w-3.5" />
+              <span className={cn(!collapsed ? "inline" : "sr-only")}>Log out</span>
+            </Button>
           </div>
         </div>
       </aside>

@@ -103,7 +103,7 @@ export const ACTIVITY_CONFIG: Record<ActivityType, { label: string; icon: string
   walkthrough_scheduled: { label: "Walkthrough Scheduled", icon: "Calendar", color: "text-purple-500" },
   status_change: { label: "Status Change", icon: "ArrowRight", color: "text-orange-500" },
   proposal_sent: { label: "Proposal Sent", icon: "FileText", color: "text-cyan-500" },
-  estimator_assigned: { label: "Estimator Assigned", icon: "User", color: "text-indigo-500" },
+  estimator_assigned: { label: "Construction Agent Assigned", icon: "User", color: "text-indigo-500" },
   contact_recorded: { label: "Contact Recorded", icon: "Phone", color: "text-teal-500" },
   meeting: { label: "Meeting", icon: "Users", color: "text-pink-500" },
   site_visit: { label: "Site Visit", icon: "MapPin", color: "text-emerald-500" },

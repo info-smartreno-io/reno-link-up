@@ -128,7 +128,7 @@ export function StageTimeoutSettings() {
                   Automated Monitoring Active
                 </p>
                 <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                  The system checks for stale leads every hour and sends email notifications to all estimators and admins.
+                  The system checks for stale leads every hour and sends email notifications to all Construction Agents and admins.
                 </p>
               </div>
             </div>

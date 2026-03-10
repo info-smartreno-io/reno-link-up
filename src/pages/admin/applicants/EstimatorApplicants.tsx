@@ -47,7 +47,7 @@ export default function EstimatorApplicants() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Estimator Applicants</h1>
+          <h1 className="text-3xl font-bold">Construction Agent Applicants</h1>
           <p className="text-muted-foreground mt-2">
             Review estimator applications and qualifications
           </p>

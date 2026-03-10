@@ -836,7 +836,7 @@ export default function PropertyRenovationReport() {
                     <div>
                       <h3 className="text-sm font-semibold text-foreground mb-1">How We Calculate These Estimates</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ contractor-grade material and labor rates with a <strong>25% GC markup</strong> included. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. Custom or luxury finishes, unforeseen conditions, and specialty trades may increase these figures. A SmartReno estimator will provide exact pricing after an on-site walkthrough.
+                        Quantities are derived from your property's square footage, number of bathrooms, and bedroom count using industry-standard cost codes (CSI MasterFormat). Unit costs reflect current Northern NJ contractor-grade material and labor rates with a <strong>25% GC markup</strong> included. Regional multipliers adjust for local market conditions in <strong>{property.town}</strong>. Custom or luxury finishes, unforeseen conditions, and specialty trades may increase these figures. A SmartReno Construction Agent will provide exact pricing after an on-site walkthrough.
                       </p>
                     </div>
                   </div>
@@ -856,7 +856,7 @@ export default function PropertyRenovationReport() {
                     These estimates are a starting point. Schedule a free 30-minute consultation with a SmartReno estimator who will walk your property, review the scope, and deliver a detailed proposal — no strings attached.
                   </p>
                   <div className="flex flex-wrap items-center justify-center gap-3 mb-10 text-background/50 text-sm">
-                    <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Licensed Estimators</span>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Licensed Construction Agents</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Obligation</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Vetted Contractors</span>
                   </div>

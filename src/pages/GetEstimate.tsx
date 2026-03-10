@@ -15,7 +15,7 @@ export default function GetEstimate() {
     <>
       <Helmet>
         <title>Get Free Estimate - SmartReno | Northern NJ Renovations</title>
-        <meta name="description" content="Get a free, no-obligation estimate for your home renovation project. Book a 60-minute estimator visit and receive verified scope with three competitive bids from vetted contractors." />
+        <meta name="description" content="Get a free, no-obligation estimate for your home renovation project. Book a 60-minute site visit and receive verified scope with three competitive bids from vetted contractors." />
       </Helmet>
 
       <SiteNavbar />
@@ -33,7 +33,7 @@ export default function GetEstimate() {
               Get Your Free Renovation Estimate
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Book a 60-minute estimator visit. Get a verified scope and three competitive bids from pre-vetted contractors.
+              Book a 60-minute site visit. Get a verified scope and three competitive bids from pre-vetted contractors.
             </p>
           </div>
 
@@ -81,7 +81,7 @@ export default function GetEstimate() {
                   <div>
                     <h3 className="font-semibold mb-1">Schedule Your Visit</h3>
                     <p className="text-sm text-muted-foreground">
-                      Our estimator will visit your home for a detailed assessment (60 minutes).
+                      Our Construction Agent will visit your home for a detailed assessment (60 minutes).
                     </p>
                   </div>
                 </div>

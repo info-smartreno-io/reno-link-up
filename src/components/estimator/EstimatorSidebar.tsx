@@ -182,7 +182,7 @@ export function EstimatorSidebar() {
         width: collapsed ? 56 : 240,
         bottom: 0,
       }}
-      aria-label="Estimator side navigation"
+      aria-label="Construction Agent side navigation"
     >
       <div className="flex h-full w-full flex-col">
         {/* Back Button & Collapse / Expand */}
@@ -190,7 +190,7 @@ export function EstimatorSidebar() {
           <div className={cn("flex items-center gap-2 transition-all duration-300", collapsed && "justify-center w-full")}>
             {!collapsed && <BackButton variant="ghost" className="h-7" />}
             <div className={cn("text-xs font-medium text-[hsl(217,15%,60%)] transition-opacity duration-300", collapsed && "sr-only")}>
-              Estimator Portal
+              Construction Agent Portal
             </div>
           </div>
           <Button

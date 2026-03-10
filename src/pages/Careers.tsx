@@ -18,7 +18,7 @@ export default function Careers() {
   return (
     <>
       <Helmet>
-        <title>Careers — Join SmartReno | Operations, Estimators, Engineering & Growth Roles</title>
+        <title>Careers — Join SmartReno | Operations, Construction Agents, Engineering & Growth Roles</title>
         <meta 
           name="description" 
           content="Join SmartReno's team of project coordinators, estimators, engineers, and growth professionals. We're hiring across operations, construction trades, and HQ roles in Northern NJ and remote." 
@@ -51,7 +51,7 @@ export default function Careers() {
         {/* Operations Roles — TOP PRIORITY */}
         <CareersOperationsSection />
 
-        {/* Estimators & Trade Specialists */}
+        {/* Construction Agents & Trade Specialists */}
         <CareersEstimatorsSection />
 
         {/* Technical & HQ Roles */}

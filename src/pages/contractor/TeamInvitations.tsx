@@ -30,7 +30,7 @@ interface TeamInvitation {
 }
 
 const AVAILABLE_ROLES = [
-  { value: "estimator", label: "Estimator" },
+  { value: "estimator", label: "Construction Agent" },
   { value: "project_coordinator", label: "Project Coordinator" },
   { value: "project_manager", label: "Project Manager" },
   { value: "foreman", label: "Foreman" },

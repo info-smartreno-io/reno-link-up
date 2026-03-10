@@ -176,7 +176,7 @@ export default function InternalLogin() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">SmartReno Internal Access</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Secure login for administrators and estimators.
+            Secure login for administrators and Construction Agents.
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export default function InternalLogin() {
               <Alert variant="destructive" className="mb-4">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  You do not have permission to access this portal. This login is restricted to authorized SmartReno administrators and estimators only.
+                  You do not have permission to access this portal. This login is restricted to authorized SmartReno administrators and Construction Agents only.
                 </AlertDescription>
               </Alert>
             )}

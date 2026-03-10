@@ -10,7 +10,7 @@ interface PMPreConstructionChecklistProps {
 
 const defaultChecklistItems = [
   { id: '1', task_name: 'Final plans complete', owner: 'Architect', status: 'pending' },
-  { id: '2', task_name: 'Scope adjusted from plans', owner: 'Estimator', status: 'pending' },
+  { id: '2', task_name: 'Scope adjusted from plans', owner: 'Construction Agent', status: 'pending' },
   { id: '3', task_name: 'Homeowner approval', owner: 'PM', status: 'pending' },
   { id: '4', task_name: 'Engineering complete', owner: 'Engineer', status: 'pending' },
   { id: '5', task_name: 'Zoning submitted', owner: 'PM', status: 'pending' },

@@ -256,7 +256,7 @@ export default function Index() {
           <div className="grid md:grid-cols-5 gap-4">
             {[
               { step: 1, title: "Submit Project Details", icon: ClipboardList, desc: "Share your renovation goals, budget, and timeline in under 60 seconds." },
-              { step: 2, title: "On-Site Walkthrough", icon: Eye, desc: "Our estimator visits your home to evaluate scope and take detailed measurements." },
+              { step: 2, title: "On-Site Walkthrough", icon: Eye, desc: "Our Construction Agent visits your home to evaluate scope and take detailed measurements." },
               { step: 3, title: "Scope Development", icon: FileText, desc: "We create a clear, detailed scope so every contractor bids on the same work." },
               { step: 4, title: "Contractor Proposals", icon: Users, desc: "Vetted local contractors review your scope and submit competitive proposals." },
               { step: 5, title: "Start Construction", icon: Hammer, desc: "Choose your contractor with confidence and begin your renovation." },

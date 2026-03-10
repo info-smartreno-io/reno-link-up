@@ -59,7 +59,7 @@ const workflowSections: WorkflowSection[] = [
   {
     title: "SMART HUB",
     items: [
-      "Estimators",
+      "Construction Agents",
       "Project Coordinator",
       "Success Manager",
       "Contractor Onboarding",
