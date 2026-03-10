@@ -319,20 +319,23 @@ function AppRoutes() {
   // Track page views automatically
   usePageTracking();
 
-  const isAppRoot =
-    typeof window !== "undefined" &&
-    window.location.hostname === "app.smartreno.io";
-
   return (
     <>
       {/* Site-wide Organization Schema */}
       <OrganizationSchema />
       <ScrollToTop />
-      
+
       <Routes>
         <Route
           path="/"
-          element={isAppRoot ? <Navigate to="/login" replace /> : <Index />}
+          element={
+            window.location.hostname.startsWith("app.") &&
+            window.location.hostname !== "localhost" ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <Index />
+            )
+          }
         />
             <Route path="/partner" element={<Partner />} />
             <Route path="/login/:portal" element={<PortalLoginGateway />} />
