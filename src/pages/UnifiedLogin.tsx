@@ -360,6 +360,7 @@ export default function UnifiedLogin() {
                   <SelectContent>
                     <SelectItem value="homeowner">Homeowner</SelectItem>
                     <SelectItem value="contractor">Contractor</SelectItem>
+                    <SelectItem value="estimator">Construction Agent</SelectItem>
                     <SelectItem value="design_professional">Design Professional</SelectItem>
                     <SelectItem value="vendor">Vendor</SelectItem>
                   </SelectContent>
