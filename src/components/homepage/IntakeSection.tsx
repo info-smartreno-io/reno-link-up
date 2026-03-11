@@ -52,6 +52,29 @@ export function IntakeSection() {
 
       if (error) throw error;
 
+      // Fire-and-forget email notification to internal team (do not block user flow)
+      try {
+        await supabase.functions.invoke("send-estimate-request-notification", {
+          body: {
+            name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            address: `${formData.city}, NJ ${formData.zip}`,
+            project_type: formData.projectType,
+            message: [
+              formData.budget ? `Estimated budget: ${formData.budget}` : null,
+              formData.timeline ? `Timeline: ${formData.timeline}` : null,
+              formData.source ? `Source: ${formData.source}` : null,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        });
+      } catch (notificationError) {
+        console.error("IntakeSection notification error:", notificationError);
+        // Do not throw; lead is already saved and UI should still show success
+      }
+
       setSuccess(true);
       toast({
         title: "Success!",
