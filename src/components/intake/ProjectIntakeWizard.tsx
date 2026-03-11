@@ -42,7 +42,7 @@ const TOTAL_STEPS = 4;
 export function ProjectIntakeWizard() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<IntakeFormData>({
     projectType: "",
     address: "",
@@ -90,7 +90,8 @@ export function ProjectIntakeWizard() {
   };
 
   const handleSubmit = async () => {
-    setSubmitting(true);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -128,7 +129,7 @@ export function ProjectIntakeWizard() {
       const { data: project, error } = await supabase
         .from("projects")
         .insert({
-          name: projectLabel,
+          project_name: projectLabel,
           project_type: form.projectType,
           description: form.description,
           address: form.address,
@@ -174,6 +175,32 @@ export function ProjectIntakeWizard() {
         }
       }
 
+      // Fire-and-forget email notification to internal team (do not block user flow)
+      try {
+        await supabase.functions.invoke("send-estimate-request-notification", {
+          body: {
+            name: projectLabel,
+            email: "",
+            phone: "",
+            address: `${form.address}, ${form.city}, NJ ${form.zip}`,
+            project_type: form.projectType,
+            message: [
+              form.budget ? `Estimated budget: ${form.budget}` : null,
+              form.financing ? `Financing: ${form.financing}` : null,
+              form.design ? `Design help: ${form.design}` : null,
+              form.materialHelp ? `Material help: ${form.materialHelp}` : null,
+              form.permitExpectation ? `Permits: ${form.permitExpectation}` : null,
+              form.projectSize ? `Project size: ${form.projectSize}` : null,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        });
+      } catch (notificationError) {
+        console.error("ProjectIntakeWizard notification error:", notificationError);
+        // Do not throw; project is already saved and UI should still show success
+      }
+
       toast.success("Your project has been submitted!");
       navigate("/start-your-renovation/confirmation", {
         state: { projectId: project?.id, projectType: projectLabel },
@@ -182,7 +209,7 @@ export function ProjectIntakeWizard() {
       console.error("Intake submit error:", err);
       toast.error(err.message || "Failed to submit project. Please try again.");
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -458,9 +485,9 @@ export function ProjectIntakeWizard() {
                 Continue <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={submitting || !canProceed()}>
-                {submitting ? "Submitting..." : "Submit Project Request"}
-                {!submitting && <CheckCircle className="h-4 w-4 ml-2" />}
+              <Button onClick={handleSubmit} disabled={isSubmitting || !canProceed()}>
+                {isSubmitting ? "Submitting..." : "Submit Project Request"}
+                {!isSubmitting && <CheckCircle className="h-4 w-4 ml-2" />}
               </Button>
             )}
           </div>
