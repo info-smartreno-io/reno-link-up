@@ -18,7 +18,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLogout } from "@/hooks/useLogout";
 
 export function ConsolidatedContractorSidebar() {
   const { state } = useSidebar();
@@ -27,6 +29,7 @@ export function ConsolidatedContractorSidebar() {
   const currentPath = location.pathname;
   const { hasRole, loading: rolesLoading } = useUserRoles();
   const { contractorUser, loading: contractorLoading } = useContractorRole();
+  const { logout } = useLogout("/contractor/auth");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(consolidatedContractorNav.map(s => s.title))
   );
@@ -162,6 +165,22 @@ export function ConsolidatedContractorSidebar() {
             </div>
           )}
         </SidebarContent>
+
+        {/* Footer with Logout */}
+        <div className="mt-auto border-t border-[hsl(217,32%,14%)] p-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "w-full justify-center text-xs bg-[hsl(217,28%,11%)] border-[hsl(217,32%,14%)] text-[hsl(0,84%,60%)] hover:bg-[hsl(0,84%,20%)]/20 hover:text-[hsl(0,84%,70%)]",
+              collapsed && "px-0"
+            )}
+            onClick={logout}
+          >
+            <LogOut className="mr-2 h-3.5 w-3.5" />
+            {!collapsed && <span>Log out</span>}
+          </Button>
+        </div>
       </div>
     </Sidebar>
   );

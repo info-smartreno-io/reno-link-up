@@ -56,8 +56,8 @@ export default function UnifiedLogin() {
 
       if (!dashboardPath) {
         toast({
-          title: "Access pending",
-          description: "Please contact an administrator.",
+          title: "No portal access",
+          description: "Your account does not have access to this portal.",
           variant: "destructive",
         });
         await supabase.auth.signOut();
@@ -71,8 +71,8 @@ export default function UnifiedLogin() {
       navigate(dashboardPath, { replace: true });
     } else {
       toast({
-        title: "Access pending",
-        description: "Please contact an administrator.",
+        title: "No portal access",
+        description: "Your account does not have access to this portal.",
         variant: "destructive",
       });
       await supabase.auth.signOut();
@@ -184,6 +184,36 @@ export default function UnifiedLogin() {
       }
 
       if (data.user) {
+        // Ensure profile exists in public.users
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("id, full_name, email, phone")
+          .eq("id", data.user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("[UnifiedLogin] profile lookup error", profileError);
+          toast({
+            title: "Error",
+            description: "Failed to load your profile. Please try again.",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setPending(false);
+          return;
+        }
+
+        if (!profile) {
+          toast({
+            title: "Profile missing",
+            description: "Your account is missing a profile. Please contact support.",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setPending(false);
+          return;
+        }
+
         const { data: roles, error: roleError } = await supabase
           .from("user_roles")
           .select("role")
@@ -203,8 +233,8 @@ export default function UnifiedLogin() {
 
         if (!roles || roles.length === 0) {
           toast({
-            title: "Access pending",
-            description: "Please contact an administrator.",
+            title: "No portal access",
+            description: "Your account does not have access to this portal.",
             variant: "destructive",
           });
           await supabase.auth.signOut();
@@ -212,13 +242,24 @@ export default function UnifiedLogin() {
           return;
         }
 
-        const userRole = roles[0].role as AppRole;
-        const dashboardPath = getDashboardPathForRole(userRole);
+        const hasSelectedRole = roles.some((r) => r.role === role);
+        if (!hasSelectedRole) {
+          toast({
+            title: "Role mismatch",
+            description: `This account is not registered as a ${role.replace(/_/g, " ")}.`,
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setPending(false);
+          return;
+        }
+
+        const dashboardPath = getDashboardPathForRole(role as AppRole);
 
         if (!dashboardPath) {
           toast({
-            title: "Access pending",
-            description: "Please contact an administrator.",
+            title: "No portal access",
+            description: "Your account does not have access to this portal.",
             variant: "destructive",
           });
           await supabase.auth.signOut();
