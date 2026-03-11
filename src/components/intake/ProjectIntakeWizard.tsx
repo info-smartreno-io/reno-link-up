@@ -113,6 +113,17 @@ export function ProjectIntakeWizard() {
 
       const projectLabel = PROJECT_TYPES.find(t => t.value === form.projectType)?.label || form.projectType;
 
+      // Parse budget range string into numeric min/max (align with HomeownerIntake)
+      let budgetMin = 0;
+      let budgetMax = 0;
+      if (form.budget) {
+        const parts = form.budget.split(" - ");
+        const minPart = parts[0]?.replace(/[^0-9]/g, "") || "0";
+        const maxPart = parts[1]?.replace(/[^0-9]/g, "") || minPart;
+        budgetMin = parseFloat(minPart) || 0;
+        budgetMax = parseFloat(maxPart) || budgetMin;
+      }
+
       // Create project record
       const { data: project, error } = await supabase
         .from("projects")
@@ -123,7 +134,8 @@ export function ProjectIntakeWizard() {
           address: form.address,
           city: form.city,
           zip_code: form.zip,
-          budget_range: form.budget,
+          budget_range_min: budgetMin,
+          budget_range_max: budgetMax,
           financing_needed: form.financing || null,
           design_needed: form.design || null,
           material_help: form.materialHelp || null,
