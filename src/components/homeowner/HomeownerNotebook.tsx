@@ -20,7 +20,18 @@ function useHomeownerNotes() {
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false })
         .limit(20);
-      if (error) throw error;
+      if (error) {
+        // If the homeowner_notes table doesn't exist in this environment,
+        // fail gracefully instead of breaking the dashboard.
+        if (
+          (error as any).code === "42P01" ||
+          String((error as any).message || "").toLowerCase().includes("homeowner_notes")
+        ) {
+          console.warn("[HomeownerNotebook] homeowner_notes table missing; skipping notes widget.", error);
+          return [];
+        }
+        throw error;
+      }
       return data || [];
     },
   });
@@ -42,7 +53,16 @@ export function HomeownerNotebook() {
         content,
         note_type: hasLinks ? "material_link" : "general",
       });
-      if (error) throw error;
+      if (error) {
+        if (
+          (error as any).code === "42P01" ||
+          String((error as any).message || "").toLowerCase().includes("homeowner_notes")
+        ) {
+          console.warn("[HomeownerNotebook] homeowner_notes table missing; cannot save note.", error);
+          throw new Error("Notebook is not available in this environment.");
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homeowner-notes"] });
@@ -56,7 +76,16 @@ export function HomeownerNotebook() {
   const deleteNote = useMutation({
     mutationFn: async (noteId: string) => {
       const { error } = await supabase.from("homeowner_notes").delete().eq("id", noteId);
-      if (error) throw error;
+      if (error) {
+        if (
+          (error as any).code === "42P01" ||
+          String((error as any).message || "").toLowerCase().includes("homeowner_notes")
+        ) {
+          console.warn("[HomeownerNotebook] homeowner_notes table missing; cannot delete note.", error);
+          return;
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homeowner-notes"] });

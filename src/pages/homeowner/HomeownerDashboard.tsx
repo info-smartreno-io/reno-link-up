@@ -88,6 +88,8 @@ export default function HomeownerDashboard() {
   const nextStep = activeProject ? getNextStep(activeProject.status || "intake") : "";
   const progressPercent = status ? Math.round((status.step / (HOMEOWNER_MILESTONES.length - 1)) * 100) : 0;
 
+  console.log("[HomeownerDashboard] projects from useHomeownerProjects", projects);
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -261,21 +263,7 @@ export default function HomeownerDashboard() {
           )}
         </>
       ) : (
-        <Card className="border border-primary/20">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <ClipboardList className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-foreground">Start Your First Project</h3>
-              <p className="text-xs text-muted-foreground">Tell us about your renovation and we'll guide the next steps.</p>
-            </div>
-            <Button size="sm" className="gap-1.5 flex-shrink-0" onClick={() => navigate("/start-your-renovation")}>
-              Start Your Renovation
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </CardContent>
-        </Card>
+        <FallbackIntakeProjectCard />
       )}
 
       {/* Notebook */}
@@ -284,5 +272,126 @@ export default function HomeownerDashboard() {
       {/* Inspiration & Materials Section - always visible */}
       <DashboardInspirationSection />
     </div>
+  );
+}
+
+function FallbackIntakeProjectCard() {
+  const navigate = useNavigate();
+  const { data: fallbackProject, isLoading } = useQuery({
+    queryKey: ["homeowner-intake-project-fallback"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("projects")
+        .select("project_name, project_type, created_at, status")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[FallbackIntakeProjectCard] projects fallback error", error);
+        return null;
+      }
+      console.log("[FallbackIntakeProjectCard] projects fallback result", data);
+      return data;
+    },
+    staleTime: 30000,
+    retry: 1,
+  });
+
+  if (isLoading) {
+    return (
+      <Card className="border border-primary/20">
+        <CardContent className="p-4 flex items-center gap-4">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="h-5 w-5 text-primary animate-pulse" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-foreground">Checking your renovation request…</h3>
+            <p className="text-xs text-muted-foreground">
+              We’re looking for any recent project requests linked to your account.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!fallbackProject) {
+    return (
+      <Card className="border border-primary/20">
+        <CardContent className="p-4 flex items-center gap-4">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-foreground">Start Your First Project</h3>
+            <p className="text-xs text-muted-foreground">
+              Tell us about your renovation and we'll guide the next steps.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            className="gap-1.5 flex-shrink-0"
+            onClick={() => navigate("/start-your-renovation")}
+          >
+            Start Your Renovation
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border border-primary/20 bg-primary/5">
+      <CardContent className="p-4 flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-foreground">
+              We received your renovation request
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Our team is reviewing your project details. You’ll be notified when there are updates.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <div className="text-muted-foreground">Project</div>
+            <div className="font-medium text-foreground">
+              {fallbackProject.project_name || "Renovation Project"}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Type</div>
+            <div className="font-medium text-foreground">
+              {fallbackProject.project_type || "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Submitted</div>
+            <div className="font-medium text-foreground">
+              {fallbackProject.created_at
+                ? format(new Date(fallbackProject.created_at), "MMM d, yyyy")
+                : "—"}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Status</div>
+            <div className="font-medium text-foreground">
+              {fallbackProject.status || "intake"}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

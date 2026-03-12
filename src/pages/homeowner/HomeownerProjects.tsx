@@ -1,15 +1,50 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHomeownerProjects, getHomeownerStatus } from "@/hooks/useHomeownerData";
+import { supabase } from "@/integrations/supabase/client";
+import { IntakeStatusCard } from "@/components/homeowner/IntakeStatusCard";
 import { MapPin, ArrowRight, Calendar } from "lucide-react";
 
 export default function HomeownerProjects() {
   const { data: projects, isLoading } = useHomeownerProjects();
   const navigate = useNavigate();
 
-  if (isLoading) {
+  console.log("[HomeownerProjectsPage] pipelineProjects", projects);
+
+  const {
+    data: intakeProject,
+    isLoading: isLoadingIntake,
+  } = useQuery({
+    queryKey: ["homeowner-intake-project-list-fallback"],
+    enabled: !isLoading && (!projects || projects.length === 0),
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("projects")
+        .select("id, project_name, project_type, created_at, status")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[HomeownerProjectsPage] intakeProject fallback error", error);
+        return null;
+      }
+
+      console.log("[HomeownerProjectsPage] intakeProject", data);
+      return data;
+    },
+    staleTime: 30000,
+    retry: 1,
+  });
+
+  if (isLoading || isLoadingIntake) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-10 w-48" />
@@ -19,16 +54,18 @@ export default function HomeownerProjects() {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">My Projects</h1>
-        <p className="text-muted-foreground mt-1">All your renovation projects in one place.</p>
-      </div>
+  const pipelineProjects = projects || [];
 
-      {projects?.length ? (
+  if (pipelineProjects.length > 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">My Projects</h1>
+          <p className="text-muted-foreground mt-1">All your renovation projects in one place.</p>
+        </div>
+
         <div className="grid gap-4">
-          {projects.map((project) => {
+          {pipelineProjects.map((project) => {
             const status = getHomeownerStatus(project.status || "intake");
             return (
               <Card
@@ -63,13 +100,35 @@ export default function HomeownerProjects() {
             );
           })}
         </div>
-      ) : (
-        <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
-            No projects found.
-          </CardContent>
-        </Card>
-      )}
+      </div>
+    );
+  }
+
+  if (intakeProject) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">My Projects</h1>
+          <p className="text-muted-foreground mt-1">
+            Your renovation request is in review.
+          </p>
+        </div>
+        <IntakeStatusCard project={intakeProject as any} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">My Projects</h1>
+        <p className="text-muted-foreground mt-1">All your renovation projects in one place.</p>
+      </div>
+      <Card>
+        <CardContent className="p-8 text-center text-muted-foreground">
+          No projects found.
+        </CardContent>
+      </Card>
     </div>
   );
 }
