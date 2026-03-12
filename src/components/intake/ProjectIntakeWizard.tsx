@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle, Upload, X, Camera, ArrowRight, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -22,7 +23,16 @@ import {
   SIZE_OPTIONS,
 } from "@/data/projectTypeDescriptions";
 
+const MIN_PASSWORD_LENGTH = 8;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface IntakeFormData {
+  full_name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirm_password: string;
+  accepted_terms: boolean;
   projectType: string;
   address: string;
   city: string;
@@ -37,13 +47,19 @@ interface IntakeFormData {
   photos: File[];
 }
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 export function ProjectIntakeWizard() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<IntakeFormData>({
+    full_name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirm_password: "",
+    accepted_terms: false,
     projectType: "",
     address: "",
     city: "",
@@ -81,21 +97,74 @@ export function ProjectIntakeWizard() {
 
   const canProceed = (): boolean => {
     switch (step) {
-      case 1: return !!form.projectType && !!form.address && !!form.city && !!form.zip;
-      case 2: return !!form.budget;
-      case 3: return true; // photos optional
-      case 4: return !!form.description;
-      default: return false;
+      case 1:
+        return (
+          !!form.full_name?.trim() &&
+          EMAIL_REGEX.test(form.email?.trim() || "") &&
+          !!form.phone?.trim() &&
+          (form.password?.length ?? 0) >= MIN_PASSWORD_LENGTH &&
+          form.password === form.confirm_password &&
+          form.accepted_terms === true
+        );
+      case 2:
+        return !!form.projectType && !!form.address && !!form.city && !!form.zip;
+      case 3:
+        return !!form.budget;
+      case 4:
+        return true; // photos optional
+      case 5:
+        return !!form.description;
+      default:
+        return false;
     }
   };
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    if (!form.accepted_terms) {
+      toast.error("Please accept the Terms and Conditions to continue.");
+      return;
+    }
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      let user = (await supabase.auth.getUser()).data?.user ?? null;
 
-      // Upload photos if any
+      // Create homeowner account if not logged in
+      if (!user) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: form.email.trim(),
+          password: form.password,
+          options: {
+            data: {
+              full_name: form.full_name.trim(),
+              phone: form.phone.trim(),
+              role: "homeowner",
+            },
+            emailRedirectTo: `${window.location.origin}/homeowner/dashboard`,
+          },
+        });
+        if (signUpError) throw signUpError;
+        if (!signUpData.user) throw new Error("Account creation failed. Please try again.");
+        user = signUpData.user;
+      }
+
+      // Persist terms acceptance on the app-level user profile (new and existing homeowners)
+      if (user) {
+        const termsVersion = "2026-03-homeowner-terms-v1";
+        const { error: termsError } = await supabase
+          .from("users" as any)
+          .update({
+            accepted_terms_at: new Date().toISOString(),
+            terms_version: termsVersion,
+          } as any)
+          .eq("id", user.id);
+        if (termsError) {
+          console.error("Failed to persist terms acceptance:", termsError);
+          // Non-fatal: project creation and portal access should still proceed
+        }
+      }
+
+      // Upload photos if any (now we have user.id)
       let photoUrls: string[] = [];
       if (form.photos.length > 0 && user) {
         for (const photo of form.photos) {
@@ -114,7 +183,6 @@ export function ProjectIntakeWizard() {
 
       const projectLabel = PROJECT_TYPES.find(t => t.value === form.projectType)?.label || form.projectType;
 
-      // Parse budget range string into numeric min/max (align with HomeownerIntake)
       let budgetMin = 0;
       let budgetMax = 0;
       if (form.budget) {
@@ -125,7 +193,7 @@ export function ProjectIntakeWizard() {
         budgetMax = parseFloat(maxPart) || budgetMin;
       }
 
-      // Create project record
+      // Create project linked to the new/current homeowner (no more anonymous submissions)
       const { data: project, error } = await supabase
         .from("projects")
         .insert({
@@ -144,44 +212,47 @@ export function ProjectIntakeWizard() {
           project_size: form.projectSize || null,
           photos: photoUrls,
           status: "open",
-          homeowner_id: user?.id || null,
-          user_id: user?.id || null,
+          homeowner_id: user.id,
+          user_id: user.id,
         } as any)
         .select()
         .single();
 
       if (error) throw error;
 
-      // Also create homeowner_projects link if logged in
-      if (user && project) {
-        // Create a contractor_projects record for the pipeline
-        const { data: cp } = await supabase
-          .from("contractor_projects")
-          .insert({
-            client_name: projectLabel,
-            project_type: form.projectType,
-            address: `${form.address}, ${form.city}, NJ ${form.zip}`,
-            status: "intake",
-            notes: form.description,
-          } as any)
-          .select("id")
-          .single();
+      // Link to contractor_projects / homeowner_projects when pipeline supports it
+      if (project) {
+        try {
+          const { data: cp } = await supabase
+            .from("contractor_projects")
+            .insert({
+              client_name: form.full_name.trim() || projectLabel,
+              project_type: form.projectType,
+              address: `${form.address}, ${form.city}, NJ ${form.zip}`,
+              status: "intake",
+              notes: form.description,
+            } as any)
+            .select("id")
+            .single();
 
-        if (cp) {
-          await supabase.from("homeowner_projects").insert({
-            homeowner_id: user.id,
-            project_id: cp.id,
-          } as any);
+          if (cp) {
+            await supabase.from("homeowner_projects").insert({
+              homeowner_id: user.id,
+              project_id: cp.id,
+            } as any);
+          }
+        } catch (linkErr) {
+          console.warn("Pipeline link optional:", linkErr);
+          // Do not block success; project is created
         }
       }
 
-      // Fire-and-forget email notification to internal team (do not block user flow)
       try {
         await supabase.functions.invoke("send-estimate-request-notification", {
           body: {
-            name: projectLabel,
-            email: "",
-            phone: "",
+            name: form.full_name.trim() || projectLabel,
+            email: form.email.trim(),
+            phone: form.phone.trim(),
             address: `${form.address}, ${form.city}, NJ ${form.zip}`,
             project_type: form.projectType,
             message: [
@@ -198,16 +269,13 @@ export function ProjectIntakeWizard() {
         });
       } catch (notificationError) {
         console.error("ProjectIntakeWizard notification error:", notificationError);
-        // Do not throw; project is already saved and UI should still show success
       }
 
-      toast.success("Your project has been submitted!");
-      navigate("/start-your-renovation/confirmation", {
-        state: { projectId: project?.id, projectType: projectLabel },
-      });
+      toast.success("Account created! Taking you to your portal…");
+      navigate("/homeowner/dashboard", { replace: true });
     } catch (err: any) {
       console.error("Intake submit error:", err);
-      toast.error(err.message || "Failed to submit project. Please try again.");
+      toast.error(err.message || "Failed to submit. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -228,8 +296,91 @@ export function ProjectIntakeWizard() {
 
       <Card className="border-none shadow-lg">
         <CardContent className="p-6 sm:p-8">
-          {/* Step 1: Project Type + Location */}
+          {/* Step 1: Contact + Account + Terms */}
           {step === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground mb-1">Create your account</h2>
+                <p className="text-sm text-muted-foreground">We'll use this to save your project and keep you updated.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Full name *</Label>
+                <Input
+                  value={form.full_name}
+                  onChange={(e) => update("full_name", e.target.value)}
+                  placeholder="Jane Smith"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => update("email", e.target.value)}
+                  placeholder="jane@example.com"
+                />
+                {form.email && !EMAIL_REGEX.test(form.email.trim()) && (
+                  <p className="text-xs text-destructive">Please enter a valid email address.</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Phone *</Label>
+                <Input
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                  placeholder="(201) 555-0123"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Password *</Label>
+                <Input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => update("password", e.target.value)}
+                  placeholder="At least 8 characters"
+                />
+                {form.password && form.password.length < MIN_PASSWORD_LENGTH && (
+                  <p className="text-xs text-destructive">Password must be at least {MIN_PASSWORD_LENGTH} characters.</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Confirm password *</Label>
+                <Input
+                  type="password"
+                  value={form.confirm_password}
+                  onChange={(e) => update("confirm_password", e.target.value)}
+                  placeholder="Repeat your password"
+                />
+                {form.confirm_password && form.password !== form.confirm_password && (
+                  <p className="text-xs text-destructive">Passwords do not match.</p>
+                )}
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  id="accepted_terms"
+                  checked={form.accepted_terms}
+                  onCheckedChange={(checked) => update("accepted_terms", checked === true)}
+                />
+                <label htmlFor="accepted_terms" className="text-sm text-muted-foreground cursor-pointer leading-tight">
+                  I accept the{" "}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                    Terms and Conditions
+                  </a>{" "}
+                  and agree to be contacted about my project. *
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Project Type + Location */}
+          {step === 2 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-1">Tell us about your project</h2>
@@ -279,8 +430,8 @@ export function ProjectIntakeWizard() {
             </div>
           )}
 
-          {/* Step 2: Budget + Qualification */}
-          {step === 2 && (
+          {/* Step 3: Budget + Qualification */}
+          {step === 3 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-1">Project Details</h2>
@@ -361,8 +512,8 @@ export function ProjectIntakeWizard() {
             </div>
           )}
 
-          {/* Step 3: Photos */}
-          {step === 3 && (
+          {/* Step 4: Photos */}
+          {step === 4 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-1">Upload Photos</h2>
@@ -412,15 +563,15 @@ export function ProjectIntakeWizard() {
               <Button
                 variant="ghost"
                 className="text-muted-foreground"
-                onClick={() => setStep(4)}
+                onClick={() => setStep(5)}
               >
                 I can't upload photos right now →
               </Button>
             </div>
           )}
 
-          {/* Step 4: Description + Review */}
-          {step === 4 && (
+          {/* Step 5: Description + Review */}
+          {step === 5 && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-1">Describe Your Project</h2>
