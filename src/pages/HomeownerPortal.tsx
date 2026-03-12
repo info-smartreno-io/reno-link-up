@@ -110,8 +110,8 @@ export default function HomeownerPortal() {
 
     // Fetch profile
     const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
+      .from("users")
+      .select("full_name, email, phone, role")
       .eq("id", user.id)
       .single();
     setProfile(profileData);

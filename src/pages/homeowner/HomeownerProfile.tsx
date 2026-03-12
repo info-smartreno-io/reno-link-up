@@ -28,7 +28,7 @@ export default function HomeownerProfile() {
       if (!user) return;
 
       const { data } = await supabase
-        .from("profiles")
+        .from("users")
         .select("full_name, email, phone")
         .eq("id", user.id)
         .single();
@@ -54,7 +54,7 @@ export default function HomeownerProfile() {
       if (!user) return;
 
       const { error } = await supabase
-        .from("profiles")
+        .from("users")
         .update({
           full_name: profile.full_name,
           phone: profile.phone,
