@@ -143,7 +143,7 @@ export function ProjectIntakeWizard() {
           permit_expectation: form.permitExpectation || null,
           project_size: form.projectSize || null,
           photos: photoUrls,
-          status: "intake",
+          status: "open",
           homeowner_id: user?.id || null,
           user_id: user?.id || null,
         } as any)
