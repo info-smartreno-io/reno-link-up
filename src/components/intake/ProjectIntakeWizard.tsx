@@ -275,7 +275,18 @@ export function ProjectIntakeWizard() {
       navigate("/homeowner/dashboard", { replace: true });
     } catch (err: any) {
       console.error("Intake submit error:", err);
-      toast.error(err.message || "Failed to submit. Please try again.");
+      const message: string = err?.message || "";
+      const lowered = message.toLowerCase();
+
+      if (
+        message.includes("users_email_key") ||
+        lowered.includes("user already registered") ||
+        lowered.includes("duplicate key value violates unique constraint")
+      ) {
+        toast.error("An account with this email already exists. Please sign in to continue.");
+      } else {
+        toast.error(message || "Failed to submit. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
