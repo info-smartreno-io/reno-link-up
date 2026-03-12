@@ -127,12 +127,34 @@ export function ProjectIntakeWizard() {
     }
     setIsSubmitting(true);
     try {
+      console.log("[ProjectIntakeWizard] handleSubmit start", {
+        formEmail: form.email,
+        formFullName: form.full_name,
+        formPhone: form.phone,
+      });
+
       let user = (await supabase.auth.getUser()).data?.user ?? null;
+      console.log("[ProjectIntakeWizard] current auth user before signup", {
+        hasUser: !!user,
+        userId: user?.id,
+        userEmail: user?.email,
+      });
+
+      // If a user is already signed in with a different email than the form,
+      // block submission to avoid attaching this intake to the wrong account.
+      const formEmail = form.email.trim();
+      if (user && formEmail && user.email && user.email.toLowerCase() !== formEmail.toLowerCase()) {
+        toast.error(
+          `You're currently signed in as ${user.email}. Please sign out first or use that email to continue.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
 
       // Create homeowner account if not logged in
       if (!user) {
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: form.email.trim(),
+          email: formEmail,
           password: form.password,
           options: {
             data: {
@@ -146,6 +168,10 @@ export function ProjectIntakeWizard() {
         if (signUpError) throw signUpError;
         if (!signUpData.user) throw new Error("Account creation failed. Please try again.");
         user = signUpData.user;
+        console.log("[ProjectIntakeWizard] signUp completed", {
+          userId: user.id,
+          userEmail: user.email,
+        });
       }
 
       // Persist terms acceptance on the app-level user profile (new and existing homeowners)
@@ -217,6 +243,13 @@ export function ProjectIntakeWizard() {
         } as any)
         .select()
         .single();
+
+      console.log("[ProjectIntakeWizard] project insert result", {
+        error,
+        projectId: project?.id,
+        projectName: project?.project_name,
+        projectUserId: project?.user_id,
+      });
 
       if (error) throw error;
 
