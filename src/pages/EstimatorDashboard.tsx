@@ -194,7 +194,7 @@ function IntakeVisitRow({
   project: IntakeSiteVisitProject;
   onView: () => void;
 }) {
-  const name = project.homeowner?.full_name || project.name || "—";
+  const name = project.homeowner?.full_name || "—";
   const when = project.scheduled_visit_at
     ? format(new Date(project.scheduled_visit_at), "MMM d, yyyy h:mm a")
     : "Not set";
@@ -255,7 +255,7 @@ function IntakeVisitDetailSheet({
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <span className="text-muted-foreground">Project</span>
-                <span>{project.name} · {project.project_type}</span>
+                <span>{project.project_type}</span>
                 <span className="text-muted-foreground">Address</span>
                 <span>{project.address ?? "—"}</span>
                 <span className="text-muted-foreground">Scheduled visit</span>

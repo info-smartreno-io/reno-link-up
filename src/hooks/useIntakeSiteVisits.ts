@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface IntakeSiteVisitProject {
   id: string;
-  name: string;
   project_type: string;
   address: string | null;
   scheduled_visit_at: string | null;
@@ -23,7 +22,7 @@ export interface IntakeSiteVisitProject {
 async function fetchIntakeSiteVisits(): Promise<IntakeSiteVisitProject[]> {
   const { data: projects, error: projectsError } = await supabase
     .from("projects")
-    .select("id, name, project_type, address, scheduled_visit_at, visit_confirmed, user_id, created_at")
+    .select("id, project_type, address, scheduled_visit_at, visit_confirmed, user_id, created_at")
     .eq("visit_confirmed", true)
     .order("scheduled_visit_at", { ascending: true, nullsFirst: false });
 
@@ -95,7 +94,7 @@ export async function fetchIntakeProjectDetails(projectId: string): Promise<{
 }> {
   const { data: project, error: projectError } = await supabase
     .from("projects")
-    .select("id, name, project_type, address, scheduled_visit_at, visit_confirmed, user_id, created_at")
+    .select("id, project_type, address, scheduled_visit_at, visit_confirmed, user_id, created_at")
     .eq("id", projectId)
     .eq("visit_confirmed", true)
     .single();

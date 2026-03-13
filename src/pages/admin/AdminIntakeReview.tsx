@@ -158,7 +158,7 @@ export default function AdminIntakeReview() {
                   intakeVisits.map((p) => (
                     <TableRow key={p.id} className="cursor-pointer" onClick={() => setSelectedIntakeProjectId(p.id)}>
                       <TableCell className="font-medium">{p.homeowner?.full_name ?? "—"}</TableCell>
-                      <TableCell>{p.name} · {p.project_type}</TableCell>
+                      <TableCell>{p.project_type}</TableCell>
                       <TableCell className="max-w-[180px] truncate">{p.address ?? "—"}</TableCell>
                       <TableCell>{p.scheduled_visit_at ? format(new Date(p.scheduled_visit_at), "MMM d, yyyy h:mm a") : "—"}</TableCell>
                       <TableCell>
@@ -261,7 +261,7 @@ function AdminIntakeVisitDetailSheet({ projectId, onClose }: { projectId: string
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <span className="text-muted-foreground">Project</span>
-                <span>{project.name} · {project.project_type}</span>
+                <span>{project.project_type}</span>
                 <span className="text-muted-foreground">Address</span>
                 <span>{project.address ?? "—"}</span>
                 <span className="text-muted-foreground">Scheduled visit</span>
