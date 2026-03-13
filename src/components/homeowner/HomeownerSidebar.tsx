@@ -8,6 +8,7 @@ import {
   Bell,
   User,
   Home,
+  CalendarCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 const navItems = [
   { title: "Dashboard", url: "/homeowner/dashboard", icon: LayoutDashboard, badgeKey: null },
   { title: "My Projects", url: "/homeowner/projects", icon: FolderKanban, badgeKey: null },
+  { title: "Schedule Visit", url: "/homeowner/schedule-visit", icon: CalendarCheck, badgeKey: null },
   { title: "Messages", url: "/homeowner/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "Files", url: "/homeowner/files", icon: FolderOpen, badgeKey: null },
   { title: "My Home", url: "/homeowner/my-home", icon: Home, badgeKey: null },
