@@ -29,6 +29,8 @@ import {
   Users,
   Clock,
   CalendarDays,
+  CalendarCheck,
+  FileEdit,
 } from "lucide-react";
 import { formatDistanceToNow, format, parseISO } from "date-fns";
 import { DashboardInspirationSection } from "@/components/homeowner/DashboardInspirationSection";
@@ -120,7 +122,7 @@ export default function HomeownerDashboard() {
               {unreadNotifs} unread
             </Button>
           )}
-          <Button size="sm" className="gap-2" onClick={() => navigate("/start-your-renovation")}>
+          <Button size="sm" className="gap-2" onClick={() => navigate("/homeowner/schedule-visit")}>
             <ArrowRight className="h-4 w-4" />
             Start Your Renovation
           </Button>
@@ -266,6 +268,9 @@ export default function HomeownerDashboard() {
         <FallbackIntakeProjectCard />
       )}
 
+      {/* Next Steps: Schedule Visit or Complete Project Details (intake-only path) */}
+      {!activeProject && <NextStepsCard />}
+
       {/* Notebook */}
       <HomeownerNotebook />
 
@@ -273,6 +278,100 @@ export default function HomeownerDashboard() {
       <DashboardInspirationSection />
     </div>
   );
+}
+
+function NextStepsCard() {
+  const navigate = useNavigate();
+  const { data: intakeProject, isLoading: loadingIntake } = useQuery({
+    queryKey: ["homeowner-intake-next-step"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from("projects")
+        .select("id, scheduled_visit_at, visit_confirmed")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    },
+    staleTime: 30000,
+    retry: 1,
+  });
+
+  const { data: projectDetails, isLoading: loadingDetails } = useQuery({
+    queryKey: ["homeowner-project-details-check", intakeProject?.id],
+    enabled: !!intakeProject?.id && intakeProject?.visit_confirmed === true,
+    queryFn: async () => {
+      if (!intakeProject?.id) return null;
+      const { data } = await supabase
+        .from("project_details")
+        .select("id")
+        .eq("project_id", intakeProject.id)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 30000,
+    retry: 1,
+  });
+
+  if (loadingIntake || !intakeProject) return null;
+  if (intakeProject.visit_confirmed !== true) {
+    return (
+      <Card className="border border-primary/20 bg-primary/5">
+        <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CalendarCheck className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Schedule Your Site Visit</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Choose a time for our estimator to visit your home and review your project.
+              </p>
+            </div>
+          </div>
+          <Button
+            className="gap-2 flex-shrink-0"
+            onClick={() => navigate("/homeowner/schedule-visit")}
+          >
+            Schedule Visit
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+  if (loadingDetails) return null;
+  if (!projectDetails) {
+    return (
+      <Card className="border border-primary/20 bg-primary/5">
+        <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <FileEdit className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Provide Additional Project Details</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Help our estimators prepare by sharing room dimensions, materials, and inspiration.
+              </p>
+            </div>
+          </div>
+          <Button
+            className="gap-2 flex-shrink-0"
+            onClick={() => navigate("/homeowner/project-details")}
+          >
+            Complete Details
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+  return null;
 }
 
 function FallbackIntakeProjectCard() {
@@ -334,9 +433,9 @@ function FallbackIntakeProjectCard() {
             </p>
           </div>
           <Button
-            size="sm"
-            className="gap-1.5 flex-shrink-0"
-            onClick={() => navigate("/start-your-renovation")}
+          size="sm"
+          className="gap-1.5 flex-shrink-0"
+          onClick={() => navigate("/homeowner/schedule-visit")}
           >
             Start Your Renovation
             <ArrowRight className="h-3.5 w-3.5" />
