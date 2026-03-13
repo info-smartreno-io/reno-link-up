@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
@@ -9,18 +9,28 @@ import {
   Send,
   Users,
   Wand2,
+  MapPin,
+  AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { useDashboardStats, useActionItems, useSchedule, useRecentActivity } from "@/hooks/useEstimatorDashboard";
-import { formatDistanceToNow } from "date-fns";
+import { useIntakeSiteVisits, fetchIntakeProjectDetails, type IntakeSiteVisitProject } from "@/hooks/useIntakeSiteVisits";
+import { formatDistanceToNow, format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 // --------------- Main Page -----------------
 export default function EstimatorDashboard() {
@@ -32,6 +42,9 @@ export default function EstimatorDashboard() {
   const { data: schedule = [], isLoading: scheduleLoading } = useSchedule();
   const { data: recentActivity = [], isLoading: activityLoading } = useRecentActivity();
   
+  const { data: intakeVisits = [], isLoading: intakeLoading, isError: intakeError } = useIntakeSiteVisits();
+  const [intakeDetailProjectId, setIntakeDetailProjectId] = useState<string | null>(null);
+
   // Fetch current user profile
   const { data: profile } = useQuery({
     queryKey: ["current-user-profile"],
@@ -174,6 +187,140 @@ function ReplyIcon() {
   );
 }
 
+function IntakeVisitRow({
+  project,
+  onView,
+}: {
+  project: IntakeSiteVisitProject;
+  onView: () => void;
+}) {
+  const name = project.homeowner?.full_name || project.name || "—";
+  const when = project.scheduled_visit_at
+    ? format(new Date(project.scheduled_visit_at), "MMM d, yyyy h:mm a")
+    : "Not set";
+  return (
+    <div className="py-3 flex flex-col gap-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-medium text-sm truncate">{name}</span>
+        <Badge variant={project.hasDetails ? "secondary" : "outline"} className="shrink-0 text-[10px]">
+          {project.hasDetails ? "Details done" : "Missing details"}
+        </Badge>
+      </div>
+      <div className="text-xs text-muted-foreground truncate">{project.project_type} · {project.address || "—"}</div>
+      <div className="text-xs text-muted-foreground">Visit: {when}</div>
+      <Button size="sm" variant="ghost" className="w-fit h-7 text-xs -ml-2" onClick={onView}>
+        View details
+      </Button>
+    </div>
+  );
+}
+
+function IntakeVisitDetailSheet({
+  projectId,
+  onClose,
+}: {
+  projectId: string | null;
+  onClose: () => void;
+}) {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["intake-visit-detail", projectId],
+    queryFn: () => fetchIntakeProjectDetails(projectId!),
+    enabled: !!projectId,
+  });
+
+  const project = data?.project ?? null;
+  const details = data?.details ?? null;
+
+  return (
+    <Sheet open={!!projectId} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent className="overflow-y-auto sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>Intake visit details</SheetTitle>
+          <SheetDescription>Homeowner project and submitted details</SheetDescription>
+        </SheetHeader>
+        <div className="mt-4 space-y-4">
+          {isLoading && <div className="py-6 text-sm text-muted-foreground">Loading…</div>}
+          {isError && (
+            <div className="py-6 text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              {(error as Error)?.message ?? "Failed to load"}
+            </div>
+          )}
+          {!isLoading && !isError && project && (
+            <>
+              <div className="space-y-1">
+                <p className="text-sm font-medium">{project.homeowner?.full_name ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{project.homeowner?.email ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{project.homeowner?.phone ?? "—"}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <span className="text-muted-foreground">Project</span>
+                <span>{project.name} · {project.project_type}</span>
+                <span className="text-muted-foreground">Address</span>
+                <span>{project.address ?? "—"}</span>
+                <span className="text-muted-foreground">Scheduled visit</span>
+                <span>{project.scheduled_visit_at ? format(new Date(project.scheduled_visit_at), "PPpp") : "—"}</span>
+              </div>
+              {!details ? (
+                <p className="text-sm text-muted-foreground">Details not yet provided by homeowner.</p>
+              ) : (
+                <div className="space-y-3">
+                  {details.description && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Description</p>
+                      <p className="text-sm whitespace-pre-wrap">{details.description}</p>
+                    </div>
+                  )}
+                  {details.measurements && Object.keys(details.measurements).length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Measurements</p>
+                      <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-32">
+                        {JSON.stringify(details.measurements, null, 2)}
+                      </pre>
+                      {Array.isArray((details.measurements as { photo_urls?: string[] }).photo_urls) &&
+                        (details.measurements as { photo_urls: string[] }).photo_urls.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {(details.measurements as { photo_urls: string[] }).photo_urls.map((url, i) => (
+                              <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline">
+                                Photo {i + 1}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  )}
+                  {details.materials && Object.keys(details.materials).length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Materials</p>
+                      <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-32">
+                        {JSON.stringify(details.materials, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                  {details.inspiration_links && details.inspiration_links.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Inspiration links</p>
+                      <ul className="text-xs space-y-1">
+                        {details.inspiration_links.map((link, i) => (
+                          <li key={i}>
+                            <a href={link.startsWith("http") ? link : `https://${link}`} target="_blank" rel="noopener noreferrer" className="text-primary underline break-all">
+                              {link}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 // Main Component Render
   return (
     <EstimatorLayout>
@@ -293,8 +440,46 @@ function ReplyIcon() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Intake / homeowner-scheduled site visits */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Intake Site Visits</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">
+                  Homeowner-scheduled visits (not yet in pipeline)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="divide-y">
+                {intakeLoading ? (
+                  <div className="py-6 text-center text-muted-foreground text-sm">Loading…</div>
+                ) : intakeError ? (
+                  <div className="py-6 text-center text-destructive text-sm flex flex-col items-center gap-1">
+                    <AlertCircle className="h-8 w-8" />
+                    <span>Could not load intake visits</span>
+                  </div>
+                ) : intakeVisits.length === 0 ? (
+                  <div className="py-6 text-center text-muted-foreground text-sm">
+                    <CalendarIcon className="h-10 w-10 mx-auto mb-1 opacity-50" />
+                    <p>No intake site visits</p>
+                  </div>
+                ) : (
+                  intakeVisits.map((p) => (
+                    <IntakeVisitRow
+                      key={p.id}
+                      project={p}
+                      onView={() => setIntakeDetailProjectId(p.id)}
+                    />
+                  ))
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
+
+        <IntakeVisitDetailSheet
+          projectId={intakeDetailProjectId}
+          onClose={() => setIntakeDetailProjectId(null)}
+        />
       </div>
     </EstimatorLayout>
   );
