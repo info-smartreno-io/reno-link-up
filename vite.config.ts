@@ -9,6 +9,8 @@ import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
+const enablePwa = process.env.VITE_ENABLE_PWA === 'true';
+
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -20,8 +22,12 @@ export default defineConfig(({ mode }) => ({
     }),
     react(), 
     mode === "development" && componentTagger(),
+    enablePwa &&
     VitePWA({
       registerType: 'autoUpdate',
+      // Disable minification of the generated service worker to avoid terser
+      // renderChunk issues on large bundles in production builds.
+      minify: false,
       includeAssets: ['favicon.ico', 'robots.txt', 'smartreno-logo.png'],
       manifest: {
         name: 'SmartReno Field Sales',

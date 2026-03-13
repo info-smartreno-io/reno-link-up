@@ -137,11 +137,23 @@ export default function AdminIntakeReview() {
               </TableHeader>
               <TableBody>
                 {intakeLoading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading…</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      Loading…
+                    </TableCell>
+                  </TableRow>
                 ) : intakeError ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-destructive">Could not load intake visits</TableRow></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-destructive">
+                      Could not load intake visits
+                    </TableCell>
+                  </TableRow>
                 ) : !intakeVisits.length ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No homeowner-scheduled visits</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      No homeowner-scheduled visits
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   intakeVisits.map((p) => (
                     <TableRow key={p.id} className="cursor-pointer" onClick={() => setSelectedIntakeProjectId(p.id)}>
