@@ -37,6 +37,7 @@ import HomeownerDashboardNew from "./pages/homeowner/HomeownerDashboard";
 import HomeownerProjectsNew from "./pages/homeowner/HomeownerProjects";
 import HomeownerProjectDetailNew from "./pages/homeowner/HomeownerProjectDetail";
 import HomeownerProjectOverview from "./pages/homeowner/HomeownerProjectOverview";
+import HomeownerBidPacket from "./pages/homeowner/HomeownerBidPacket";
 import HomeownerProposals from "./pages/homeowner/HomeownerProposals";
 import HomeownerProjectTimeline from "./pages/homeowner/HomeownerProjectTimeline";
 import HomeownerProjectMessages from "./pages/homeowner/HomeownerProjectMessages";
@@ -55,6 +56,17 @@ import HomeownerEstimateConfirmed from "./pages/HomeownerEstimateConfirmed";
 import HomeownerEstimateCancelled from "./pages/HomeownerEstimateCancelled";
 import AccountSettings from "./pages/homeowner/AccountSettings";
 import HomeownerFiles from "./pages/homeowner/HomeownerFiles";
+import HomeownerProjectPhotos from "./pages/homeowner/HomeownerProjectPhotos";
+import HomeownerProjectVideos from "./pages/homeowner/HomeownerProjectVideos";
+import HomeownerProjectPlans from "./pages/homeowner/HomeownerProjectPlans";
+import HomeownerProjectSurvey from "./pages/homeowner/HomeownerProjectSurvey";
+import HomeownerProjectInclusions from "./pages/homeowner/HomeownerProjectInclusions";
+import HomeownerProjectMaterials from "./pages/homeowner/HomeownerProjectMaterials";
+import HomeownerProjectFilesVisuals from "./pages/homeowner/HomeownerProjectFilesVisuals";
+import HomeownerProjectScope from "./pages/homeowner/HomeownerProjectScope";
+import HomeownerProjectTimelinePreview from "./pages/homeowner/HomeownerProjectTimelinePreview";
+import HomeownerCompareBids from "./pages/homeowner/HomeownerCompareBids";
+import HomeownerNotebookPage from "./pages/homeowner/HomeownerNotebookPage";
 import MyHomePage from "./pages/homeowner/MyHomePage";
 import About from "./pages/About";
 import Careers from "./pages/Careers";
@@ -396,6 +408,11 @@ function AppRoutes() {
                 <HomeownerLayout><HomeownerProjectsNew /></HomeownerLayout>
               </ProtectedRoute>
             } />
+            <Route path="/homeowner/bid-packet" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerBidPacket /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
             <Route path="/homeowner/projects/:projectId" element={
               <ProtectedRoute>
                 <HomeownerLayout><HomeownerProjectDetailNew /></HomeownerLayout>
@@ -437,6 +454,61 @@ function AppRoutes() {
             <Route path="/homeowner/project-details" element={
               <ProtectedRoute>
                 <HomeownerLayout><ProjectDetails /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/notebook" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerNotebookPage /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-photos" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectPhotos /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-videos" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectVideos /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-plans" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectPlans /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-survey" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectSurvey /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-files-visuals" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectFilesVisuals /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-inclusions" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectInclusions /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-materials" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectMaterials /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-scope" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectScope /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-timeline-preview" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerProjectTimelinePreview /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/projects/:projectId/compare-bids" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerCompareBids /></HomeownerLayout>
               </ProtectedRoute>
             } />
             <Route path="/contractors" element={<ContractorsDirectory />} />

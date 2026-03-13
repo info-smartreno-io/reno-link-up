@@ -35,6 +35,7 @@ import {
 import { formatDistanceToNow, format, parseISO } from "date-fns";
 import { DashboardInspirationSection } from "@/components/homeowner/DashboardInspirationSection";
 import { HomeownerNotebook } from "@/components/homeowner/HomeownerNotebook";
+import { IntakeStatusCard } from "@/components/homeowner/IntakeStatusCard";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -122,7 +123,7 @@ export default function HomeownerDashboard() {
               {unreadNotifs} unread
             </Button>
           )}
-          <Button size="sm" className="gap-2" onClick={() => navigate("/homeowner/schedule-visit")}>
+          <Button size="sm" className="gap-2" onClick={() => navigate("/homeowner-intake")}>
             <ArrowRight className="h-4 w-4" />
             Start Your Renovation
           </Button>
@@ -435,7 +436,7 @@ function FallbackIntakeProjectCard() {
           <Button
           size="sm"
           className="gap-1.5 flex-shrink-0"
-          onClick={() => navigate("/homeowner/schedule-visit")}
+          onClick={() => navigate("/homeowner-intake")}
           >
             Start Your Renovation
             <ArrowRight className="h-3.5 w-3.5" />
@@ -446,51 +447,6 @@ function FallbackIntakeProjectCard() {
   }
 
   return (
-    <Card className="border border-primary/20 bg-primary/5">
-      <CardContent className="p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <ClipboardList className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-foreground">
-              We received your renovation request
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Our team is reviewing your project details. You’ll be notified when there are updates.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 text-xs">
-          <div>
-            <div className="text-muted-foreground">Project</div>
-            <div className="font-medium text-foreground">
-              {fallbackProject.project_name || "Renovation Project"}
-            </div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Type</div>
-            <div className="font-medium text-foreground">
-              {fallbackProject.project_type || "—"}
-            </div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Submitted</div>
-            <div className="font-medium text-foreground">
-              {fallbackProject.created_at
-                ? format(new Date(fallbackProject.created_at), "MMM d, yyyy")
-                : "—"}
-            </div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Status</div>
-            <div className="font-medium text-foreground">
-              {fallbackProject.status || "intake"}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <IntakeStatusCard project={fallbackProject as any} />
   );
 }

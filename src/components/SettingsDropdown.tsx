@@ -77,13 +77,31 @@ export const SettingsDropdown = ({ userRole }: SettingsDropdownProps) => {
       ],
     };
 
+    const specific = roleSpecificItems[userRole as keyof typeof roleSpecificItems] || [];
+
+    const discover =
+      userRole === "homeowner"
+        ? [
+            {
+              icon: HelpCircle,
+              label: "Help Center",
+              onClick: () => navigate("/homeowner/messages"),
+            },
+            { icon: Globe, label: "Full Site", onClick: () => navigate("/") },
+          ]
+        : [
+            {
+              icon: HelpCircle,
+              label: "Help Center",
+              onClick: () => window.open("https://help.smartreno.com", "_blank"),
+            },
+            { icon: Globe, label: "Full Site", onClick: () => navigate("/") },
+          ];
+
     return {
-      specific: roleSpecificItems[userRole as keyof typeof roleSpecificItems] || [],
+      specific,
       common: commonItems,
-      discover: [
-        { icon: HelpCircle, label: "Help Center", onClick: () => window.open("https://help.smartreno.com", "_blank") },
-        { icon: Globe, label: "Full Site", onClick: () => navigate("/") },
-      ],
+      discover,
     };
   };
 

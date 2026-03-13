@@ -113,6 +113,36 @@ export function useHomeownerProjectDetail(projectId: string | undefined) {
   });
 }
 
+export function useHomeownerBidPacket(projectId: string | undefined) {
+  return useQuery({
+    queryKey: ["homeowner-bid-packet", projectId],
+    enabled: !!projectId,
+    queryFn: async () => {
+      // Find the most recent bid packet linked to this contractor project
+      const { data: packet, error } = await supabase
+        .from("bid_packets")
+        .select("*")
+        .eq("project_id", projectId!)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error || !packet) return null;
+
+      const { data: tradeSections } = await supabase
+        .from("bid_packet_trade_sections")
+        .select("*, bid_packet_line_items(*)")
+        .eq("bid_packet_id", packet.id)
+        .order("sort_order", { ascending: true });
+
+      return {
+        packet,
+        tradeSections: tradeSections || [],
+      };
+    },
+  });
+}
+
 export function useHomeownerProposals(projectId: string | undefined) {
   return useQuery({
     queryKey: ["homeowner-proposals", projectId],

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { HomeownerSidebar } from "./HomeownerSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Menu, Bell } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { SettingsDropdown } from "@/components/SettingsDropdown";
@@ -20,7 +20,7 @@ function HomeownerLayoutContent({ children }: HomeownerLayoutProps) {
           {/* Top bar */}
           <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-border bg-card px-4">
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="md:hidden">
+              <SidebarTrigger>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <Menu className="h-5 w-5" />
                 </Button>
@@ -30,8 +30,19 @@ function HomeownerLayoutContent({ children }: HomeownerLayoutProps) {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                aria-label="Call SmartReno support"
+              >
+                <a href="tel:12017889502">
+                  <Phone className="h-4 w-4" />
+                </a>
+              </Button>
               <NotificationBell />
-              <SettingsDropdown />
+              <SettingsDropdown userRole="homeowner" />
             </div>
           </header>
 

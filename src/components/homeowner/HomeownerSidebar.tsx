@@ -9,6 +9,7 @@ import {
   User,
   Home,
   CalendarCheck,
+  StickyNote,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,6 +29,7 @@ const navItems = [
   { title: "My Projects", url: "/homeowner/projects", icon: FolderKanban, badgeKey: null },
   { title: "Schedule Visit", url: "/homeowner/schedule-visit", icon: CalendarCheck, badgeKey: null },
   { title: "Messages", url: "/homeowner/messages", icon: MessageSquare, badgeKey: "messages" as const },
+  { title: "My Notebook", url: "/homeowner/notebook", icon: StickyNote, badgeKey: null },
   { title: "Files", url: "/homeowner/files", icon: FolderOpen, badgeKey: null },
   { title: "My Home", url: "/homeowner/my-home", icon: Home, badgeKey: null },
   { title: "Notifications", url: "/homeowner/notifications", icon: Bell, badgeKey: "notifications" as const },

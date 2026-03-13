@@ -13,25 +13,19 @@ import { CalendarDays, MapPin, Clock, AlertCircle, Users, MessageCircle } from "
 import { addDays, isBefore, startOfToday } from "date-fns";
 
 const TIME_SLOTS = [
-  "10-11",
   "11-12",
   "12-1",
   "1-2",
-  "2-3",
-  "3-4",
-  "4-5",
+  "5-6",
   "6-7",
   "7-8",
 ] as const;
 
 const TIME_SLOT_LABELS: Record<string, string> = {
-  "10-11": "10:00 AM – 11:00 AM",
   "11-12": "11:00 AM – 12:00 PM",
   "12-1": "12:00 PM – 1:00 PM",
   "1-2": "1:00 PM – 2:00 PM",
-  "2-3": "2:00 PM – 3:00 PM",
-  "3-4": "3:00 PM – 4:00 PM",
-  "4-5": "4:00 PM – 5:00 PM",
+  "5-6": "5:00 PM – 6:00 PM",
   "6-7": "6:00 PM – 7:00 PM",
   "7-8": "7:00 PM – 8:00 PM",
 };
@@ -50,7 +44,7 @@ export default function ScheduleVisit() {
       if (!user) return null;
       const { data, error } = await supabase
         .from("projects")
-        .select("id, address, city, zip_code, project_name, name, visit_with")
+        .select("id, address, city, zip_code, project_name, visit_with")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -76,6 +70,7 @@ export default function ScheduleVisit() {
 
   const addressLine = [project?.address, project?.city, project?.zip_code].filter(Boolean).join(", ");
   const fullAddress = addressLine ? `${addressLine}, NJ` : "";
+  const hasProject = !!project;
 
   useEffect(() => {
     if (project && (project as any).visit_with) {
@@ -84,6 +79,10 @@ export default function ScheduleVisit() {
   }, [project]);
 
   const handleConfirm = async () => {
+    if (!project) {
+      toast.error("Please submit your renovation request first. Once approved, you’ll be able to schedule a visit here.");
+      return;
+    }
     if (!project?.id || !selectedDate || !selectedSlot || !visitWith) {
       toast.error("Please select a date, time, and who the visit is with.");
       return;
@@ -105,6 +104,20 @@ export default function ScheduleVisit() {
 
       if (error) throw error;
 
+      // Try to push this visit to the shared SmartReno calendar (info@smartreno.io)
+      try {
+        await supabase.functions.invoke("homeowner-site-visit-calendar", {
+          body: {
+            projectId: project.id,
+            scheduledAt: visitAt.toISOString(),
+            visitWith,
+            address: fullAddress || null,
+          },
+        });
+      } catch (calendarErr) {
+        console.warn("Failed to sync visit to Google Calendar", calendarErr);
+      }
+
       // Post an automatic system message into the project chat, if a contractor project exists
       try {
         const contractorProjectId = (project as any).contractor_project_id as string | null | undefined;
@@ -121,6 +134,10 @@ export default function ScheduleVisit() {
                   return "a project manager";
                 case "design_pro":
                   return "a design pro";
+                case "architect":
+                  return "an architect";
+                case "contractor":
+                  return "the contractor";
                 default:
                   return "our team";
               }
@@ -160,17 +177,9 @@ export default function ScheduleVisit() {
 
   const minDate = addDays(startOfToday(), 1);
 
-  // No intake project: redirect to dashboard
-  useEffect(() => {
-    if (isLoading || isError) return;
-    if (!project) {
-      navigate("/homeowner/dashboard", { replace: true });
-    }
-  }, [isLoading, isError, project, navigate]);
-
   if (isLoading) {
     return (
-      <div className="space-y-6 max-w-2xl">
+      <div className="space-y-6 max-w-3xl">
         <Skeleton className="h-10 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -179,7 +188,7 @@ export default function ScheduleVisit() {
 
   if (isError) {
     return (
-      <div className="space-y-6 max-w-2xl">
+      <div className="space-y-6 max-w-3xl">
         <h1 className="text-2xl font-semibold text-foreground">Schedule Your Site Visit</h1>
         <Card className="border-destructive/50">
           <CardContent className="p-6 flex flex-col items-center gap-4 text-center">
@@ -199,14 +208,10 @@ export default function ScheduleVisit() {
     );
   }
 
-  if (!project) {
-    return null;
-  }
-
   // Already confirmed: show message and CTA to project details or dashboard
-  if ((project as { visit_confirmed?: boolean }).visit_confirmed === true) {
+  if (project && (project as { visit_confirmed?: boolean }).visit_confirmed === true) {
     return (
-      <div className="space-y-6 max-w-2xl">
+      <div className="space-y-6 max-w-3xl">
         <h1 className="text-2xl font-semibold text-foreground">Schedule Your Site Visit</h1>
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6 text-center space-y-4">
@@ -240,11 +245,13 @@ export default function ScheduleVisit() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Schedule Your Site Visit</h1>
         <p className="text-muted-foreground mt-1">
-          Choose a date and time for our estimator to visit your home and review your project.
+          {hasProject
+            ? "Choose a date and time for our estimator to visit your home and review your project."
+            : "Once your renovation request is submitted and intake steps are complete, you'll be able to pick a visit time here."}
         </p>
       </div>
 
@@ -267,14 +274,26 @@ export default function ScheduleVisit() {
             Select date
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            disabled={(date) => isBefore(date, minDate)}
-            initialFocus
-          />
+        <CardContent
+          className={`pt-4 pb-6 ${hasProject ? "" : "opacity-50 pointer-events-none"}`}
+        >
+          <div className="flex flex-col items-center">
+            <div className="scale-110 md:scale-115 origin-top">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={(date) =>
+                  isBefore(date, minDate) ||
+                  date.getDay() === 0 ||
+                  date.getDay() === 6
+                }
+                initialFocus
+                showOutsideDays
+                className="rounded-lg border border-border bg-background p-4 shadow-sm"
+              />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -285,7 +304,7 @@ export default function ScheduleVisit() {
             Select time
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={hasProject ? "" : "opacity-50 pointer-events-none"}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {TIME_SLOTS.map((slot) => (
               <Button
@@ -293,6 +312,11 @@ export default function ScheduleVisit() {
                 type="button"
                 variant={selectedSlot === slot ? "default" : "outline"}
                 size="sm"
+                className={
+                  selectedSlot === slot
+                    ? "shadow-sm"
+                    : "border-muted-foreground/30 hover:border-primary hover:bg-primary/5"
+                }
                 onClick={() => setSelectedSlot(selectedSlot === slot ? "" : slot)}
               >
                 {TIME_SLOT_LABELS[slot] ?? slot}
@@ -309,23 +333,40 @@ export default function ScheduleVisit() {
             Who is this visit with?
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className={`space-y-2 ${hasProject ? "" : "opacity-50 pointer-events-none"}`}>
           <Label className="text-xs text-muted-foreground">
-            This helps route your visit to the right SmartReno teammate.
+            For now, visits are scheduled with a SmartReno construction agent. Other visit types will be enabled later.
           </Label>
           <Select value={visitWith} onValueChange={setVisitWith}>
             <SelectTrigger>
-              <SelectValue placeholder="Select a team member type" />
+              <SelectValue placeholder="Select who this visit will be with" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="construction_agent">Construction agent</SelectItem>
-              <SelectItem value="client_success">Client success</SelectItem>
-              <SelectItem value="pm">Project manager</SelectItem>
-              <SelectItem value="design_pro">Design pro</SelectItem>
+              <SelectItem value="client_success" disabled>
+                Client success (coming soon)
+              </SelectItem>
+              <SelectItem value="pm" disabled>
+                Project manager (coming soon)
+              </SelectItem>
+              <SelectItem value="design_pro" disabled>
+                Design pro / designer (coming soon)
+              </SelectItem>
+              <SelectItem value="architect" disabled>
+                Architect (coming soon)
+              </SelectItem>
+              <SelectItem value="contractor" disabled>
+                Contractor (coming soon)
+              </SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
       </Card>
+
+      <p className="text-xs text-muted-foreground">
+        We plan to arrive near the beginning of your selected time window. You&apos;ll receive a text
+        message reminder approximately one hour before your scheduled site visit.
+      </p>
 
       <div className="flex gap-3">
         <Button
@@ -336,7 +377,7 @@ export default function ScheduleVisit() {
         </Button>
         <Button
           onClick={handleConfirm}
-          disabled={!selectedDate || !selectedSlot || !visitWith || confirming}
+          disabled={!hasProject || !selectedDate || !selectedSlot || !visitWith || confirming}
         >
           {confirming ? "Scheduling…" : "Confirm visit"}
         </Button>

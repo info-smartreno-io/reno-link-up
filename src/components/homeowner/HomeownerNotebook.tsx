@@ -61,7 +61,8 @@ export function HomeownerNotebook() {
           console.warn("[HomeownerNotebook] homeowner_notes table missing; cannot save note.", error);
           throw new Error("Notebook is not available in this environment.");
         }
-        throw error;
+        console.error("[HomeownerNotebook] failed to save note", error);
+        throw new Error((error as any).message || "Failed to save note");
       }
     },
     onSuccess: () => {
@@ -70,7 +71,7 @@ export function HomeownerNotebook() {
       setIsAdding(false);
       toast.success("Note saved!");
     },
-    onError: () => toast.error("Failed to save note"),
+    onError: (err: Error) => toast.error(err.message || "Failed to save note"),
   });
 
   const deleteNote = useMutation({

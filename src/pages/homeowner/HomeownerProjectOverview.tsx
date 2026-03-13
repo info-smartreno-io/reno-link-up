@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useHomeownerProjectDetail,
+  useHomeownerBidPacket,
   getHomeownerStatus,
   getNextStep,
   HOMEOWNER_MILESTONES,
@@ -21,7 +22,7 @@ import {
   FileText,
   MessageSquare,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -33,7 +34,9 @@ const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
 
 export default function HomeownerProjectOverview() {
   const { projectId } = useParams();
+  const navigate = useNavigate();
   const { data, isLoading } = useHomeownerProjectDetail(projectId);
+  const { data: bidPacketData, isLoading: bidLoading } = useHomeownerBidPacket(projectId);
 
   if (isLoading) {
     return (
@@ -54,6 +57,147 @@ export default function HomeownerProjectOverview() {
 
   return (
     <div className="space-y-6">
+      {/* Bid Packet Summary: scope, line items, inclusions/exclusions */}
+      {bidLoading ? (
+        <Card>
+          <CardContent className="p-5">
+            <Skeleton className="h-20 w-full" />
+          </CardContent>
+        </Card>
+      ) : bidPacketData?.packet ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                Bid packet scope of work
+              </span>
+              <button
+                type="button"
+                onClick={() => navigate(`/homeowner/projects/${project.id}/files`)}
+                className="text-xs font-medium text-primary hover:underline inline-flex items-center gap-1"
+              >
+                View photos & files
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Project</p>
+                <p className="font-medium text-foreground">{bidPacketData.packet.title || project.client_name}</p>
+              </div>
+              {bidPacketData.packet.bid_due_date && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Bid finalized</p>
+                  <p className="text-foreground">
+                    {format(new Date(bidPacketData.packet.bid_due_date), "MMM d, yyyy")}
+                  </p>
+                </div>
+              )}
+              {project.address && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Project address</p>
+                  <p className="text-foreground">{project.address}</p>
+                </div>
+              )}
+              {bidPacketData.packet.estimated_budget_min && bidPacketData.packet.estimated_budget_max && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Target budget range</p>
+                  <p className="text-foreground">
+                    ${(bidPacketData.packet.estimated_budget_min / 1000).toFixed(0)}k – $
+                    {(bidPacketData.packet.estimated_budget_max / 1000).toFixed(0)}k
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {bidPacketData.packet.scope_summary && (
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Scope summary</p>
+                <p className="text-sm text-foreground whitespace-pre-line">
+                  {bidPacketData.packet.scope_summary}
+                </p>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              {bidPacketData.packet.inclusions && (
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">Inclusions</p>
+                  <p className="text-sm text-foreground whitespace-pre-line">
+                    {bidPacketData.packet.inclusions}
+                  </p>
+                </div>
+              )}
+              {bidPacketData.packet.exclusions && (
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">Exclusions</p>
+                  <p className="text-sm text-foreground whitespace-pre-line">
+                    {bidPacketData.packet.exclusions}
+                  </p>
+                </div>
+              )}
+              {bidPacketData.packet.design_selections_notes && (
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">Materials & selections</p>
+                  <p className="text-sm text-foreground whitespace-pre-line">
+                    {bidPacketData.packet.design_selections_notes}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {bidPacketData.tradeSections.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Scope by trade & measurements
+                </p>
+                <div className="space-y-3">
+                  {bidPacketData.tradeSections.map((section: any) => (
+                    <div key={section.id} className="border border-border rounded-md p-3 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium text-foreground">{section.trade}</p>
+                        {section.allowance_amount && (
+                          <span className="text-xs text-muted-foreground">
+                            Allowance: ${Number(section.allowance_amount).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      {section.scope_notes && (
+                        <p className="text-xs text-muted-foreground whitespace-pre-line">
+                          {section.scope_notes}
+                        </p>
+                      )}
+                      {section.bid_packet_line_items?.length > 0 && (
+                        <div className="mt-1 space-y-1">
+                          {section.bid_packet_line_items.map((item: any) => (
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between text-xs bg-muted/50 rounded px-2 py-1"
+                            >
+                              <span className="text-foreground">{item.description}</span>
+                              <span className="text-muted-foreground">
+                                {item.quantity} {item.unit}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-[11px] text-muted-foreground">
+              This view summarizes the scope and measurements your bids are based on. For full
+              documents, photos, and videos, use the Files tab.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
       {/* What Happens Next - signature trust card */}
       <Card className="border-primary/20 bg-primary/5 shadow-none">
         <CardContent className="p-5">

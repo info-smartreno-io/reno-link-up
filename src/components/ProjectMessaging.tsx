@@ -55,6 +55,7 @@ export default function ProjectMessaging({ projectId, projectName }: ProjectMess
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [chatAudience, setChatAudience] = useState<string>("");
 
   useEffect(() => {
     getCurrentUser();
@@ -220,12 +221,18 @@ export default function ProjectMessaging({ projectId, projectName }: ProjectMess
     
     try {
       // Insert the message first
+      const audiencePrefix = chatAudience
+        ? `[For: ${chatAudience.replace(/_/g, " ")}] `
+        : "";
+
       const { data: messageData, error: messageError } = await supabase
         .from("project_messages")
         .insert({
           project_id: projectId,
           sender_id: currentUserId,
-          message: newMessage.trim() || "(sent attachments)",
+          message: newMessage.trim()
+            ? `${audiencePrefix}${newMessage.trim()}`
+            : `${audiencePrefix}(sent attachments)`,
         })
         .select()
         .single();
@@ -344,9 +351,9 @@ export default function ProjectMessaging({ projectId, projectName }: ProjectMess
   }
 
   return (
-    <Card className="flex flex-col h-[600px]">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+    <Card className="flex flex-col h-[640px]">
+      <CardHeader className="pb-3 space-y-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <CardTitle>Project Messages</CardTitle>
             <CardDescription>Chat about {projectName}</CardDescription>
@@ -434,6 +441,26 @@ export default function ProjectMessaging({ projectId, projectName }: ProjectMess
               </PopoverContent>
             </Popover>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">
+            Who is this chat primarily for?
+          </Label>
+          <Select value={chatAudience} onValueChange={setChatAudience}>
+            <SelectTrigger className="h-8 max-w-xs text-xs">
+              <SelectValue placeholder="Everyone on the project" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Everyone on the project</SelectItem>
+              <SelectItem value="construction_agent">SmartReno construction agent</SelectItem>
+              <SelectItem value="client_success">Client success partner</SelectItem>
+              <SelectItem value="pm">Project manager</SelectItem>
+              <SelectItem value="design_pro">Design pro / designer</SelectItem>
+              <SelectItem value="architect">Architect</SelectItem>
+              <SelectItem value="contractor">Contractor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0">
@@ -570,7 +597,11 @@ export default function ProjectMessaging({ projectId, projectName }: ProjectMess
                 <Paperclip className="h-4 w-4" />
               </Button>
               <Input
-                placeholder="Type a message..."
+                placeholder={
+                  chatAudience
+                    ? `Type a message for your ${chatAudience.replace(/_/g, " ")}…`
+                    : "Type a message..."
+                }
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 disabled={sending}
