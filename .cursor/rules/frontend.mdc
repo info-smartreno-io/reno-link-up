@@ -1,0 +1,47 @@
+Frontend Guidelines for SmartReno:
+
+Framework:
+- Next.js
+- TypeScript
+- Tailwind CSS
+
+Frontend Rules:
+
+- Keep components small, readable, and modular
+- Separate presentation from business logic
+- Prefer existing hooks/services/utils over inline fetch/query logic
+- Do not place sensitive logic in the browser if it belongs on the server
+- Use typed responses and props
+- Keep forms predictable and resilient
+- Preserve the existing design system and app patterns where possible
+
+State Management Rules:
+
+- Avoid fragile state logic
+- Avoid deeply nested state when simpler composition works
+- Prefer clear derived state over duplicated state
+- Handle loading, empty, success, and error states explicitly
+
+Error Handling Rules:
+
+- Always show user-friendly errors
+- Log developer-useful details where appropriate
+- Never silently swallow failures
+- Do not expose internal implementation details to end users
+
+Avoid:
+
+- large monolithic components
+- direct database writes without established project patterns
+- duplicated API logic across pages/components
+- unnecessary refactors
+- introducing new libraries unless clearly justified
+
+Prefer:
+
+- reusable hooks
+- typed service functions
+- clear loading indicators
+- stable form handling
+- incremental UI changes over rewrites
+

@@ -1,0 +1,48 @@
+SmartReno Supabase Edge Function Rules
+
+Edge Functions are trusted backend execution points and must remain strict.
+
+Rules:
+
+- Never weaken input validation
+- All external input must be validated with Zod if the function pattern supports it
+- Never expose secrets in responses or logs
+- Never move privileged logic into the client if it belongs in an Edge Function
+- Keep functions focused and single-purpose
+- Preserve structured JSON responses
+- Preserve error handling and meaningful logging
+
+Before editing an Edge Function:
+
+1. Inspect the full function
+2. Inspect how the frontend or backend calls it
+3. Inspect related database writes
+4. Confirm environment variables used
+5. Confirm whether service-role access is intentional and required
+
+Data safety rules:
+
+- Never broaden service-role usage without explicit need
+- Never return more data than needed
+- Never silently swallow DB errors
+- Preserve existing authorization assumptions
+- If a function changes workflow status, inspect the full downstream lifecycle first
+
+Deployment rules:
+
+- Never assume a function is deployed just because the local file exists
+- Distinguish clearly between:
+  - local code changes
+  - required env vars
+  - required deploy steps
+  - required database dependencies
+
+When changing an Edge Function, always output:
+
+1. root cause
+2. minimal safe fix
+3. exact file changes
+4. required secrets/env vars
+5. deploy steps
+6. verification steps
+

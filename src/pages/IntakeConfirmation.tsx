@@ -82,7 +82,7 @@ export default function IntakeConfirmation() {
   const handleProfileSave = async () => {
     if (!user) {
       toast.error("Please log in first");
-      navigate("/signup");
+      navigate("/start-your-renovation");
       return;
     }
     setProfileSaving(true);
@@ -197,8 +197,8 @@ export default function IntakeConfirmation() {
                 </CardContent>
               </Card>
 
-              <Button size="lg" onClick={() => user ? setPhase("profile") : navigate("/signup")}>
-                {user ? "Continue to Complete Profile" : "Create Account to Continue"}
+              <Button size="lg" onClick={() => user ? setPhase("profile") : navigate("/start-your-renovation")}>
+                {user ? "Continue to Complete Profile" : "Start your renovation"}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>

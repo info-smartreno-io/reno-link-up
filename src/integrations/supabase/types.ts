@@ -3651,6 +3651,47 @@ export type Database = {
           },
         ]
       }
+      project_details: {
+        Row: {
+          id: string
+          project_id: string
+          description: string | null
+          measurements: Json | null
+          materials: Json | null
+          inspiration_links: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          description?: string | null
+          measurements?: Json | null
+          materials?: Json | null
+          inspiration_links?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          description?: string | null
+          measurements?: Json | null
+          materials?: Json | null
+          inspiration_links?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_details_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_referrals: {
         Row: {
           created_at: string | null
@@ -11121,6 +11162,8 @@ export type Database = {
           warranty_issued_at: string | null
           zip_code: string | null
           zoning_prepared_at: string | null
+          scheduled_visit_at: string | null
+          visit_confirmed: boolean | null
         }
         Insert: {
           address?: string | null
@@ -11184,6 +11227,8 @@ export type Database = {
           warranty_issued_at?: string | null
           zip_code?: string | null
           zoning_prepared_at?: string | null
+          scheduled_visit_at?: string | null
+          visit_confirmed?: boolean | null
         }
         Update: {
           address?: string | null
@@ -11247,6 +11292,8 @@ export type Database = {
           warranty_issued_at?: string | null
           zip_code?: string | null
           zoning_prepared_at?: string | null
+          scheduled_visit_at?: string | null
+          visit_confirmed?: boolean | null
         }
         Relationships: [
           {

@@ -1,0 +1,46 @@
+Project: SmartReno
+
+SmartReno is a renovation coordination and contractor marketplace platform.
+
+Core workflows:
+
+1. Homeowner submits a project
+2. Payment is processed via Stripe
+3. Estimator is assigned
+4. Site visit is scheduled
+5. Estimate/proposal workflow begins
+6. Contractors receive RFPs
+7. Contractors submit bids
+8. Homeowner reviews/selects a contractor
+9. Walkthrough/project coordination continues
+
+Primary Roles:
+
+- homeowner
+- estimator
+- contractor
+- admin
+
+Core Systems:
+
+- authentication
+- homeowner intake
+- project management
+- estimator scheduling
+- contractor bidding / RFP workflow
+- messaging
+- payments
+- walkthrough coordination
+- admin oversight
+
+Project Priorities:
+
+- production stability
+- auth reliability
+- schema accuracy
+- secure payment flow
+- role-safe access control
+- minimal regression risk
+
+Any new feature or fix must integrate cleanly with these workflows and must not break role permissions, payment logic, or project lifecycle states.
+

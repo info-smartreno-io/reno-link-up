@@ -11,7 +11,15 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { getDashboardPathForRole, type AppRole } from "@/utils/roleRedirect";
 
-type AppRole = Database['public']['Enums']['app_role'];
+const ROLE_PRIORITY: AppRole[] = [
+  "admin",
+  "estimator",
+  "contractor",
+  "homeowner",
+  "design_professional",
+  "architect",
+  "interior_designer",
+];
 
 function useQueryParam(key: string) {
   const { search } = useLocation();
@@ -27,6 +35,7 @@ export default function UnifiedLogin() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [pending, setPending] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -40,6 +49,8 @@ export default function UnifiedLogin() {
   }, []);
 
   async function checkRoleAndRedirect(userId: string) {
+    if (redirecting) return;
+
     const { data: roles, error } = await supabase
       .from('user_roles')
       .select('role')
@@ -51,8 +62,9 @@ export default function UnifiedLogin() {
     }
 
     if (roles && roles.length > 0) {
-      const userRole = roles[0].role as AppRole;
-      const dashboardPath = getDashboardPathForRole(userRole);
+      const roleValues = roles.map((r) => r.role as AppRole);
+      const effectiveRole = ROLE_PRIORITY.find((r) => roleValues.includes(r));
+      const dashboardPath = effectiveRole ? getDashboardPathForRole(effectiveRole) : null;
 
       if (!dashboardPath) {
         toast({
@@ -68,6 +80,7 @@ export default function UnifiedLogin() {
         title: "Welcome!",
         description: "Redirecting you to your dashboard.",
       });
+      setRedirecting(true);
       navigate(dashboardPath, { replace: true });
     } else {
       toast({
@@ -154,6 +167,10 @@ export default function UnifiedLogin() {
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (redirecting) {
+      return;
+    }
     
     if (!role) {
       toast({
@@ -272,6 +289,7 @@ export default function UnifiedLogin() {
           description: "Signed in successfully!",
         });
 
+        setRedirecting(true);
         navigate(dashboardPath, { replace: true });
       }
     } catch (error) {

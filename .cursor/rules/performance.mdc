@@ -1,0 +1,25 @@
+Performance Rules for SmartReno:
+
+Backend / Data:
+
+- Avoid unnecessary database queries
+- Never fetch entire tables when a scoped query is sufficient
+- Use pagination for lists where appropriate
+- Select only the columns actually needed
+- Reuse existing indexes and query patterns before proposing new ones
+- Keep server-side logic efficient and predictable
+
+Frontend:
+
+- Minimize unnecessary re-renders
+- Avoid heavy client-side state when server-driven patterns are better
+- Lazy load heavy UI when appropriate
+- Keep expensive computations memoized only when actually needed
+- Do not over-engineer optimization prematurely
+
+General:
+
+- Favor simple, maintainable performance wins
+- Do not sacrifice correctness or security for speed
+- Measure before proposing major architectural performance changes
+

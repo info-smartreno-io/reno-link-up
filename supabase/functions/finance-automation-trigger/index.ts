@@ -395,7 +395,7 @@ async function handleLeadSold(
       .insert({
         lead_id: lead_id,
         user_id: estimator_id,
-        name: `${lead_name || 'New'} - ${project_type || 'Project'}`,
+        project_name: `${lead_name || 'New'} - ${project_type || 'Project'}`,
         description: lead?.client_notes,
         project_type: project_type,
         status: 'sold_pending_contract',

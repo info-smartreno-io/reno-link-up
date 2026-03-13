@@ -1,0 +1,48 @@
+SmartReno Migration + Schema Drift Prevention Rules
+
+Schema drift is a major risk in this codebase.
+
+Rules:
+
+- Never assume local code, generated types, migrations, and live database are all in sync
+- Never create schema changes to patch over an application bug unless explicitly instructed
+- Always inspect:
+  - current generated Supabase types
+  - relevant migrations
+  - actual query usage in code
+before proposing DB-related changes
+
+Migration rules:
+
+- Never write a migration unless explicitly requested
+- Keep migrations minimal and reversible in intent
+- One migration should solve one clearly defined schema problem
+- Never bundle unrelated schema edits together
+- Never rename/drop columns casually in a live workflow system
+
+Schema debugging order:
+
+1. inspect exact query failing
+2. inspect generated types
+3. inspect related migrations
+4. inspect all code references
+5. determine whether the problem is:
+   - bad query
+   - stale types
+   - missing migration
+   - wrong environment
+   - schema drift between local and remote
+
+Environment safety:
+
+- Distinguish clearly between local, staging, and production assumptions
+- Never state a migration is applied unless verified
+- Never state schema cache issues are fixed unless the actual source is identified
+
+When discussing schema changes, always output:
+
+1. confirmed current state
+2. suspected mismatch
+3. minimal correction path
+4. whether code change, migration, type regeneration, or deployment is needed
+

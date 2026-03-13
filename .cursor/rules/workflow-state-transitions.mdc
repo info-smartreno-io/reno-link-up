@@ -1,0 +1,48 @@
+SmartReno Workflow State Transition Rules
+
+This platform depends on workflow statuses across intake, payment, estimating, RFP, bidding, walkthroughs, and project coordination.
+
+Core rules:
+
+- Never invent new statuses unless explicitly instructed
+- Never rename an existing status without inspecting all references first
+- Never change workflow progression casually
+- Never update a status field without tracing every downstream dependency
+- Never assume one status field is the only workflow driver; inspect all related fields first
+
+Before changing any workflow logic:
+
+1. Identify the exact status field(s) involved
+2. Search all references across frontend, backend, Edge Functions, and SQL
+3. Identify all triggers, automations, notifications, and UI tabs depending on that status
+4. Confirm whether transitions are role-dependent
+5. Make the smallest possible fix
+
+Critical workflow areas:
+
+- homeowner intake progression
+- estimate checkout/payment confirmation
+- estimator assignment
+- site visit scheduling
+- walkthrough completion
+- quote generation
+- RFP creation
+- contractor bid submission
+- shortlist/selection logic
+- project handoff / completion states
+
+Safety rules:
+
+- Never skip required intermediate statuses to “make the UI work”
+- Never backfill statuses blindly
+- Never create dual sources of truth for project state
+- Never update state in the client if the existing trusted pattern is server-side
+
+When changing workflow logic, always output:
+
+1. root cause
+2. exact status fields involved
+3. downstream systems affected
+4. minimal safe fix
+5. manual regression checklist
+

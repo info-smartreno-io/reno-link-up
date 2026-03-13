@@ -10,6 +10,7 @@ export interface IntakeSiteVisitProject {
   user_id: string;
   created_at: string;
   homeowner?: { full_name: string | null; email: string | null; phone: string | null } | null;
+  homePreferences?: Record<string, unknown> | null;
   hasDetails: boolean;
   details?: {
     description: string | null;
@@ -40,7 +41,7 @@ async function fetchIntakeSiteVisits(): Promise<IntakeSiteVisitProject[]> {
     userIds.length
       ? supabase
           .from("users")
-          .select("id, full_name, email, phone")
+          .select("id, full_name, email, phone, home_visit_preferences")
           .in("id", userIds)
       : { data: [] as { id: string; full_name: string | null; email: string | null; phone: string | null }[], error: null },
   ]);
@@ -57,16 +58,17 @@ async function fetchIntakeSiteVisits(): Promise<IntakeSiteVisitProject[]> {
 
   return projects.map((p) => {
     const details = detailsByProject.get(p.id);
-    const homeowner = p.user_id ? usersById.get(p.user_id) ?? null : null;
+    const userRow = p.user_id ? usersById.get(p.user_id) ?? null : null;
     return {
       ...p,
-      homeowner: homeowner
+      homeowner: userRow
         ? {
-            full_name: homeowner.full_name ?? null,
-            email: homeowner.email ?? null,
-            phone: homeowner.phone ?? null,
+            full_name: userRow.full_name ?? null,
+            email: userRow.email ?? null,
+            phone: userRow.phone ?? null,
           }
         : null,
+      homePreferences: (userRow?.home_visit_preferences as Record<string, unknown>) ?? null,
       hasDetails: !!details,
       details: details
         ? {
@@ -104,13 +106,17 @@ export async function fetchIntakeProjectDetails(projectId: string): Promise<{
   }
 
   let homeowner: IntakeSiteVisitProject["homeowner"] = null;
+  let homePreferences: IntakeSiteVisitProject["homePreferences"] = null;
   if (project.user_id) {
     const { data: user } = await supabase
       .from("users")
-      .select("full_name, email, phone")
+      .select("full_name, email, phone, home_visit_preferences")
       .eq("id", project.user_id)
       .single();
-    if (user) homeowner = { full_name: user.full_name ?? null, email: user.email ?? null, phone: user.phone ?? null };
+    if (user) {
+      homeowner = { full_name: user.full_name ?? null, email: user.email ?? null, phone: user.phone ?? null };
+      homePreferences = (user.home_visit_preferences as Record<string, unknown>) ?? null;
+    }
   }
 
   const { data: detailRow, error: detailsError } = await supabase
@@ -132,6 +138,7 @@ export async function fetchIntakeProjectDetails(projectId: string): Promise<{
   const fullProject: IntakeSiteVisitProject = {
     ...project,
     homeowner,
+    homePreferences,
     hasDetails: !!detailRow,
     details,
   };

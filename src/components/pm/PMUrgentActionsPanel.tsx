@@ -33,7 +33,7 @@ export function PMUrgentActionsPanel() {
       // At-risk projects (no activity in 7+ days)
       const { data: atRiskProjects } = await supabase
         .from('projects')
-        .select('id, name')
+        .select('id, project_name')
         .or(`project_manager_id.eq.${user.id},coordinator_id.eq.${user.id}`)
         .in('status', ['pre_construction', 'procurement', 'construction'])
         .or(`last_pm_activity_at.is.null,last_pm_activity_at.lt.${sevenDaysAgo.toISOString()}`)
@@ -43,7 +43,7 @@ export function PMUrgentActionsPanel() {
         items.push({
           id: `risk-${p.id}`,
           type: 'at_risk',
-          title: p.name || 'Unnamed Project',
+          title: p.project_name || 'Unnamed Project',
           subtitle: 'No activity for 7+ days',
           projectId: p.id
         });

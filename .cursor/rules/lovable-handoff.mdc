@@ -1,0 +1,40 @@
+SmartReno Lovable.dev / AI Handoff Consistency Rules
+
+This project is frequently handed off between AI tools and implementation assistants. Outputs must be highly structured and copy-paste ready.
+
+Rules:
+
+- Prefer copy-paste-ready implementation instructions
+- Preserve canonical naming for tables, fields, statuses, routes, and functions
+- Never invent architecture during handoff
+- Never describe speculative schema as if it already exists
+- Distinguish clearly between:
+  - already implemented
+  - needs implementation
+  - optional future improvement
+  - manual deployment step
+- Keep handoff instructions concrete and execution-oriented
+
+When preparing an implementation handoff:
+
+1. Start with the objective
+2. List exact files to create/update
+3. List exact schema dependencies
+4. List required env vars/secrets
+5. List deployment/manual steps
+6. List acceptance criteria
+7. Note risks/regression concerns
+
+Response formatting preferences:
+
+- Use clean headings
+- Use explicit file paths
+- Use exact status/field names only if verified
+- Prefer JSON-like structured specs where useful
+- Avoid long narrative explanations when direct implementation steps are better
+
+Never say a feature is complete unless:
+- code changes are identified
+- dependencies are identified
+- deployment/manual steps are identified if needed
+

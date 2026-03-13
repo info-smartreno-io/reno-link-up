@@ -1,0 +1,52 @@
+SmartReno Stripe + Payment Safety Rules
+
+Payments are production-critical.
+
+Core rules:
+
+- Never modify payment logic casually
+- Never bypass payment confirmation requirements
+- Never assume a Stripe session completed unless verified by the existing trusted backend flow
+- Never trust client-reported payment status
+- Never expose secrets, webhook secrets, or privileged payment operations to the client
+- Never alter pricing logic without explicit instruction
+- Never hardcode fallback payment success states to “make the flow work”
+
+Checkout rules:
+
+- Inspect the full payment path before changing anything:
+  - checkout creation
+  - metadata
+  - redirect/success handling
+  - verification flow
+  - project status updates
+  - notifications/logging
+- Preserve existing source of truth for payment completion
+- If the codebase uses webhook verification or post-checkout verification, do not replace it with client assumptions
+
+Webhook / verification rules:
+
+- Never disable signature verification
+- Never make webhook handlers permissive without reason
+- Always preserve idempotency protections if present
+- Never create duplicate writes for completed payments
+- Never update project/payment state in multiple places unless the architecture explicitly requires it
+
+Data integrity rules:
+
+- Payment records must remain consistent with:
+  - projects
+  - users
+  - Stripe session/payment identifiers
+  - status fields
+- Never mark a project as payment_confirmed without tracing all downstream effects
+- Never alter payment amounts, fees, or upsells unless explicitly instructed
+
+When changing payment code, always output:
+
+1. root cause
+2. where the source of truth lives
+3. minimal safe fix
+4. affected files/functions
+5. manual test plan including success/cancel/failure cases
+

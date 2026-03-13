@@ -46,7 +46,7 @@ export default function HomeownerWarrantyClaim() {
           project_id,
           projects (
             id,
-            name,
+            project_name,
             status
           )
         `)
@@ -232,7 +232,7 @@ export default function HomeownerWarrantyClaim() {
                   <SelectContent>
                     {projects.map((project) => (
                       <SelectItem key={project.id} value={project.id}>
-                        {project.name}
+                        {project.project_name}
                       </SelectItem>
                     ))}
                   </SelectContent>

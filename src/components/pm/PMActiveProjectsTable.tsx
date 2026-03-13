@@ -14,7 +14,7 @@ type SortDirection = 'asc' | 'desc';
 
 interface Project {
   id: string;
-  name: string;
+  project_name: string;
   project_type: string;
   status: string;
   start_date: string | null;
@@ -84,7 +84,7 @@ export function PMActiveProjectsTable() {
 
       const { data, error } = await supabase
         .from('projects')
-        .select('id, name, project_type, status, start_date, risk_level, next_action, subs_status, materials_status')
+        .select('id, project_name, project_type, status, start_date, risk_level, next_action, subs_status, materials_status')
         .or(`project_manager_id.eq.${user.id},estimator_id.eq.${user.id}`)
         .in('status', ['pre_construction', 'procurement', 'construction', 'pm_pre_construction', 'pm_in_progress', 'closeout'])
         .order(sortField, { ascending: sortDirection === 'asc' });
@@ -136,7 +136,7 @@ export function PMActiveProjectsTable() {
               <TableRow key={project.id} className="cursor-pointer hover:bg-muted/50">
                 <TableCell>
                   <div>
-                    <p className="font-medium">{project.name || 'Untitled Project'}</p>
+                    <p className="font-medium">{project.project_name || 'Untitled Project'}</p>
                     <p className="text-xs text-muted-foreground">{project.project_type}</p>
                   </div>
                 </TableCell>

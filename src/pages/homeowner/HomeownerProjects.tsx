@@ -70,10 +70,9 @@ export default function HomeownerProjects() {
             return (
               <Card
                 key={project.id}
-                className="cursor-pointer hover:shadow-md transition-shadow border-border"
-                onClick={() => navigate(`/homeowner/projects/${project.id}/overview`)}
+                className="hover:shadow-md transition-shadow border-border"
               >
-                <CardContent className="p-5 flex items-center justify-between">
+                <CardContent className="p-5 flex items-center justify-between gap-4">
                   <div className="space-y-1.5">
                     <h3 className="font-medium text-foreground">
                       {project.project_type || "Renovation"}
@@ -89,11 +88,18 @@ export default function HomeownerProjects() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end gap-2">
                     <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
                       {status.label}
                     </Badge>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/homeowner/projects/${project.id}/overview`)}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                    >
+                      View my project
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
                   </div>
                 </CardContent>
               </Card>

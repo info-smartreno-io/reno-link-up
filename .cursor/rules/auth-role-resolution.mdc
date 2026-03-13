@@ -1,0 +1,53 @@
+SmartReno Auth + Role Resolution Rules
+
+This codebase contains high-risk auth and role-dependent flows.
+
+Core principles:
+
+- Never weaken authentication checks to make login “work”
+- Never bypass role resolution
+- Never assume a user is valid just because auth sign-in succeeded
+- Never fabricate profile completion logic
+- Never guess whether role data lives in public.users, public.user_roles, or another table; inspect the real code/schema first
+- Never change login, signup, session, or route guard logic without tracing the full auth flow first
+
+Required debugging order for auth issues:
+
+1. Confirm the exact failing step:
+   - credential sign-in
+   - session creation
+   - profile lookup
+   - role lookup
+   - protected route gating
+   - post-login redirect
+2. Inspect the exact files involved in the active login path
+3. Inspect generated Supabase types and actual query fields
+4. Inspect relevant RLS/policies/migrations only if needed
+5. Apply the smallest safe fix
+
+User validity rules:
+
+- A valid SmartReno user may require:
+  - auth identity
+  - profile row
+  - role row or role field
+  - approved status depending on portal and role
+- Never “fix” missing profile/role problems by skipping required validation
+- Never silently default a privileged role
+- Never auto-promote a user to admin/estimator/contractor as a convenience fix
+
+Protected route rules:
+
+- Never remove route guards just to unblock navigation
+- Never move authorization checks from server to client if the server-side pattern already exists
+- Always preserve least-privilege access
+- If multiple portals exist, preserve portal-specific access constraints
+
+When changing auth-related code, always output:
+
+1. root cause
+2. exact auth step failing
+3. minimal safe fix
+4. affected files
+5. manual verification steps
+

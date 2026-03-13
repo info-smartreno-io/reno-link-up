@@ -1,0 +1,47 @@
+SmartReno uses Supabase as the source of truth.
+
+Supabase Rules:
+
+- Never assume a table, column, relationship, policy, or trigger exists.
+- Always inspect the current schema, migrations, and generated Supabase types before making DB-related changes.
+- Never invent columns.
+- Never write queries against fields that are not confirmed in the codebase or schema types.
+- Prefer existing typed helpers and service patterns already used in the project.
+
+Authentication Rules:
+
+- Auth identities live in auth.users
+- App profile data lives in public.users unless the codebase clearly shows otherwise
+- user.id should map to auth.uid() according to the existing schema design
+- Never patch auth issues by weakening checks
+- Never work around login issues by skipping role/profile validation
+
+RLS Rules:
+
+- Row Level Security must always be respected
+- Do not suggest disabling RLS as a shortcut
+- Client-side reads/writes must align with existing policies
+- Admin/service-role actions must remain server-side only
+
+Migration Rules:
+
+- Never create a migration unless explicitly requested
+- Never modify schema as a guess to fix an app bug
+- If a migration is required, explain exactly why and keep it minimal
+- Match the real production schema, not assumptions
+
+Edge Function Rules:
+
+- Validate inputs with Zod
+- Return structured JSON responses
+- Log meaningful errors
+- Fail safely
+- Do not expose secrets
+- Keep function responsibilities small and clear
+
+Debugging Rules:
+
+- For auth/profile issues, inspect sign-in flow, session handling, profile lookup, role resolution, and RLS interactions in that order
+- For database issues, confirm whether the problem is schema mismatch, stale generated types, wrong query shape, missing policy, or bad data
+- Prefer root-cause fixes over temporary patches
+

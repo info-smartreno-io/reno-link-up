@@ -1,0 +1,40 @@
+SmartReno Admin-Only Operations Rules
+
+Admin operations are privileged and must stay tightly controlled.
+
+Rules:
+
+- Never expose admin capabilities to non-admin users
+- Never trust client-side hiding alone as access control
+- Never remove role checks from admin pages, handlers, or functions
+- Never broaden admin access as a shortcut for debugging
+- Never perform privileged writes from the client if a server-side/admin pattern already exists
+
+Before editing admin functionality:
+
+1. Inspect the current role/access checks
+2. Inspect whether the action uses server-side or privileged Supabase access
+3. Confirm which tables/records are affected
+4. Confirm audit/logging expectations if present
+5. Preserve least-privilege behavior
+
+Examples of admin-sensitive operations:
+
+- reviewing bids
+- changing project statuses
+- assigning estimators
+- triggering RFP creation
+- managing users
+- overriding workflow states
+- viewing sensitive payment or operational data
+- manual reminder triggers
+- admin dashboards with cross-user data
+
+When changing admin-related code, always output:
+
+1. root cause
+2. current access model
+3. minimal safe fix
+4. affected authorization points
+5. manual permission test cases
+

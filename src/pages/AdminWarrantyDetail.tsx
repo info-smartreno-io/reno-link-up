@@ -50,7 +50,7 @@ export default function AdminWarrantyDetail() {
           *,
           projects (
             id,
-            name,
+            project_name,
             status
           ),
           warranty_plans (
@@ -262,7 +262,7 @@ export default function AdminWarrantyDetail() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label className="text-muted-foreground">Project</Label>
-                        <p className="font-medium">{claim.projects?.name || '-'}</p>
+                        <p className="font-medium">{claim.projects?.project_name || '-'}</p>
                       </div>
                       <div>
                         <Label className="text-muted-foreground">Status</Label>

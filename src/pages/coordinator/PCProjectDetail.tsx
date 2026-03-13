@@ -68,7 +68,7 @@ export default function PCProjectDetail() {
     );
   }
 
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.name || "")}`;
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.project_name || "")}`;
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -83,7 +83,7 @@ export default function PCProjectDetail() {
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">{project.name}</h1>
+              <h1 className="text-3xl font-bold">{project.project_name}</h1>
               {isReadOnly && (
                 <Badge variant="secondary" className="gap-1">
                   <Lock className="h-3 w-3" />
@@ -109,7 +109,7 @@ export default function PCProjectDetail() {
                 <User className="h-4 w-4 text-muted-foreground mt-0.5" />
                 <div>
                   <p className="text-xs text-muted-foreground">Homeowner</p>
-                  <p className="text-sm font-medium">{project.name}</p>
+                  <p className="text-sm font-medium">{project.project_name}</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">

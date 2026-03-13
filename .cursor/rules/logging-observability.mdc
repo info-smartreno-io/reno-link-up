@@ -1,0 +1,38 @@
+SmartReno Logging + Observability Rules
+
+Logging should help diagnose production issues without exposing secrets or creating noise.
+
+Rules:
+
+- Never log secrets, tokens, raw credentials, service-role keys, or sensitive payment data
+- Never remove useful error logging without replacing it with something equivalent
+- Prefer structured, actionable logs over vague console output
+- Distinguish user-facing error messaging from developer diagnostics
+- Preserve existing monitoring or log-table patterns where present
+
+When adding or modifying logs:
+
+- Include enough context to trace:
+  - action attempted
+  - high-level entity involved
+  - status/failure point
+- Do not log unnecessary PII
+- Do not log full request payloads if they include sensitive info
+- Keep logs consistent with existing project conventions
+
+For failures, prefer logs that help answer:
+
+- what operation failed
+- where it failed
+- which system failed (auth, DB, payment, scheduling, etc.)
+- whether retry is safe or unsafe
+
+If the codebase includes log tables (e.g. sms_logs, email_logs, admin logs), preserve schema expectations and write patterns.
+
+When changing observability-related code, always output:
+
+1. what signal was missing or wrong
+2. minimal logging fix
+3. affected files/tables
+4. any privacy/security considerations
+

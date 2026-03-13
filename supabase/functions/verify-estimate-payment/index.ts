@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { securityLogger } from '../_shared/securityLogger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,14 +20,18 @@ serve(async (req) => {
 
     const signature = req.headers.get('stripe-signature');
     if (!signature) {
-      throw new Error('Missing stripe-signature header');
+      const error = new Error('Missing stripe-signature header');
+      await securityLogger.logEdgeFunctionError(req, 'verify-estimate-payment', error);
+      throw error;
     }
 
     const body = await req.text();
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
 
     if (!webhookSecret) {
-      throw new Error('STRIPE_WEBHOOK_SECRET not configured');
+      const error = new Error('STRIPE_WEBHOOK_SECRET not configured');
+      await securityLogger.logEdgeFunctionError(req, 'verify-estimate-payment', error);
+      throw error;
     }
 
     // Verify webhook signature
@@ -41,8 +46,13 @@ serve(async (req) => {
       const { projectId, homeownerId, paymentType } = session.metadata || {};
 
       if (!projectId || !homeownerId) {
+        const error = new Error('Missing required metadata');
         console.error('Missing metadata in session:', session.id);
-        throw new Error('Missing required metadata');
+        await securityLogger.logEdgeFunctionError(req, 'verify-estimate-payment', error, homeownerId, {
+          sessionId: session.id,
+          metadata: session.metadata,
+        });
+        throw error;
       }
 
       // Initialize Supabase client
@@ -73,6 +83,13 @@ serve(async (req) => {
 
       if (paymentError) {
         console.error('Error creating payment record:', paymentError);
+        await securityLogger.logEdgeFunctionError(
+          req,
+          'verify-estimate-payment',
+          paymentError,
+          homeownerId,
+          { projectId }
+        );
         throw paymentError;
       }
 
@@ -89,6 +106,13 @@ serve(async (req) => {
 
       if (projectError) {
         console.error('Error updating project:', projectError);
+        await securityLogger.logEdgeFunctionError(
+          req,
+          'verify-estimate-payment',
+          projectError,
+          homeownerId,
+          { projectId }
+        );
         throw projectError;
       }
 
@@ -101,12 +125,26 @@ serve(async (req) => {
 
       if (assignError) {
         console.error('Error triggering AI scheduling:', assignError);
+        await securityLogger.logEdgeFunctionError(
+          req,
+          'verify-estimate-payment',
+          assignError,
+          homeownerId,
+          { projectId, step: 'ai-scheduling-routing' }
+        );
         // Fallback: Try manual assignment
         const { error: fallbackError } = await supabase.functions.invoke('assign-estimator', {
           body: { projectId }
         });
         if (fallbackError) {
           console.error('Fallback assignment also failed:', fallbackError);
+          await securityLogger.logEdgeFunctionError(
+            req,
+            'verify-estimate-payment',
+            fallbackError,
+            homeownerId,
+            { projectId, step: 'assign-estimator-fallback' }
+          );
         }
       } else {
         console.log('AI scheduling completed for project:', projectId);
@@ -122,6 +160,11 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Webhook error:', error);
+    await securityLogger.logEdgeFunctionError(
+      req,
+      'verify-estimate-payment',
+      error instanceof Error ? error : new Error('Unknown error')
+    );
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { 

@@ -44,6 +44,8 @@ import HomeownerDailyLogs from "./pages/homeowner/HomeownerDailyLogs";
 import HomeownerProjectFiles from "./pages/homeowner/HomeownerProjectFiles";
 import HomeownerNotifications from "./pages/homeowner/HomeownerNotifications";
 import HomeownerProfile from "./pages/homeowner/HomeownerProfile";
+import ScheduleVisit from "./pages/homeowner/ScheduleVisit";
+import ProjectDetails from "./pages/homeowner/ProjectDetails";
 import { HomeownerLayout } from "./components/homeowner/HomeownerLayout";
 import HomeownerBidDemo from "./pages/HomeownerBidDemo";
 import HomeownerWarrantyClaim from "./pages/HomeownerWarrantyClaim";
@@ -425,6 +427,16 @@ function AppRoutes() {
             <Route path="/homeowner/profile" element={
               <ProtectedRoute>
                 <HomeownerLayout><HomeownerProfile /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/schedule-visit" element={
+              <ProtectedRoute>
+                <HomeownerLayout><ScheduleVisit /></HomeownerLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/project-details" element={
+              <ProtectedRoute>
+                <HomeownerLayout><ProjectDetails /></HomeownerLayout>
               </ProtectedRoute>
             } />
             <Route path="/contractors" element={<ContractorsDirectory />} />

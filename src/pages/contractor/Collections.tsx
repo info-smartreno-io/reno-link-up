@@ -71,7 +71,7 @@ export default function Collections() {
             contract_value,
             projects (
               id,
-              name,
+              project_name,
               project_type,
               project_manager_id
             )
@@ -106,8 +106,8 @@ export default function Collections() {
 
         return {
           id: item.id,
-          description: project?.name 
-            ? `${project.name} ${item.milestone_name || ""}`.trim()
+          description: project?.project_name
+            ? `${project.project_name} ${item.milestone_name || ""}`.trim()
             : item.milestone_name || "Untitled",
           milestone_name: item.milestone_name,
           status: item.status || "pending",
@@ -117,7 +117,7 @@ export default function Collections() {
           scheduled_balance: item.amount || 0,
           pm_id: pmId || null,
           pm_name: pmId ? pmMap[pmId] || "Unassigned" : "Unassigned",
-          customer_name: project?.name || "Unknown",
+          customer_name: project?.project_name || "Unknown",
           project_id: project?.id || null,
           is_open: item.status !== "paid",
         };

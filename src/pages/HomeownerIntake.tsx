@@ -72,6 +72,7 @@ export default function HomeownerIntake() {
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<{
     projectType?: string;
@@ -279,7 +280,9 @@ export default function HomeownerIntake() {
   };
 
   const onSubmit = async () => {
+    if (isSubmitting || processing || uploading) return;
     setProcessing(true);
+    setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -357,6 +360,7 @@ export default function HomeownerIntake() {
       });
     } finally {
       setProcessing(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -877,8 +881,8 @@ export default function HomeownerIntake() {
                   <Button type="button" variant="outline" onClick={() => setStep(3)}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
-                  <Button onClick={onSubmit} disabled={processing || uploading}>
-                    {processing ? "Processing..." : "Proceed to Payment"}
+                  <Button onClick={onSubmit} disabled={isSubmitting || processing || uploading}>
+                    {isSubmitting ? "Processing..." : "Proceed to Payment"}
                   </Button>
                 </div>
               </div>

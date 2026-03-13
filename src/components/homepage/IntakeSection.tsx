@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 export function IntakeSection() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -28,7 +28,8 @@ export function IntakeSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     try {
       // Create lead in database
@@ -94,7 +95,7 @@ export function IntakeSection() {
         variant: "destructive"
       });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -279,7 +280,7 @@ export function IntakeSection() {
               </div>
 
               <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                {loading ? "Submitting..." : "Get My Renovation Match"}
+                {isSubmitting ? "Submitting..." : "Get My Renovation Match"}
               </Button>
             </form>
           </div>

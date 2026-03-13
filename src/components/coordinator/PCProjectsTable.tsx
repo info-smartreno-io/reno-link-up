@@ -21,7 +21,7 @@ interface PCProjectsTableProps {
   coordinatorId?: string;
 }
 
-type SortField = "name" | "target_start_date" | "risk_level";
+type SortField = "project_name" | "target_start_date" | "risk_level";
 type SortDirection = "asc" | "desc";
 
 function StatusIcon({ status }: { status: string | null }) {
@@ -101,6 +101,11 @@ export function PCProjectsTable({ coordinatorId }: PCProjectsTableProps) {
           bVal = riskOrder[bVal as keyof typeof riskOrder] ?? 4;
         }
 
+        if (sortField === "project_name") {
+          aVal = (aVal ?? "").toString().toLowerCase();
+          bVal = (bVal ?? "").toString().toLowerCase();
+        }
+
         if (sortDirection === "asc") {
           return aVal > bVal ? 1 : -1;
         }
@@ -176,7 +181,7 @@ export function PCProjectsTable({ coordinatorId }: PCProjectsTableProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("name")} className="gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => handleSort("project_name")} className="gap-1">
                     Project <ArrowUpDown className="h-3 w-3" />
                   </Button>
                 </TableHead>
@@ -204,7 +209,7 @@ export function PCProjectsTable({ coordinatorId }: PCProjectsTableProps) {
                 <TableRow key={project.id} className="hover:bg-muted/50">
                   <TableCell>
                     <div>
-                      <p className="font-medium">{project.name}</p>
+                      <p className="font-medium">{project.project_name}</p>
                       <p className="text-xs text-muted-foreground">{project.project_type}</p>
                     </div>
                   </TableCell>

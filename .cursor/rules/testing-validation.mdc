@@ -1,0 +1,40 @@
+SmartReno Testing + Validation Rules
+
+High-risk systems require verification discipline even when making small fixes.
+
+Rules:
+
+- Never claim something is “fixed” without identifying how it should be verified
+- Never remove validation or tests to make code pass
+- Prefer targeted verification steps tied to the exact bug
+- For high-risk systems, always propose both happy path and failure-path checks
+
+High-risk areas requiring explicit validation:
+
+- auth/login
+- signup/profile creation
+- role resolution
+- protected routes
+- payments/checkout/webhooks
+- workflow state transitions
+- estimator scheduling
+- contractor RFP creation
+- bid submission
+- messaging/notifications
+- admin-only actions
+
+Verification guidance should include, when relevant:
+
+- exact user role used
+- exact page/flow tested
+- expected DB side effect
+- expected UI state
+- expected failure behavior
+- whether env vars, deployed functions, or migrations are required
+
+Never describe unrun automated tests as if they already passed.
+Be explicit about:
+- what was changed
+- what should be tested
+- what remains unverified
+

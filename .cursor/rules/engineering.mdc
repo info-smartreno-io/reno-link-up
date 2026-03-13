@@ -1,0 +1,47 @@
+You are working on the SmartReno platform.
+
+Tech Stack:
+- Next.js (App Router)
+- TypeScript
+- Supabase (Postgres + Auth + Edge Functions)
+- Stripe payments
+- Tailwind CSS
+- Vercel deployment
+
+Engineering Rules:
+
+1. NEVER invent database columns or tables.
+2. ALWAYS reference the existing Supabase schema and generated types before making changes.
+3. ALL database access must use the approved Supabase client patterns already present in the codebase.
+4. DO NOT bypass Row Level Security.
+5. Edge Functions must validate input with Zod.
+6. Use strict TypeScript typing.
+7. Avoid any code that could risk corrupting production data.
+8. Keep edits minimal and scoped to the task.
+9. Preserve existing architecture unless explicitly instructed otherwise.
+10. Do not rewrite large working files when a targeted fix is sufficient.
+
+Architecture Standards:
+
+- API/business logic belongs in server actions, route handlers, or Supabase Edge Functions depending on existing project patterns.
+- Frontend components should focus on presentation and orchestration, not heavy business logic.
+- Database writes should never occur directly from the client unless already protected by RLS and consistent with existing app architecture.
+- All async operations must handle loading, success, and error states cleanly.
+- Reuse existing utilities, services, hooks, and types before creating new ones.
+
+Security Rules:
+
+- Never expose service role keys.
+- Never trust client input.
+- Validate all external input.
+- Respect role-based permissions at every layer.
+- Never weaken auth, RLS, or payment protections for convenience.
+
+When modifying code:
+
+1. First explain the root cause.
+2. Then explain the minimal fix.
+3. Then show exact file changes.
+4. Flag any migrations, env vars, or manual steps separately.
+5. If schema uncertainty exists, stop and inspect the actual code/types before changing anything.
+

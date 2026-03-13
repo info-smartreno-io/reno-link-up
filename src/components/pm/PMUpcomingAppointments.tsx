@@ -42,7 +42,7 @@ export function PMUpcomingAppointments() {
           notes,
           project_id,
           projects (
-            name
+            project_name
           )
         `)
         .gte('scheduled_date', now.toISOString().split('T')[0])
@@ -64,7 +64,7 @@ export function PMUpcomingAppointments() {
           type: meeting.meeting_type?.toLowerCase().includes('inspection') ? 'inspection' 
               : meeting.meeting_type?.toLowerCase().includes('walkthrough') ? 'walkthrough'
               : 'meeting',
-          projectName: meeting.projects?.name
+          projectName: meeting.projects?.project_name
         });
       });
 

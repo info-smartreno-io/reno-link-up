@@ -253,6 +253,26 @@ function IntakeVisitDetailSheet({
                 <p className="text-xs text-muted-foreground">{project.homeowner?.email ?? "—"}</p>
                 <p className="text-xs text-muted-foreground">{project.homeowner?.phone ?? "—"}</p>
               </div>
+              {project.homePreferences && (
+                <div className="rounded-md border bg-muted/40 p-3 space-y-1 text-xs">
+                  <p className="font-medium text-muted-foreground">Home & visit preferences</p>
+                  {"working_hours" in project.homePreferences && (
+                    <p><span className="text-muted-foreground">Working hours: </span>{String(project.homePreferences.working_hours)}</p>
+                  )}
+                  {"storage_ok" in project.homePreferences && (
+                    <p><span className="text-muted-foreground">Store materials on site: </span>{String(project.homePreferences.storage_ok)}</p>
+                  )}
+                  {"bathroom_access" in project.homePreferences && (
+                    <p><span className="text-muted-foreground">Bathroom access: </span>{String(project.homePreferences.bathroom_access)}</p>
+                  )}
+                  {"dumpster_location" in project.homePreferences && (
+                    <p><span className="text-muted-foreground">Dumpster / parking: </span>{String(project.homePreferences.dumpster_location)}</p>
+                  )}
+                  {"pets_wfh" in project.homePreferences && (
+                    <p><span className="text-muted-foreground">Pets / WFH notes: </span>{String(project.homePreferences.pets_wfh)}</p>
+                  )}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <span className="text-muted-foreground">Project</span>
                 <span>{project.project_type}</span>
