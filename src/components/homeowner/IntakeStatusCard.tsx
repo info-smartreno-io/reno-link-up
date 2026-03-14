@@ -71,7 +71,7 @@ export function IntakeStatusCard({ project }: IntakeStatusCardProps) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <div className="text-muted-foreground">Project</div>
+              <div className="text-muted-foreground">Renovation request</div>
               <div className="font-medium text-foreground">
                 {project.project_name || "Renovation Project"}
               </div>
@@ -121,7 +121,7 @@ export function IntakeStatusCard({ project }: IntakeStatusCardProps) {
             className="mt-1 shrink-0 gap-1.5"
             onClick={() => navigate("/homeowner/bid-packet")}
           >
-            View my project
+            View renovation request
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </div>

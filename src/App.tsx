@@ -16,6 +16,8 @@ import { LeadDataProvider } from "@/context/LeadDataContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import GetEstimate from "./pages/GetEstimate";
+import Payments from "./pages/Payments";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import SubBidPublicForm from "./pages/SubBidPublicForm";
 import Partner from "./pages/Partner";
@@ -55,6 +57,7 @@ import HomeownerIntake from "./pages/HomeownerIntake";
 import HomeownerEstimateConfirmed from "./pages/HomeownerEstimateConfirmed";
 import HomeownerEstimateCancelled from "./pages/HomeownerEstimateCancelled";
 import AccountSettings from "./pages/homeowner/AccountSettings";
+import HomeownerSettings from "./pages/homeowner/HomeownerSettings";
 import HomeownerFiles from "./pages/homeowner/HomeownerFiles";
 import HomeownerProjectPhotos from "./pages/homeowner/HomeownerProjectPhotos";
 import HomeownerProjectVideos from "./pages/homeowner/HomeownerProjectVideos";
@@ -356,6 +359,8 @@ function AppRoutes() {
             <Route path="/auth/smartreno" element={<SmartRenoSsoLogin />} />
             <Route path="/auth/smartreno/callback" element={<SmartRenoSsoCallback />} />
             <Route path="/get-estimate" element={<GetEstimate />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/payments/success" element={<PaymentSuccess />} />
             <Route path="/homeowners" element={<Homeowners />} />
             <Route path="/homeowner-intake" element={
               <ProtectedRoute>
@@ -378,6 +383,11 @@ function AppRoutes() {
             <Route path="/homeowner/account-settings" element={
               <ProtectedRoute>
                 <AccountSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/homeowner/settings" element={
+              <ProtectedRoute>
+                <HomeownerLayout><HomeownerSettings /></HomeownerLayout>
               </ProtectedRoute>
             } />
             <Route path="/homeowner/files" element={

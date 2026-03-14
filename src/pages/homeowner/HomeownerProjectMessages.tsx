@@ -44,26 +44,11 @@ export default function HomeownerProjectMessages() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="support">SmartReno support</SelectItem>
-                  <SelectItem value="construction_agent" disabled>
-                    Construction agent (inside a project)
-                  </SelectItem>
-                  <SelectItem value="client_success" disabled>
-                    Client success (coming soon)
-                  </SelectItem>
-                  <SelectItem value="pm" disabled>
-                    Project manager (coming soon)
-                  </SelectItem>
-                  <SelectItem value="design_pro" disabled>
-                    Design pro / designer (coming soon)
-                  </SelectItem>
-                  <SelectItem value="architect" disabled>
-                    Architect (coming soon)
-                  </SelectItem>
-                  <SelectItem value="contractor" disabled>
-                    Contractor (inside a project)
-                  </SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                Message your project manager or contractor from your project page once one is assigned.
+              </p>
 
               <div className="flex flex-wrap justify-center gap-2 pt-2">
                 <Button

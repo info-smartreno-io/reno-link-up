@@ -9,6 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { trackEvent } from "@/utils/analytics";
 import { CalendarDays, MapPin, Clock, AlertCircle, Users, MessageCircle } from "lucide-react";
 import { addDays, isBefore, startOfToday } from "date-fns";
 
@@ -103,6 +104,8 @@ export default function ScheduleVisit() {
         .eq("id", project.id);
 
       if (error) throw error;
+
+      trackEvent("schedule_visit_submitted", { project_id: project.id, visit_with: visitWith, category: "Homeowner" });
 
       // Try to push this visit to the shared SmartReno calendar (info@smartreno.io)
       try {
@@ -335,7 +338,7 @@ export default function ScheduleVisit() {
         </CardHeader>
         <CardContent className={`space-y-2 ${hasProject ? "" : "opacity-50 pointer-events-none"}`}>
           <Label className="text-xs text-muted-foreground">
-            For now, visits are scheduled with a SmartReno construction agent. Other visit types will be enabled later.
+            A SmartReno construction agent will visit to assess your project. More visit types (e.g. with your PM or designer) will be available as your project progresses.
           </Label>
           <Select value={visitWith} onValueChange={setVisitWith}>
             <SelectTrigger>
@@ -343,21 +346,6 @@ export default function ScheduleVisit() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="construction_agent">Construction agent</SelectItem>
-              <SelectItem value="client_success" disabled>
-                Client success (coming soon)
-              </SelectItem>
-              <SelectItem value="pm" disabled>
-                Project manager (coming soon)
-              </SelectItem>
-              <SelectItem value="design_pro" disabled>
-                Design pro / designer (coming soon)
-              </SelectItem>
-              <SelectItem value="architect" disabled>
-                Architect (coming soon)
-              </SelectItem>
-              <SelectItem value="contractor" disabled>
-                Contractor (coming soon)
-              </SelectItem>
             </SelectContent>
           </Select>
         </CardContent>

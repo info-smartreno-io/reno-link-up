@@ -36,6 +36,7 @@ import { formatDistanceToNow, format, parseISO } from "date-fns";
 import { DashboardInspirationSection } from "@/components/homeowner/DashboardInspirationSection";
 import { HomeownerNotebook } from "@/components/homeowner/HomeownerNotebook";
 import { IntakeStatusCard } from "@/components/homeowner/IntakeStatusCard";
+import { PayEstimateCard } from "@/components/homeowner/PayEstimateCard";
 
 const ACTIVITY_ICONS: Record<string, typeof Wrench> = {
   status_change: ArrowRight,
@@ -90,8 +91,6 @@ export default function HomeownerDashboard() {
   const status = activeProject ? getHomeownerStatus(activeProject.status || "intake") : null;
   const nextStep = activeProject ? getNextStep(activeProject.status || "intake") : "";
   const progressPercent = status ? Math.round((status.step / (HOMEOWNER_MILESTONES.length - 1)) * 100) : 0;
-
-  console.log("[HomeownerDashboard] projects from useHomeownerProjects", projects);
 
   if (isLoading) {
     return (
@@ -166,6 +165,7 @@ export default function HomeownerDashboard() {
             <CardContent className="p-6 md:p-8">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active project</p>
                   <h2 className="text-xl font-semibold text-foreground">
                     {activeProject.project_type || "Renovation Project"}
                   </h2>
@@ -271,6 +271,9 @@ export default function HomeownerDashboard() {
 
       {/* Next Steps: Schedule Visit or Complete Project Details (intake-only path) */}
       {!activeProject && <NextStepsCard />}
+
+      {/* Pay for estimate when SmartEstimate is ready (intake path) */}
+      {!activeProject && <PayEstimateCard />}
 
       {/* Notebook */}
       <HomeownerNotebook />
@@ -391,11 +394,7 @@ function FallbackIntakeProjectCard() {
         .limit(1)
         .maybeSingle();
 
-      if (error) {
-        console.error("[FallbackIntakeProjectCard] projects fallback error", error);
-        return null;
-      }
-      console.log("[FallbackIntakeProjectCard] projects fallback result", data);
+      if (error) return null;
       return data;
     },
     staleTime: 30000,

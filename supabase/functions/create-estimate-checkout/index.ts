@@ -54,7 +54,7 @@ serve(async (req) => {
     const addonsTotal = (addons || []).reduce((sum: number, addon: any) => sum + (addon.price || 0), 0);
     const totalAmount = baseAmount + addonsTotal;
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session — credit card for now; ACH can be added later.
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',

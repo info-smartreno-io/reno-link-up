@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FolderOpen } from "lucide-react";
 
 export default function HomeownerProjectVideos() {
   const navigate = useNavigate();
@@ -21,9 +21,18 @@ export default function HomeownerProjectVideos() {
       <p className="text-sm text-muted-foreground">
         Walkthroughs and short clips will live here so estimators and contractors can understand the space without extra site visits.
       </p>
-      <Card>
-        <CardContent className="p-6 text-sm text-muted-foreground">
-          Video uploads for this project will be organized here once your SmartReno team starts building your scope.
+      <Card className="border-dashed">
+        <CardContent className="p-6 space-y-4 text-sm text-muted-foreground">
+          <p>
+            Video uploads for this project will be organized here once your SmartReno team starts building your scope.
+          </p>
+          <p className="text-xs">
+            You can also find all project documents in Files.
+          </p>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate("/homeowner/files")}>
+            <FolderOpen className="h-3.5 w-3.5" />
+            View project files
+          </Button>
         </CardContent>
       </Card>
     </div>

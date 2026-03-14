@@ -107,10 +107,14 @@ export default function HomeownerNotifications() {
           })}
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <Bell className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+        <Card className="border-dashed">
+          <CardContent className="p-8 text-center space-y-4">
+            <Bell className="h-10 w-10 text-muted-foreground/30 mx-auto" />
             <p className="text-muted-foreground">No notifications yet.</p>
+            <p className="text-sm text-muted-foreground">We&apos;ll notify you when there&apos;s project activity.</p>
+            <Button variant="outline" size="sm" onClick={() => navigate("/homeowner/dashboard")}>
+              Go to dashboard
+            </Button>
           </CardContent>
         </Card>
       )}

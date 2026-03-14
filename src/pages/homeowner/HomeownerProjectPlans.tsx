@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FolderOpen } from "lucide-react";
 
 export default function HomeownerProjectPlans() {
   const navigate = useNavigate();
@@ -21,9 +21,18 @@ export default function HomeownerProjectPlans() {
       <p className="text-sm text-muted-foreground">
         Architectural drawings, 3D views, and design packages for this project will be stored here.
       </p>
-      <Card>
-        <CardContent className="p-6 text-sm text-muted-foreground">
-          As your design team uploads plans and renderings, this page will become the single source of truth for scopes and measurements.
+      <Card className="border-dashed">
+        <CardContent className="p-6 space-y-4 text-sm text-muted-foreground">
+          <p>
+            As your design team uploads plans and renderings, this page will become the single source of truth for scopes and measurements.
+          </p>
+          <p className="text-xs">
+            You can also find all project documents in one place in Files.
+          </p>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate("/homeowner/files")}>
+            <FolderOpen className="h-3.5 w-3.5" />
+            View project files
+          </Button>
         </CardContent>
       </Card>
     </div>

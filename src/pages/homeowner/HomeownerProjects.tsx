@@ -14,7 +14,6 @@ export default function HomeownerProjects() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  console.log("[HomeownerProjectsPage] pipelineProjects", projects);
 
   const {
     data: intakeProjects,
@@ -32,12 +31,7 @@ export default function HomeownerProjects() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("[HomeownerProjectsPage] intakeProject fallback error", error);
-        return [];
-      }
-
-      console.log("[HomeownerProjectsPage] intakeProjects", data);
+      if (error) return [];
       return data || [];
     },
     staleTime: 30000,
@@ -239,9 +233,15 @@ export default function HomeownerProjects() {
           </select>
         </div>
       </div>
-      <Card>
-        <CardContent className="p-8 text-center text-muted-foreground">
-          No projects found. Start a renovation from your dashboard to see projects here.
+      <Card className="border-dashed">
+        <CardContent className="p-8 text-center space-y-4">
+          <p className="text-muted-foreground">
+            No projects yet. Start a renovation from your dashboard to see projects here.
+          </p>
+          <Button onClick={() => navigate("/homeowner/dashboard")} className="gap-2">
+            <ArrowRight className="h-4 w-4" />
+            Go to dashboard
+          </Button>
         </CardContent>
       </Card>
     </div>

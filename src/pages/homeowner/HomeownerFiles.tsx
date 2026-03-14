@@ -79,7 +79,6 @@ export default function HomeownerFiles() {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        console.log('No authenticated user');
         setLoading(false);
         return;
       }
@@ -268,12 +267,25 @@ export default function HomeownerFiles() {
             </CardHeader>
             <CardContent>
               {folderFiles.length === 0 ? (
-                <div className="text-center py-12">
-                  <Folder className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No files in this folder yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Files will appear here when your contractor uploads them
-                  </p>
+                <div className="text-center py-12 space-y-4">
+                  <Folder className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">
+                      {files.length === 0
+                        ? "No project files yet. When you have an active project, your team's documents will appear here."
+                        : "No files in this folder yet."}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {files.length === 0
+                        ? "Start a renovation or open a project to see files."
+                        : "Files will appear here when your contractor uploads them."}
+                    </p>
+                  </div>
+                  {files.length === 0 && (
+                    <Button variant="outline" size="sm" onClick={() => navigate("/homeowner/dashboard")}>
+                      Go to dashboard
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-2">

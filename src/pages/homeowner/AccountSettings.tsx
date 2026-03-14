@@ -47,11 +47,27 @@ export default function AccountSettings() {
         console.error("Error fetching profile:", error);
       }
 
+      // Auto-populate address from latest project if available
+      let addressLine = "";
+      const { data: lastProject } = await supabase
+        .from("projects")
+        .select("address, city, zip_code")
+        .eq("homeowner_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastProject?.address || lastProject?.city || lastProject?.zip_code) {
+        addressLine = [lastProject.address, lastProject.city, lastProject.zip_code].filter(Boolean).join(", ");
+        if (addressLine && !addressLine.endsWith("NJ")) {
+          addressLine = addressLine.trim() + " NJ";
+        }
+      }
+
       setProfile({
         full_name: profileData?.full_name || user.user_metadata?.full_name || "",
         email: user.email || "",
         phone: profileData?.phone || user.user_metadata?.phone || "",
-        address: "",
+        address: addressLine,
       });
     } catch (error) {
       console.error("Error:", error);
@@ -235,23 +251,23 @@ export default function AccountSettings() {
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
                 <CardDescription>
-                  Manage your payment methods for project invoices and subscriptions
+                  Pay by credit card or ACH (bank account) for project invoices and estimate fees.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Placeholder for payment methods */}
-                <div className="text-center py-12 border-2 border-dashed rounded-lg">
-                  <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Payment Methods</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Add a payment method to easily pay for projects and services
+                <div className="text-center py-12 border-2 border-dashed rounded-lg space-y-4">
+                  <CreditCard className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Credit Card or ACH</h3>
+                  <p className="text-sm text-muted-foreground">
+                    When you pay an invoice or estimate fee, you can use a credit card or ACH (bank account) in the secure Stripe checkout. Card and bank details are tokenized and processed by Stripe; SmartReno does not store your full card or account numbers.
                   </p>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Payment Method
+                  <Button onClick={() => navigate("/payments")} className="gap-2" aria-label="Pay an invoice">
+                    <CreditCard className="h-4 w-4" />
+                    Pay an invoice
                   </Button>
                   <p className="text-xs text-muted-foreground mt-4">
-                    We accept all major credit and debit cards
+                    All payments to SmartReno are final and non-refundable.
                   </p>
                 </div>
 
@@ -259,8 +275,7 @@ export default function AccountSettings() {
                 <div className="bg-muted p-4 rounded-lg">
                   <h4 className="text-sm font-semibold mb-2">Secure Payment Processing</h4>
                   <p className="text-xs text-muted-foreground">
-                    All payment information is encrypted and processed securely through Stripe.
-                    We never store your complete card details on our servers.
+                    Payments are processed by Stripe. Your card and bank details are not stored on SmartReno servers.
                   </p>
                 </div>
               </CardContent>

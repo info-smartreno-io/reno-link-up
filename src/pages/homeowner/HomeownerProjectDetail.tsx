@@ -3,7 +3,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHomeownerProjectDetail, getHomeownerStatus } from "@/hooks/useHomeownerData";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const TABS = [
@@ -36,6 +37,32 @@ export default function HomeownerProjectDetail() {
   }
 
   const project = data?.project;
+  if (!project) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate("/homeowner/projects")}>
+          <ArrowLeft className="h-4 w-4" />
+          Back to projects
+        </Button>
+        <Card className="border-dashed">
+          <CardContent className="p-8 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <FolderOpen className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">Project not found</h2>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              This project doesn&apos;t exist or you don&apos;t have access to it. It may have been removed or the link is incorrect.
+            </p>
+            <Button onClick={() => navigate("/homeowner/projects")} className="gap-2">
+              <FolderOpen className="h-4 w-4" />
+              View my projects
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const status = getHomeownerStatus(project?.status || "intake");
 
   return (

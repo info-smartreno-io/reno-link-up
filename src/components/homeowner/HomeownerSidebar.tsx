@@ -7,9 +7,12 @@ import {
   FolderOpen,
   Bell,
   User,
+  UserCircle,
   Home,
   CalendarCheck,
   StickyNote,
+  Settings,
+  CreditCard,
 } from "lucide-react";
 import {
   Sidebar,
@@ -31,9 +34,12 @@ const navItems = [
   { title: "Messages", url: "/homeowner/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "My Notebook", url: "/homeowner/notebook", icon: StickyNote, badgeKey: null },
   { title: "Files", url: "/homeowner/files", icon: FolderOpen, badgeKey: null },
+  { title: "Pay invoice", url: "/payments", icon: CreditCard, badgeKey: null },
   { title: "My Home", url: "/homeowner/my-home", icon: Home, badgeKey: null },
   { title: "Notifications", url: "/homeowner/notifications", icon: Bell, badgeKey: "notifications" as const },
   { title: "Profile", url: "/homeowner/profile", icon: User, badgeKey: null },
+  { title: "Account", url: "/homeowner/account-settings", icon: UserCircle, badgeKey: null },
+  { title: "Settings", url: "/homeowner/settings", icon: Settings, badgeKey: null },
 ];
 
 export function HomeownerSidebar() {
